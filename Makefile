@@ -2,7 +2,7 @@
 #								PROJECT INFOS									  #
  #===============================================================================#
 
-NAME				=	webserv
+NAME				=	RT
 
  #=================================================#
 #					COMPILATION						#
@@ -39,51 +39,48 @@ INCLUDE_DIR			=	includes/
 #								SOURCES											  #
  #===============================================================================#
 
-INCLUDES			=	$(INCLUDE_DIR) \
-						$(addprefix $(INCLUDE_DIR), \
-						$(REQUEST) \
-						$(PARSE_DIR) \
-						$(METHOD_DIR) \
-						$(METADATA_DIR) \
-						)
+# INCLUDES			=	$(INCLUDE_DIR) \
+# 						$(addprefix $(INCLUDE_DIR), \
+# 						$(REQUEST) \
+# 						$(PARSE_DIR) \
+# 						$(METHOD_DIR) \
+# 						$(METADATA_DIR) \
+# 						)
 
 SRC_FILES			=	$(addprefix $(SRC_DIR), \
 						main.cpp \
-						prints.cpp\
-						fileManagement.cpp \
-						$(SRC_CLASSES) \
 						)
 
-SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
-						$(SRC_REQUEST) \
-						$(SRC_PARSING) \
-						$(SRC_METHODS) \
-						$(SRC_METADATA) \
-						MessageContext.cpp \
-						Whole.cpp \
-						CGI.cpp \
-						)
+# SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
+# 						$(SRC_REQUEST) \
+# 						$(SRC_PARSING) \
+# 						$(SRC_METHODS) \
+# 						$(SRC_METADATA) \
+# 						MessageContext.cpp \
+# 						Whole.cpp \
+# 						CGI.cpp \
+# 						)
 
-SRC_METADATA		=	$(addprefix $(METADATA_DIR), \
-						ServerData.cpp \
-						)
+# SRC_METADATA		=	$(addprefix $(METADATA_DIR), \
+# 						ServerData.cpp \
+# 						)
 
-SRC_REQUEST			=	$(addprefix $(REQUEST), \
-						Connexion.cpp \
-						RequestHandler.cpp \
-						)
+# SRC_REQUEST			=	$(addprefix $(REQUEST), \
+# 						Connexion.cpp \
+# 						RequestHandler.cpp \
+# 						)
 
-SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
-						FunctionWrapper.cpp \
-						Parse.cpp \
-						)
+# SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
+# 						FunctionWrapper.cpp \
+# 						Parse.cpp \
+# 						)
 
-SRC_METHODS			=	$(addprefix $(METHOD_DIR), \
-						Method.cpp \
-						Get.cpp \
-						Post.cpp \
-						Delete.cpp \
-						)
+# SRC_METHODS			=	$(addprefix $(METHOD_DIR), \
+# 						Method.cpp \
+# 						Get.cpp \
+# 						Post.cpp \
+# 						Delete.cpp \
+# 						)
 
 # $(addprefix $(UTILS), FunctionWrapper.cpp)
 # $(addprefix $(CLASSES_DIR), Func.cpp)
