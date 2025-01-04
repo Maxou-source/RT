@@ -12,7 +12,9 @@ CC					=	c++
 
 FLAGS				=	$(DBFLAGS) $(CFLAGS) $(INCLUDES_FLAGED) $(CDFLAGS)
 
-CFLAGS				=	-gdwarf-4 -Wall -Wextra -Werror #-std=c++98 #-fsanitize=address
+PKG_CONFIG = pkg-config
+CFLAGS				=	-gdwarf-4 -Wall -Wextra -Werror $(shell $(PKG_CONFIG) --cflags xcb)#-std=c++98 #-fsanitize=address
+LDFLAGS = $(shell $(PKG_CONFIG) --libs xcb)
 
 DBFLAGS				=	-g3
 
@@ -27,9 +29,10 @@ INCLUDES_FLAGED		=	$(addprefix $(INCLUDEFLAG), $(INCLUDES))
  #=================================================#
 
 SRC_DIR				=	src/
+OBJECTS_DIR			=	Object/
 CLASSES_DIR			=	Classes/
 REQUEST				=	Request/
-PARSE_DIR			=	Parsing/
+PARSE_DIR			=	Parse/
 METHOD_DIR			=	Methods/
 METADATA_DIR		=	MetaData/
 
@@ -39,7 +42,12 @@ INCLUDE_DIR			=	includes/
 #								SOURCES											  #
  #===============================================================================#
 
-# INCLUDES			=	$(INCLUDE_DIR) \
+INCLUDES			=	$(INCLUDE_DIR) \
+							$(addprefix $(INCLUDE_DIR), \
+							$(OBJECTS_DIR) \
+							$(PARSE_DIR) \
+							)
+						
 # 						$(addprefix $(INCLUDE_DIR), \
 # 						$(REQUEST) \
 # 						$(PARSE_DIR) \
@@ -49,17 +57,26 @@ INCLUDE_DIR			=	includes/
 
 SRC_FILES			=	$(addprefix $(SRC_DIR), \
 						main.cpp \
+						$(SRC_CLASSES) \
 						)
 
-# SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
-# 						$(SRC_REQUEST) \
-# 						$(SRC_PARSING) \
-# 						$(SRC_METHODS) \
-# 						$(SRC_METADATA) \
-# 						MessageContext.cpp \
-# 						Whole.cpp \
-# 						CGI.cpp \
-# 						)
+SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
+						$(SRC_PARSING) \
+						$(SRC_OBJECTS) \
+						)
+
+# $(SRC_REQUEST) \
+# $(SRC_PARSING) \
+# $(SRC_METHODS) \
+# $(SRC_METADATA) \
+# MessageContext.cpp \
+# Whole.cpp \
+# CGI.cpp \
+# )
+
+SRC_OBJECTS			= $(addprefix $(OBJECTS_DIR), \
+						AObject.cpp \
+						)
 
 # SRC_METADATA		=	$(addprefix $(METADATA_DIR), \
 # 						ServerData.cpp \
@@ -70,10 +87,9 @@ SRC_FILES			=	$(addprefix $(SRC_DIR), \
 # 						RequestHandler.cpp \
 # 						)
 
-# SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
-# 						FunctionWrapper.cpp \
-# 						Parse.cpp \
-# 						)
+SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
+						parse.cpp \
+						)
 
 # SRC_METHODS			=	$(addprefix $(METHOD_DIR), \
 # 						Method.cpp \
@@ -100,13 +116,14 @@ DEPS		=	$(OBJS:%.o=%.d)
  #=============================================================================#
 
 $(OBJS_DIR)%.o : $(SRC_DIR)%.cpp
+				echo $(dir $@)
 				mkdir -p $(dir $@)
 				$(CC) $(FLAGS) -c $< -o $@
 
 all : $(NAME)
 
 $(NAME)		:	$(OBJS_DIR) $(OBJS) Makefile
-				$(CC) $(FLAGS) $(OBJS) -o $(NAME)
+				$(CC) $(FLAGS) $(OBJS) -o $(NAME) $(LDFLAGS)
 
 $(OBJS_DIR) :
 				mkdir $(OBJS_DIR)
