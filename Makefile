@@ -35,6 +35,7 @@ REQUEST				=	Request/
 PARSE_DIR			=	Parse/
 TUPLE_DIR			=	Tuple/
 METHOD_DIR			=	Methods/
+XCB_DIR				=	XCB/
 METADATA_DIR		=	MetaData/
 
 INCLUDE_DIR			=	includes/
@@ -48,14 +49,8 @@ INCLUDES			=	$(INCLUDE_DIR) \
 							$(OBJECTS_DIR) \
 							$(PARSE_DIR) \
 							$(TUPLE_DIR) \
+							$(XCB_DIR) \
 							)
-						
-# 						$(addprefix $(INCLUDE_DIR), \
-# 						$(REQUEST) \
-# 						$(PARSE_DIR) \
-# 						$(METHOD_DIR) \
-# 						$(METADATA_DIR) \
-# 						)
 
 SRC_FILES			=	$(addprefix $(SRC_DIR), \
 						maintest2.cpp \
@@ -66,6 +61,7 @@ SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
 						$(SRC_PARSING) \
 						$(SRC_OBJECTS) \
 						$(SRC_TUPLE) \
+						$(SRC_XCB) \
 						)
 
 # $(SRC_REQUEST) \
@@ -87,15 +83,9 @@ SRC_TUPLE			= $(addprefix $(TUPLE_DIR), \
 						Ray.cpp \
 						)
 
-# SRC_METADATA		=	$(addprefix $(METADATA_DIR), \
-# 						ServerData.cpp \
-# 						)
-
-# SRC_REQUEST			=	$(addprefix $(REQUEST), \
-# 						Connexion.cpp \
-# 						RequestHandler.cpp \
-# 						)
-
+SRC_XCB				= $(addprefix $(XCB_DIR), \
+						XCB.cpp \
+						)
 SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
 						parse.cpp \
 						)
