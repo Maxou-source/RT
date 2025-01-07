@@ -1,8 +1,9 @@
 #include <string>
 #include <iostream>
 #include <stdlib.h>
-#include "AObject.hpp"
+#include "Sphere.hpp"
 #include "parse.hpp"
+#include "Ray.hpp"
 // #include <GL/glew.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,21 +15,8 @@
 
 int main(int ac, char **av)
 {
-	// AObject c;
-	(void) av;
 	(void) ac;
-	// if (ac != 2)
-	// {
-	// 	std::cerr << "error no input file" << std::endl;
-	// 	return (EXIT_FAILURE);
-	// }
-	// if (Parse::parse(av[1]))
-	// {
-	// 	return (EXIT_FAILURE);
-	// }
-	std::cout << "test 1 2 3"<< std::endl;
-    // Connect to the X server
-
+	(void) av;
     xcb_connection_t *connection = xcb_connect(NULL, NULL);
 	std::cout << "test" << std::endl;
     if (xcb_connection_has_error(connection)) {
@@ -56,7 +44,7 @@ int main(int ac, char **av)
         window,                  // Window ID
         screen->root,            // Parent window
         100, 100,                // x, y position
-        400, 300,                // Width, height
+        400, 400,                // Width, height
         10,                      // Border width
         XCB_WINDOW_CLASS_INPUT_OUTPUT, // Window class
         screen->root_visual,     // Visual
@@ -90,17 +78,39 @@ int main(int ac, char **av)
         switch (event->response_type & ~0x80) {
             case XCB_EXPOSE: {
                 // Draw a red dot in the middle of the screen
-                int center_x = 200;
-                int center_y = 150;
+				Tuple origin(0,0,-5,POINT);
+				Tuple direction(0,0,0, VECTOR);
+				Ray ray(origin, direction);
+				Sphere sp;
+				// float canvas_pixels = 400;
+				float wall_z = 10;
+				float wall_size = 7;
+				float pixel_size = wall_size / 400;
+				float half = wall_size /2;
+				xcb_gcontext_t red_gc = xcb_generate_id(connection);
+				for (int y = 0; y < 399; y++)
+				{
+					float world_y = half - pixel_size * y;
+					for (int x = 0; x < 399; x++)
+					{
+						float world_x = -half - pixel_size * x;
+						Tuple position(world_x, world_y, wall_z, POINT);
+						// Ray r();
+						Tuple tmp((position - ray.getOrigin()).normalize());
+						ray.setDirection(tmp);
+						if (sp.intersect(&ray))
+						{
+							uint32_t red_color = 0xff0000; // RGB for red
+							uint32_t red_gc_values[] = {red_color, screen->white_pixel};
+							xcb_create_gc(connection, red_gc, window, gc_mask, red_gc_values);
 
-                xcb_gcontext_t red_gc = xcb_generate_id(connection);
-                uint32_t red_color = 0xff0000; // RGB for red
-                uint32_t red_gc_values[] = {red_color, screen->white_pixel};
-                xcb_create_gc(connection, red_gc, window, gc_mask, red_gc_values);
+							xcb_point_t point = {static_cast<int16_t>(x), static_cast<int16_t>(y)};
+							xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, window, red_gc, 1, &point);
+						}
+					}
+				}
 
-                xcb_point_t point = {static_cast<int16_t>(center_x), static_cast<int16_t>(center_y)};
-                xcb_poly_point(connection, XCB_COORD_MODE_ORIGIN, window, red_gc, 1, &point);
-
+				std::cout << "im done" << std::endl;
                 xcb_free_gc(connection, red_gc);
                 xcb_flush(connection);
                 break;

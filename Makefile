@@ -8,7 +8,7 @@ NAME				=	RT
 #					COMPILATION						#
  #=================================================#
 
-CC					=	c++
+CC					=	clang++
 
 FLAGS				=	$(DBFLAGS) $(CFLAGS) $(INCLUDES_FLAGED) $(CDFLAGS)
 
@@ -33,6 +33,7 @@ OBJECTS_DIR			=	Object/
 CLASSES_DIR			=	Classes/
 REQUEST				=	Request/
 PARSE_DIR			=	Parse/
+TUPLE_DIR			=	Tuple/
 METHOD_DIR			=	Methods/
 METADATA_DIR		=	MetaData/
 
@@ -46,6 +47,7 @@ INCLUDES			=	$(INCLUDE_DIR) \
 							$(addprefix $(INCLUDE_DIR), \
 							$(OBJECTS_DIR) \
 							$(PARSE_DIR) \
+							$(TUPLE_DIR) \
 							)
 						
 # 						$(addprefix $(INCLUDE_DIR), \
@@ -56,13 +58,14 @@ INCLUDES			=	$(INCLUDE_DIR) \
 # 						)
 
 SRC_FILES			=	$(addprefix $(SRC_DIR), \
-						main.cpp \
+						maintest2.cpp \
 						$(SRC_CLASSES) \
 						)
 
 SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
 						$(SRC_PARSING) \
 						$(SRC_OBJECTS) \
+						$(SRC_TUPLE) \
 						)
 
 # $(SRC_REQUEST) \
@@ -76,6 +79,12 @@ SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
 
 SRC_OBJECTS			= $(addprefix $(OBJECTS_DIR), \
 						AObject.cpp \
+						Sphere.cpp \
+						)
+
+SRC_TUPLE			= $(addprefix $(TUPLE_DIR), \
+						Tuple.cpp \
+						Ray.cpp \
 						)
 
 # SRC_METADATA		=	$(addprefix $(METADATA_DIR), \

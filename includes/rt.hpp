@@ -6,4 +6,8 @@
 # include <iostream>
 # include <vector>
 
+
+# define POINT 1
+# define VECTOR 0
+
 #endif
