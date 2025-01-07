@@ -1,6 +1,6 @@
 #include "parse.hpp"
 
-bool Parse::checkFileName(char *fileName)
+bool Parse::checkFileName(const char *fileName)
 {
 	std::string argStr = fileName;
 	if (argStr.size() < 4)
@@ -11,7 +11,7 @@ bool Parse::checkFileName(char *fileName)
 	return false;
 }
 
-bool Parse::checkFileRights(char *fileName, std::ifstream *fileStream)
+bool Parse::checkFileRights(const char *fileName, std::ifstream *fileStream)
 {
 	fileStream->open(fileName);
 	if (!fileStream->is_open()) {
@@ -20,21 +20,39 @@ bool Parse::checkFileRights(char *fileName, std::ifstream *fileStream)
 	return false;
 }
 
-bool Parse::parseContent(std::ifstream *fileStream)
+bool	getBase(std::vector<std::string> vec)
+{
+	const std::array<std::string, 2> objects_id = {"Sphere", "Cylinder"};
+
+	bool inprogress = false;
+	for (std::string &s : vec)
+	{
+		if (s.empty())
+			continue ;
+		if (!inprogress && s.find(objects_id[0]) || s.find(objects_id[1])) {
+			inprogress = s.[s.size() - 1] == '{';
+			if (!inprogress)
+				return false;
+			continue ;
+		}
+		if (inprogress && )
+	}
+}
+
+std::vector<std::string>	Parse::parseContent(std::ifstream *fileStream)
 {
 	(void) fileStream;
 	std::string					line;
 	std::vector<std::string>	vectorFile;
 
 	while (std::getline(*fileStream, line)) {
-		// line.erase(std::remove_if(line.begin(), line.end(), ::isspace), line.end());
 		std::cout << line << std::endl;
 		vectorFile.push_back(line);
 	}
-	return (false);
+	return vectorFile;
 }
 
-bool Parse::parse(char *fileName)
+bool Parse::parse(const char *fileName)
 {
 	if (checkFileName(fileName))
 	{
@@ -47,8 +65,10 @@ bool Parse::parse(char *fileName)
 		std::cerr << "KO: Not a file or you dont have the correct rights" << std::endl;
 		return true;
 	}
-	if (parseContent(&fileStream))
+	std::vector<std::string> lines = parseContent(&fileStream);
+	if (lines.size() > 0)
 	{
+
 		return true;
 	}
 	return false;

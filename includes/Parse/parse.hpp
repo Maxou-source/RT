@@ -8,11 +8,11 @@ class Parse {
 	private:
 
 	public:
-		static bool parse(char *);
-		static bool parseContent(std::ifstream *fileStream);
+		static bool parse(const char *);
+		static std::vector<std::string>	parseContent(std::ifstream *fileStream);
 
-		static bool checkFileName(char *fileName);
-		static bool checkFileRights(char *fileName, std::ifstream *filestream);
+		static bool checkFileName(const char *fileName);
+		static bool checkFileRights(const char *fileName, std::ifstream *filestream);
 
 };
 

@@ -1,0 +1,13 @@
+Sphere {
+    color: [0, 0, 10]
+    specular: .23
+    diameter: .146
+    pattern: true
+}
+
+Cylinder {
+    color: [0, 0, 10]
+    specular: .23
+    diameter: .146
+    pattern: true
+}

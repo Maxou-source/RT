@@ -11,8 +11,16 @@
 
 int main(int ac, char **av)
 {
-	(void) ac;
-	(void) av;
+	if (ac != 2) {
+        std::cerr << "Wrong args number" << std::endl;
+        return 1;
+    }
+
+    const char *filename = av[1];
+
+    Parse parser;
+    parser.parse(filename);
+
 	XCB xcb;
 	xcb.setupConnection();
 	xcb.setupScreen();
