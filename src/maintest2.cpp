@@ -90,16 +90,25 @@ int main(int ac, char **av)
 				xcb_gcontext_t red_gc = xcb_generate_id(connection);
 				for (int y = 0; y < 399; y++)
 				{
-					float world_y = half - pixel_size * y;
+					float world_y = half - (pixel_size * y);
 					for (int x = 0; x < 399; x++)
 					{
-						float world_x = -half - pixel_size * x;
+						float world_x = -half + (pixel_size * x);
+						std::cout << "start" << std::endl;
 						Tuple position(world_x, world_y, wall_z, POINT);
 						// Ray r();
-						Tuple tmp((position - ray.getOrigin()).normalize());
-						ray.setDirection(tmp);
+						position.display();
+						position = position - ray.getOrigin();
+						position.display();
+						position.normalize();
+						position.display();
+						// Tuple tmp((position - ray.getOrigin()).normalize());
+						std::cout << "normalize vector" << std::endl;
+						// position.display();
+						ray.setDirection(position);
 						if (sp.intersect(&ray))
 						{
+							std::cout << "Intersect !! " << std::endl;
 							uint32_t red_color = 0xff0000; // RGB for red
 							uint32_t red_gc_values[] = {red_color, screen->white_pixel};
 							xcb_create_gc(connection, red_gc, window, gc_mask, red_gc_values);

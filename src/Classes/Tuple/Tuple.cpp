@@ -75,20 +75,20 @@ float Tuple::magnitude()
 					(value.z * value.z) ));
 }
 
-// void Tuple::normalize()
-// {
-// 	float magnitude = this->magnitude();
-// 	value = tuple(value.x / magnitude,
-// 				value.y / magnitude,
-// 				value.z / magnitude,
-// 				value.w / magnitude);
-// }
-
-Tuple Tuple::normalize()
+void Tuple::normalize()
 {
 	float magnitude = this->magnitude();
-	return Tuple(value.x / magnitude,
-				value.y / magnitude,
-				value.z / magnitude,
-				value.w / magnitude);
+	value.x = value.x / magnitude;
+	value.y  = value.y / magnitude;
+	value.z  = value.z / magnitude;
+	value.w  = value.w / magnitude;
+}
+
+Tuple Tuple::normalize(Tuple& fix)
+{
+	float magnitude = fix.magnitude();
+	return Tuple(fix.value.x / magnitude,
+				fix.value.y / magnitude,
+				fix.value.z / magnitude,
+				fix.value.w / magnitude);
 }

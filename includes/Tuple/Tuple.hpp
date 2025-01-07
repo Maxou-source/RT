@@ -49,8 +49,8 @@ class Tuple {
 		float dot_product(Tuple &);
 		void display();
 		float magnitude();
-		// void normalize();
-		Tuple normalize();
+		void normalize();
+		Tuple normalize(Tuple&);
 };
 
 #endif

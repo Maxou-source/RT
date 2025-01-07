@@ -4,6 +4,7 @@
 #include "Sphere.hpp"
 #include "Ray.hpp"
 #include "parse.hpp"
+#include "rt.hpp"
 // #include <GL/glew.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,8 +23,8 @@ int main()
 	Ray r(p,v );
 	// Vector pp(1, -2, 3);
 	// pp = pp * 3.5;
-	Tuple pp = r.position(2.5);
-	pp.display();
+	// Tuple pp = r.position(2.5);
+	// pp.display();
 
 	std::cout << "NEW TEST FOR DOT PRODUCT" << std::endl;
 
@@ -34,6 +35,15 @@ int main()
 
 	std::cout << "NEW TEST FOR SPHERE" << std::endl;
 
+	Tuple pp(0, 1, -5, POINT);
+	Tuple vv(0, 0, 1, VECTOR);
+	Ray newR(pp, vv);
 	Sphere sp;
-	sp.intersect(&r);
+	sp.intersect(&newR);
+
+	std::cout << "NEW TEST FOR NORMALIZATION" << std::endl;
+	Tuple ve(1,2,3, VECTOR);
+	ve.normalize();
+	ve.display();
+
 }
