@@ -53,7 +53,7 @@ INCLUDES			=	$(INCLUDE_DIR) \
 							)
 
 SRC_FILES			=	$(addprefix $(SRC_DIR), \
-						maintest2.cpp \
+						maintest.cpp \
 						$(SRC_CLASSES) \
 						)
 
@@ -85,6 +85,7 @@ SRC_TUPLE			= $(addprefix $(TUPLE_DIR), \
 
 SRC_XCB				= $(addprefix $(XCB_DIR), \
 						XCB.cpp \
+						Image.cpp \
 						)
 SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
 						parse.cpp \

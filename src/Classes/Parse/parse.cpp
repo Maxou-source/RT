@@ -20,24 +20,24 @@ bool Parse::checkFileRights(const char *fileName, std::ifstream *fileStream)
 	return false;
 }
 
-bool	getBase(std::vector<std::string> vec)
-{
-	const std::array<std::string, 2> objects_id = {"Sphere", "Cylinder"};
+// bool	getBase(std::vector<std::string> vec)
+// {
+// 	const std::array<std::string, 2> objects_id = {"Sphere", "Cylinder"};
 
-	bool inprogress = false;
-	for (std::string &s : vec)
-	{
-		if (s.empty())
-			continue ;
-		if (!inprogress && s.find(objects_id[0]) || s.find(objects_id[1])) {
-			inprogress = s.[s.size() - 1] == '{';
-			if (!inprogress)
-				return false;
-			continue ;
-		}
-		if (inprogress && )
-	}
-}
+// 	bool inprogress = false;
+// 	for (std::string &s : vec)
+// 	{
+// 		if (s.empty())
+// 			continue ;
+// 		if (!inprogress && s.find(objects_id[0]) || s.find(objects_id[1])) {
+// 			inprogress = s.[s.size() - 1] == '{';
+// 			if (!inprogress)
+// 				return false;
+// 			continue ;
+// 		}
+// 		if (inprogress && )
+// 	}
+// }
 
 std::vector<std::string>	Parse::parseContent(std::ifstream *fileStream)
 {

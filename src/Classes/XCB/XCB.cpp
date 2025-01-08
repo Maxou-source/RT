@@ -1,6 +1,10 @@
 #include "XCB.hpp"
+#include "Image.hpp"
+#include "rt.hpp"
 
-XCB::XCB() {}
+XCB::XCB() {
+	gc = 0;
+}
 
 bool XCB::setupConnection() {
 	connection = xcb_connect(NULL, NULL);
@@ -11,12 +15,26 @@ bool XCB::setupConnection() {
 }
 
 
-bool XCB::setupScreen()
+bool XCB::setupScreenAndFormat()
 {
 	const xcb_setup_t *setup = xcb_get_setup(connection);
 	xcb_screen_iterator_t iter = xcb_setup_roots_iterator(setup);
 	screen = iter.data;
-	return false;
+
+	const xcb_format_t* pixmap_format = xcb_setup_pixmap_formats(setup);
+	int num_formats = xcb_setup_pixmap_formats_length(setup);
+	for (int i = 0; i < num_formats; i++)
+	{
+		if (pixmap_format[i].depth == screen->root_depth &&
+			pixmap_format[i].bits_per_pixel == BPP
+			&& pixmap_format[i].scanline_pad == SCANLINE_PAD)
+		{
+			format = pixmap_format[i];
+			return false;
+		}
+	}
+	std::cout << "ERROR : appropriate xcb_format not found" << std::endl;
+	return (true);
 }
 
 bool XCB::createWindow()

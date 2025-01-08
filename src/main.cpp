@@ -8,6 +8,7 @@
 #include <stdlib.h>
 // #include <SDL2/SDL.h>
 #include <xcb/xcb.h>
+#include "XCB.hpp"
 // #include <GL/glew.h>
 // #include <glad/glad.h>
 // #include <GLFW/glfw3.h>
