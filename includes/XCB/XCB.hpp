@@ -19,17 +19,21 @@ class XCB {
 		xcb_gcontext_t		gc;
 
 		xcb_format_t		format;
-		Image				xcb_image;
+		// Image				xcb_image;
 
 	public:
+	// constructors and destructors
 		XCB();
+	// methods
 		bool	setupConnection();
 		bool	setupScreenAndFormat();
 
 		bool	createWindow();
 
-		bool	loop();
+		bool	loop(uint8_t *image_data);
 
+	// setters and getters
+		xcb_format_t*	getFormatPtr(void);
 };
 
 #endif

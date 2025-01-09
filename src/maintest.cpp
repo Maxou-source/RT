@@ -18,12 +18,20 @@
 
 int main()
 {
-
+	// std::cout << "this main" << std::endl;
 	XCB xcb;
 	xcb.setupConnection();
 	xcb.setupScreenAndFormat();
 	xcb.createWindow();
-	xcb.loop();
+	// std::cout << "format prtr" << xcb.getFormatPtr() << std::endl;
+	Image img(xcb.getFormatPtr(), 400, 400);
+	unsigned int red = 0xFFFF0000;
+	(void) red;
+	img.pixel_put(200, 200, red);
+	img.pixel_put(201, 200, red);
+	img.pixel_put(203, 200, red);
+	// xcb.setImage(img);
+	xcb.loop(img.getImageData());
 	// std::cout << "everuthing compiling" << std::endl;
 	// Tuple  p(2, 3, 4, 1);
 	// Tuple v(1, 0, 0, 0);
