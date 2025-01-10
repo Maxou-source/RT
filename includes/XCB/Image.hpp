@@ -31,7 +31,10 @@ class Image {
 		void	pixel_put(int x, int y, unsigned int color);
 
 	// getters and setters
-		uint8_t*	getImageData();
+		uint8_t*		getImageData();
+		int				getTotalSize();
+		uint16_t		getWidth();
+		uint16_t		getHeight();
 
 };
 

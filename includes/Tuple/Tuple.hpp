@@ -1,11 +1,12 @@
 #ifndef Tuple_HPP
 # define Tuple_HPP
 
-typedef float	t_f4 __attribute__((ext_vector_type(4)));
+# include "rt.hpp"
 // # include <iostream>
 # include <string>
 # include <iostream>
 # include <math.h>
+# include "Matrix.hpp"
 
 
 // # include "Poçint.hpp"
@@ -51,6 +52,8 @@ class Tuple {
 		float magnitude();
 		void normalize();
 		Tuple normalize(Tuple&);
+
+		Tuple MatrixTuple(Matrix &);
 };
 
 #endif

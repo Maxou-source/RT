@@ -45,7 +45,7 @@ bool XCB::setupScreenAndFormat()
 	return (true);
 }
 
-bool XCB::createWindow()
+bool XCB::createWindowAndGC()
 {
 	window = xcb_generate_id(connection);
 
@@ -71,49 +71,40 @@ bool XCB::createWindow()
 
 	xcb_map_window(connection, window);
 	xcb_flush(connection);
+
+	gc = xcb_generate_id(connection);
+	uint32_t mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND;
+	uint32_t values[2] = {screen->black_pixel, screen->white_pixel};
+	xcb_create_gc(connection, gc, window, mask, values);
 	return false;
 }
 
-bool XCB::loop(uint8_t *image_data) {
+bool XCB::loop() {
 	xcb_generic_event_t *event;
-	uint32_t mask;
-	uint32_t values[2];
+
 	while ((event = xcb_wait_for_event(connection))) {
 		switch (event->response_type & ~0x80) {
 			case XCB_EXPOSE:
 				std::cout << "XCB_EXPOSE event received!" << std::endl;
-				gc = xcb_generate_id(connection);
-				mask = XCB_GC_FOREGROUND | XCB_GC_BACKGROUND;
-				values[0] = screen->black_pixel;
-				values[1] =  screen->white_pixel;
-				xcb_create_gc(connection, gc, window, mask, values);
 				// Draw the image
-				if (xcb_connection_has_error(connection)) {
-					std::cout << "Connection error" << std::endl;
-					return true;
-				}
 				xcb_put_image(
 					connection,
 					XCB_IMAGE_FORMAT_Z_PIXMAP,
 					window,
-					gc,				  // Use the persistent GC
-					400, 400,			// Image dimensions
+					gc,
+					xcb_image.getHeight(), xcb_image.getWidth(),			// Image dimensions
 					0, 0,				// x, y
 					0,				   // Left-pad
 					screen->root_depth,  // Depth
-					640000,
-					image_data);
-				// (void) image_data;
+					xcb_image.getTotalSize(),
+					xcb_image.getImageData());
+				// need to check return 
 				xcb_flush(connection);
-				std::cout << "depth " << (int)screen->root_depth << std::endl;
 				break;
+
 			case XCB_KEY_PRESS:
 				std::cout << "Key pressed, exiting..." << std::endl;
 				free(event);
-				if (xcb_connection_has_error(connection)) {
-					std::cout << "Connection error" << std::endl;
-					return true;
-				}
 				xcb_disconnect(connection);
 				return false;
 
@@ -123,77 +114,17 @@ bool XCB::loop(uint8_t *image_data) {
 		}
 		free(event);
 	}
-	std::cout << XCB_CONN_ERROR << std::endl;
-	std::cout << XCB_CONN_CLOSED_EXT_NOTSUPPORTED << std::endl;
-	std::cout << XCB_CONN_CLOSED_MEM_INSUFFICIENT << std::endl;
-	std::cout << XCB_CONN_CLOSED_REQ_LEN_EXCEED << std::endl;
-	std::cout << XCB_CONN_CLOSED_PARSE_ERR << std::endl;
-	std::cout << XCB_CONN_CLOSED_INVALID_SCREEN << std::endl;
-	std::cout << xcb_connection_has_error(connection) << std::endl;
-	if (xcb_connection_has_error(connection)) {
-		std::cout << "Connection error" << std::endl;
-		return true;
-	}
-	std::cout << "loop quit" << std::endl;
 	xcb_disconnect(connection);
 	return false;
 }
-
-// bool XCB::loop(uint8_t *image_data)
-// {
-//  xcb_generic_event_t *event;
-//     while ((event = xcb_wait_for_event(connection))) {
-//         switch (event->response_type & ~0x80) {
-//             case XCB_EXPOSE: {
-// 				std::cout << "hello" << std::endl;
-// 				xcb_gcontext_t gc = xcb_generate_id(connection);
-// 				xcb_create_gc(connection, gc, window, 0, NULL);
-
-// 				xcb_put_image(
-// 					connection,
-// 					XCB_IMAGE_FORMAT_Z_PIXMAP,  // Image format
-// 					window,                     // Destination (window)
-// 					gc,                         // Graphics context
-// 					400, 400,              // 400, 4000
-// 					0, 0,                       // x, y
-// 					0,                          // Left-pad
-// 					screen->root_depth,         // Depth
-// 					400 * 400 * sizeof(uint32_t),  // Image size in bytes
-// 					(uint8_t *)image_data);     // Pointer to pixel data
-
-// 				// std::cout << "res " << res << std::endl;
-// 				xcb_free_gc(connection, gc);
-// 				xcb_flush(connection);
-// 				break;
-// 				// sleep(400000000);
-
-//             }
-//             case XCB_KEY_PRESS:
-//                 // Exit on key press
-//                 printf("Key pressed, exiting...\n");
-//                 free(event);
-//                 xcb_disconnect(connection);
-//                 return 0;
-// 			default:
-// 				std::cout << "Unhandled event: " << (event->response_type & ~0x80) << std::endl;
-// 				break;
-//         }
-//         free(event);
-//     }
-
-//     // Clean up
-//     xcb_disconnect(connection);
-// 	return false;
-// }
-
-// void XCB::putImage()
-// {
-
-// }
 
 /*===== Setters and Getters =====*/
 
 xcb_format_t*	XCB::getFormatPtr(void)
 {
 	return (&format);
+}
+
+void		XCB::setImage(Image& img) {
+	this->xcb_image = img;
 }

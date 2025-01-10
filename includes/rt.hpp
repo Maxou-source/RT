@@ -7,6 +7,8 @@
 # include <vector>
 # include <array>
 
+typedef float	t_f4 __attribute__((ext_vector_type(4)));
+
 
 # define POINT 1
 # define VECTOR 0

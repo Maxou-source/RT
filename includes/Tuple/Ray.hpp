@@ -19,6 +19,7 @@ class Ray {
 		Tuple& getOrigin();
 		Tuple& getDirection();
 		void setDirection(Tuple&);
+		void setOrigin(Tuple&);
 };
 
 #endif

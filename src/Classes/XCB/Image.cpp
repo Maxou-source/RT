@@ -43,25 +43,15 @@ Image::~Image() {
 void	Image::pixel_put(int x, int y, unsigned int color)
 {
 	uint8_t *  row = data + (y * stride);
-	std::cout << "y * stride" << stride << std::endl;
 	row[x << 2] = color;
 	row[(x << 2) + 1] = color >> 8;
 	row[(x << 2) + 2] = color >> 16;
 	row[(x << 2) + 3] = color >> 24;
-    // // int pixel_index = (y * width + x); // Assuming 32-bit color depth
-    // // *((uint32_t *)(data + pixel_index)) = color;
-	// uint8_t	*dst;
-	// std::cout << "addr data" << (long)data << std::endl;
-	// dst = data + (y * stride) + (x * (bpp/8));
-	// // dst = data->addr + (y * data->line_length + x * (data->bits_per_pixel / 8));
-    // *(unsigned int *)dst = color;
-	// (void) dst;
-	// std::cout << "color " << color << std::endl;
-	// std::cout << "addr dsst" << *(unsigned int *)dst << std::endl;
 }
 
 /*===== Getters and Setters ====*/
 
-uint8_t*	Image::getImageData() { 
-	std::cout << "addr dsst" << *(unsigned int *)data << std::endl;
-	return data;}
+uint8_t*	Image::getImageData() { return data;}
+int			Image::getTotalSize() { return total_size;}
+uint16_t	Image::getWidth() { return width;}
+uint16_t	Image::getHeight() { return height;}

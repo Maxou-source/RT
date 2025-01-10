@@ -11,9 +11,15 @@ t2 ← (-b + √(discriminant)) / (2 * a)*/
 
 bool Sphere::intersect(Ray *r)
 {
-	Tuple direction = r->getDirection();
+	Tuple newDirection =  r->getDirection().MatrixTuple(i_m);
+	Tuple newOrigin =  r->getOrigin().MatrixTuple(i_m);
+
+	Ray newR(newOrigin, newDirection);
+	// newR.origin = matrix_tuple(sphere->obj.i_m, ray.origin);
+	// newR.direction = matrix_tuple(sphere->obj.i_m, ray.direction);
+	Tuple direction = newR.getDirection();
 	// direction.display();
-	Tuple sphere_to_ray = r->getOrigin() - Tuple(0,0,0,POINT);
+	Tuple sphere_to_ray = newR.getOrigin() - Tuple(0,0,0,POINT);
 	// sphere_to_ray.display();
 	// need to check if its okqy to have a vector here w = 1
 	float a = direction.dot_product(direction);

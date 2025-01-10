@@ -50,6 +50,7 @@ t_f4	Tuple::getValue() {
 	return value;
 }
 
+
 /*Methods*/
 
 void Tuple::display()
@@ -91,4 +92,18 @@ Tuple Tuple::normalize(Tuple& fix)
 				fix.value.y / magnitude,
 				fix.value.z / magnitude,
 				fix.value.w / magnitude);
+}
+
+Tuple Tuple::MatrixTuple(Matrix& m)
+{
+	t_f4	res;
+	t_m4 a = m.getMatrix();
+
+	res.x = a[0][0] * value.x + a[0][1] * value.y + a[0][2] * value.z + a[0][3] * value.w;
+	res.y = a[1][0] * value.x + a[1][1] * value.y + a[1][2] * value.z + a[1][3] * value.w;
+	res.z = a[2][0] * value.x + a[2][1] * value.y + a[2][2] * value.z + a[2][3] * value.w;
+	res.w = a[3][0] * value.x + a[3][1] * value.y + a[3][2] * value.z + a[3][3] * value.w;
+
+	Tuple	ret(res.x, res.y, res.z, res.w);
+	return (ret);
 }

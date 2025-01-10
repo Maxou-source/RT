@@ -13,7 +13,7 @@ CC					=	clang++
 FLAGS				=	$(DBFLAGS) $(CFLAGS) $(INCLUDES_FLAGED) $(CDFLAGS)
 
 PKG_CONFIG = pkg-config
-CFLAGS				=	-gdwarf-4 -Wall -Wextra -Werror $(shell $(PKG_CONFIG) --cflags xcb)#-std=c++98 #-fsanitize=address
+CFLAGS				=	-gdwarf-4 -Wall -Wextra -Werror $(shell $(PKG_CONFIG) --cflags xcb) -fenable-matrix#-std=c++98 #-fsanitize=address
 LDFLAGS = $(shell $(PKG_CONFIG) --libs xcb)
 
 DBFLAGS				=	-g3
@@ -30,13 +30,13 @@ INCLUDES_FLAGED		=	$(addprefix $(INCLUDEFLAG), $(INCLUDES))
 
 SRC_DIR				=	src/
 OBJECTS_DIR			=	Object/
+
 CLASSES_DIR			=	Classes/
-REQUEST				=	Request/
 PARSE_DIR			=	Parse/
 TUPLE_DIR			=	Tuple/
 METHOD_DIR			=	Methods/
 XCB_DIR				=	XCB/
-METADATA_DIR		=	MetaData/
+MATRIX_DIR			=	Matrix/
 
 INCLUDE_DIR			=	includes/
 
@@ -50,6 +50,7 @@ INCLUDES			=	$(INCLUDE_DIR) \
 							$(PARSE_DIR) \
 							$(TUPLE_DIR) \
 							$(XCB_DIR) \
+							$(MATRIX_DIR) \
 							)
 
 SRC_FILES			=	$(addprefix $(SRC_DIR), \
@@ -62,16 +63,13 @@ SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
 						$(SRC_OBJECTS) \
 						$(SRC_TUPLE) \
 						$(SRC_XCB) \
+						$(SRC_MATRIX) \
 						)
 
-# $(SRC_REQUEST) \
-# $(SRC_PARSING) \
-# $(SRC_METHODS) \
-# $(SRC_METADATA) \
-# MessageContext.cpp \
-# Whole.cpp \
-# CGI.cpp \
-# )
+SRC_MATRIX			=	$(addprefix $(MATRIX_DIR), \
+						Matrix.cpp \
+						)
+
 
 SRC_OBJECTS			= $(addprefix $(OBJECTS_DIR), \
 						AObject.cpp \
