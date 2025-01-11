@@ -5,12 +5,13 @@
 
 class Ray {
 	private:
-		Tuple&	origin;
-		Tuple&	direction;
+		Tuple	origin;
+		Tuple	direction;
 	public:
 		// Ray();
 	// constructor and Destructors
-		Ray(Tuple&, Tuple&);
+		Ray(const Tuple&, const Tuple&);
+		// Ray(Tuple&, Tuple&);
 	
 	// methods
 		Tuple position(float t);

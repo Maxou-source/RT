@@ -13,6 +13,8 @@ Tuple::Tuple(float x, float y, float z, float w) {
 	value.w = w;
 }
 
+Tuple::Tuple(const Tuple& t) {value = t.value;}
+
 Tuple::~Tuple() {
 
 }
@@ -39,9 +41,13 @@ Tuple  Tuple::operator-(const Tuple &fix) const
     );
 }
 
-Tuple Tuple::operator*(float t)
-{
-	value = value * t;
+const Tuple Tuple::operator*(float t) const{
+	Tuple tu(value.x * t, value.y * t, value.z * t, value.w *t);
+	return (tu);
+}
+
+const Tuple Tuple::operator*(const Tuple& t) {
+	value = value * t.value;
 	return (*this);
 }
 
@@ -59,7 +65,7 @@ void Tuple::display()
 	<< " y: " << value.y << " z: " << value.z << " w: " << value.w << std::endl;
 }
 
-float Tuple::dot_product(Tuple& t)
+float Tuple::dot_product(const Tuple& t) const
 {
 	return (
 		(value.x * t.value.x) +
@@ -69,7 +75,7 @@ float Tuple::dot_product(Tuple& t)
 	);
 }
 
-float Tuple::magnitude()
+float Tuple::magnitude() const
 {
 	return (sqrtf((value.x * value.x) + 
 					(value.y * value.y) +
@@ -85,7 +91,13 @@ void Tuple::normalize()
 	value.w  = value.w / magnitude;
 }
 
-Tuple Tuple::normalize(Tuple& fix)
+Tuple Tuple::negating()
+{
+	return Tuple(-value.x, -value.y, -value.z, -value.w);
+}
+
+
+Tuple Tuple::normalize(const Tuple& fix) const
 {
 	float magnitude = fix.magnitude();
 	return Tuple(fix.value.x / magnitude,

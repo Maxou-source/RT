@@ -27,6 +27,9 @@ class Matrix {
 		float	determinant();
 		float	cofactor4(int row, int column);
 		float	cofactor3(t_m3 m, int row, int column);
+		t_m2	submatrix_f3(t_m3 matrix, int row, int column);
+		float	determinant_2b2(t_m2 m);
+		float	minor_f3(t_m3 m, int row, int column);
 
 	// setters and getters
 		t_m4	getMatrix() {return matrix;}

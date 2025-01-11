@@ -10,20 +10,31 @@
 
 class Ray;
 
+typedef struct s_material {
+	Tuple color;
+} t_material;
+
 class AObject
 {
 	protected:
 		static int	idCounter;
 		int			id;
 		t_f4		center;
+
 		Matrix		m;
 		Matrix		i_m;
 
-		t_f4		origin;
-		t_clr		color;
-		float		diameter;
-		float		specular;
-		bool		pattern;
+		Tuple		color;
+		int			color_hex;
+		// on va stocker l'image directement ici Jean Marc
+
+		Tuple		origin;
+		Tuple		normalv;
+		Tuple		reflectv;
+		// t_clr		color;
+		// float		diameter;
+		// float		specular;
+		// bool		pattern;
 
 
 	public:
@@ -32,13 +43,17 @@ class AObject
 		AObject();
 
 	// methods
-		virtual bool intersect(Ray *r) = 0;
+		virtual float intersect(Ray *r) = 0;
+		virtual Tuple normal(const Tuple &) = 0;
+		
+		void reflect(const Tuple&);
+		void	scale(float x, float y, float z);
 
 	// setters and getters
-		void	setMatrix(Matrix &ma) {m = ma;}
-		void	setIMatrix(Matrix &ma) {i_m = ma;}
-		Matrix&	getMatrix() {return m;};
-		Matrix&	getIMatrix() {return i_m;};
+		void	setMatrix(Matrix &ma);
+		void	setIMatrix(Matrix &ma);
+		Matrix&	getMatrix();
+		Matrix&	getIMatrix();
 };
 
 #endif

@@ -2,6 +2,8 @@
 #include "Ray.hpp"
 #include "rt.hpp"
 
+/*==== Constructors and Destructors =====*/
+
 Sphere::Sphere() : AObject() {}
 
 // method
@@ -9,12 +11,14 @@ Sphere::Sphere() : AObject() {}
 t1 ← (-b - √(discriminant)) / (2 * a)
 t2 ← (-b + √(discriminant)) / (2 * a)*/
 
-bool Sphere::intersect(Ray *r)
+/*====== Methods =======*/
+
+float Sphere::intersect(Ray *r)
 {
 	Tuple newDirection =  r->getDirection().MatrixTuple(i_m);
 	Tuple newOrigin =  r->getOrigin().MatrixTuple(i_m);
 
-	Ray newR(newOrigin, newDirection);
+	Ray newR(r->getOrigin().MatrixTuple(i_m), newDirection);
 	// newR.origin = matrix_tuple(sphere->obj.i_m, ray.origin);
 	// newR.direction = matrix_tuple(sphere->obj.i_m, ray.direction);
 	Tuple direction = newR.getDirection();
@@ -34,7 +38,7 @@ bool Sphere::intersect(Ray *r)
 	if (discriminant < 0)
 	{
 
-		return false;
+		return 0;
 	}
 	float t1 = ((-b - sqrtf(discriminant)) / (2 * a));
 	float t2 = ((-b + sqrtf(discriminant)) / (2 * a));
@@ -42,5 +46,15 @@ bool Sphere::intersect(Ray *r)
 	(void) t2;
 	// std::cout << "t1 " << t1 << std::endl;
 	// std::cout << "t2 " << t2 << std::endl;
-	return true;
+	return t1;
+}
+/*function normal_at(sphere, p)
+return normalize(p - point(0, 0, 0))*/
+Tuple	Sphere::normal(const Tuple &t)
+{
+	Tuple n;
+	n = Tuple(t - Tuple(0,0,0,POINT));
+	n.normalize();
+	return n;
+	
 }

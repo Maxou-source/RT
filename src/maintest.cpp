@@ -10,6 +10,26 @@
 #include <stdlib.h>
 #include <xcb/xcb.h>
 #include "XCB.hpp"
+#include "Light.hpp"
+
+
+/*
+-Optimise Matrix operations (notably tuple * matrix)
+-correctly implement normal at
+-store intersections duuuuuh
+-make a better normalize method (shit doesnt make sense)
+*/
+int	float_to_rgba(t_f4 color)
+{
+	int	r;
+	int	g;
+	int	b;
+
+	r = (int)(((color.x > 1.0) + ((color.x < 1.0) * color.x)) * 255.0);
+	g = (int)(((color.y > 1.0) + ((color.y < 1.0) * color.y)) * 255.0);
+	b = (int)(((color.z > 1.0) + ((color.z < 1.0) * color.z)) * 255.0);
+	return ((r << 16) | (g << 8) | b);
+}
 
 int main()
 {
@@ -23,20 +43,13 @@ int main()
 	xcb.setImage(img);
 
 	// building image
-	unsigned int red = 0xFFFF0000;
+	// unsigned int red = 0xFFFF0000;
 
-	Tuple origin(0,0,-5,POINT);
+	// Tuple origin(0,0,-5,POINT);
 	Tuple direction(0,0,0, VECTOR);
-	Ray ray(origin, direction);
+	Ray ray(Tuple(0,0,-5, POINT), Tuple(0,0,0,VECTOR));
 	Sphere sp;
-	Matrix newM(sp.getMatrix());
-	(void) newM;
-	newM.display();
-	newM.scale(1, 1, 1);
-	newM.display();
-	newM.invertedMatrix();
-	sp.setIMatrix(newM);
-	// float canvas_pixels = 400;
+	sp.scale(1, 1, 1);
 	float wall_z = 10;
 	float wall_size = 7;
 	float pixel_size = wall_size / 400;
@@ -51,9 +64,17 @@ int main()
 			position = position - ray.getOrigin();
 			position.normalize();
 			ray.setDirection(position);
-			if (sp.intersect(&ray))
+			float t = sp.intersect(&ray);
+			if ((t != 0))
 			{
-				img.pixel_put(x,y,red);
+// Tuple Light::Lighting(t_material mat, Tuple point, Tuple eyev, Tuple normalv)
+
+				Tuple p = ray.position(t);
+				Light l;
+				t_material m;
+				m.color = Tuple(1,0,0, POINT);
+				Tuple cl = l.lighting(m, p, ray.getDirection().negating(), sp.normal(p));
+				img.pixel_put(x,y,float_to_rgba(cl.getValue()));
 			}
 		}
 	}
@@ -68,6 +89,9 @@ int main()
 	m1.display();
 	Matrix m2 = m1.invertedMatrix();
 	m2.display();
+
+	// Tuple nor = sp.normal(Tuple(0.5,0.5,0.5, POINT));
+	// nor.display();
 	// Tuple  p(2, 3, 4, 1);
 	// Tuple v(1, 0, 0, 0);
 	// Ray r(p,v );

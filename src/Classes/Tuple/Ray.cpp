@@ -2,7 +2,8 @@
 
 // Ray::Ray()  { }
 
-Ray::Ray(Tuple& p, Tuple& v) : origin(p), direction(v) {}
+Ray::Ray(const Tuple& p, const Tuple& v) : origin(p), direction(v) {}
+// Ray::Ray(Tuple p, Tuple& v) : origin(p), direction(v) {}
 
 Tuple Ray::position(float t) {
 	Tuple res;

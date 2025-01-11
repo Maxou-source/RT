@@ -36,6 +36,7 @@ class Tuple {
 	// constructor qnd Destructors
 		Tuple();
 		Tuple(float x, float y, float z, float w);
+		Tuple(const Tuple &);
 		~Tuple();
 
 	// setters and getters
@@ -44,14 +45,18 @@ class Tuple {
 	// overload operators
 		Tuple	operator+(const Tuple&) const;
 		Tuple	operator-(const Tuple&) const;
-		Tuple	operator*(float t);
+		const Tuple	operator*(float t) const;
+		const Tuple operator*(const Tuple &t) ;
+
 
 	// methods
-		float dot_product(Tuple &);
+		float dot_product(const Tuple &) const;
 		void display();
-		float magnitude();
+		float magnitude() const;
 		void normalize();
-		Tuple normalize(Tuple&);
+		Tuple normalize(const Tuple&) const;
+
+		Tuple negating();
 
 		Tuple MatrixTuple(Matrix &);
 };

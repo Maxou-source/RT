@@ -2,6 +2,9 @@
 
 class Sphere : public AObject {
 	public:
+	// Constructors and Destructors 
 		Sphere();
-		bool intersect(Ray *r);
+	// methods
+		float	intersect(Ray *r);
+		Tuple	normal(const Tuple&);
 };

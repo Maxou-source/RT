@@ -166,7 +166,7 @@ float Matrix::cofactor4(int row, int column)
 	return (res);
 }
 
-t_m2	submatrix_f3(t_m3 matrix, int row, int column)
+t_m2	Matrix::submatrix_f3(t_m3 matrix, int row, int column)
 {
 	t_m2	res;
 	int		ii;
@@ -194,12 +194,12 @@ t_m2	submatrix_f3(t_m3 matrix, int row, int column)
 	return (res);
 }
 
-float	determinant_2b2(t_m2 m)
+float	Matrix::determinant_2b2(t_m2 m)
 {
 	return ((m[0][0] * m[1][1]) - (m[0][1] * m[1][0]));
 }
 
-float	minor_f3(t_m3 m, int row, int column)
+float	Matrix::minor_f3(t_m3 m, int row, int column)
 {
 	return (determinant_2b2(submatrix_f3(m, row, column)));
 }

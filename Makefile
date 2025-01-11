@@ -74,6 +74,7 @@ SRC_MATRIX			=	$(addprefix $(MATRIX_DIR), \
 SRC_OBJECTS			= $(addprefix $(OBJECTS_DIR), \
 						AObject.cpp \
 						Sphere.cpp \
+						Light.cpp \
 						)
 
 SRC_TUPLE			= $(addprefix $(TUPLE_DIR), \
