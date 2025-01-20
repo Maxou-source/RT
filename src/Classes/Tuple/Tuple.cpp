@@ -13,6 +13,8 @@ Tuple::Tuple(float x, float y, float z, float w) {
 	value.w = w;
 }
 
+Tuple::Tuple(t_f4 f) :value(f) {}
+
 Tuple::Tuple(const Tuple& t) {value = t.value;}
 
 Tuple::~Tuple() {
@@ -21,43 +23,62 @@ Tuple::~Tuple() {
 
 /*=== Overload Operators====*/
 
-Tuple  Tuple::operator+(const Tuple &fix) const
+Tuple  Tuple::operator+(const Tuple &t) const
 {
     return Tuple(
-        this->value.x + fix.value.x,
-        this->value.y + fix.value.y,
-        this->value.z + fix.value.z,
-        this->value.w + fix.value.w
+        this->value.x + t.value.x,
+        this->value.y + t.value.y,
+        this->value.z + t.value.z,
+        this->value.w + t.value.w
     );
 }
 
-Tuple  Tuple::operator-(const Tuple &fix) const
+Tuple  Tuple::operator-(const Tuple &t) const
 {
     return Tuple(
-        this->value.x - fix.value.x,
-        this->value.y - fix.value.y,
-        this->value.z - fix.value.z,
-        this->value.w - fix.value.w
+        this->value.x - t.value.x,
+        this->value.y - t.value.y,
+        this->value.z - t.value.z,
+        this->value.w - t.value.w
     );
 }
 
-const Tuple Tuple::operator*(float t) const{
+Tuple Tuple::operator*(float t) const{
 	Tuple tu(value.x * t, value.y * t, value.z * t, value.w *t);
 	return (tu);
 }
 
-const Tuple Tuple::operator*(const Tuple& t) {
-	value = value * t.value;
-	return (*this);
+Tuple Tuple::operator*(const Tuple& t) const {
+	return Tuple(value * t.value);
+}
+
+Tuple Tuple::operator*(const Matrix& m) const {
+	t_m4 ma = m.getMatrix();
+	return Tuple(ma[0][0] * value.x + ma[0][1] * value.y + ma[0][2] * value.z + ma[0][3] * value.w,
+				ma[1][0] * value.x + ma[1][1] * value.y + ma[1][2] * value.z + ma[1][3] * value.w,
+				ma[2][0] * value.x + ma[2][1] * value.y + ma[2][2] * value.z + ma[2][3] * value.w,
+				ma[3][0] * value.x + ma[3][1] * value.y + ma[3][2] * value.z + ma[3][3] * value.w
+	);
+}
+
+std::ostream& operator<<(std::ostream& os, const Tuple& tu) {
+	t_f4 g = tu.getValue();
+	os << g.x << " " << g.y << " " << g.z << " " << g.w << std::endl;
+	return os;
 }
 
 /*===== Getters and Setters ====*/
-t_f4	Tuple::getValue() {
+t_f4	Tuple::getValue() const {
 	return value;
 }
 
+/*========Methods=========*/
 
-/*Methods*/
+Tuple Tuple::reflect(const Tuple &in, const Tuple &normalv)
+{
+	Tuple reflectv =  in - normalv * 2.0f * in.dot_product(normalv);
+	return reflectv;
+}
 
 void Tuple::display()
 {
@@ -91,13 +112,7 @@ void Tuple::normalize()
 	value.w  = value.w / magnitude;
 }
 
-Tuple Tuple::negating()
-{
-	return Tuple(-value.x, -value.y, -value.z, -value.w);
-}
-
-
-Tuple Tuple::normalize(const Tuple& fix) const
+Tuple Tuple::normalize(const Tuple& fix)
 {
 	float magnitude = fix.magnitude();
 	return Tuple(fix.value.x / magnitude,
@@ -106,16 +121,12 @@ Tuple Tuple::normalize(const Tuple& fix) const
 				fix.value.w / magnitude);
 }
 
-Tuple Tuple::MatrixTuple(Matrix& m)
+Tuple Tuple::negating(const Tuple& t)
 {
-	t_f4	res;
-	t_m4 a = m.getMatrix();
+	return Tuple(-t.value.x, -t.value.y, -t.value.z, -t.value.w);
+}
 
-	res.x = a[0][0] * value.x + a[0][1] * value.y + a[0][2] * value.z + a[0][3] * value.w;
-	res.y = a[1][0] * value.x + a[1][1] * value.y + a[1][2] * value.z + a[1][3] * value.w;
-	res.z = a[2][0] * value.x + a[2][1] * value.y + a[2][2] * value.z + a[2][3] * value.w;
-	res.w = a[3][0] * value.x + a[3][1] * value.y + a[3][2] * value.z + a[3][3] * value.w;
-
-	Tuple	ret(res.x, res.y, res.z, res.w);
-	return (ret);
+void Tuple::negating()
+{
+	value = -value;
 }

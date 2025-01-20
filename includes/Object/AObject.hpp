@@ -4,11 +4,19 @@
 
 # include <iostream>
 # include <stdbool.h>
+# include <set>
+# include "Intersection.hpp"
 # include "Tuple.hpp"
 # include "Matrix.hpp"
 # include "rt.hpp"
 
 class Ray;
+
+enum OBJECT_ID
+{
+	SPHERE,
+	CYLINDER,
+};
 
 typedef struct s_material {
 	Tuple color;
@@ -23,6 +31,7 @@ class AObject
 
 		Matrix		m;
 		Matrix		i_m;
+		Matrix		t_m;
 
 		Tuple		color;
 		int			color_hex;
@@ -43,11 +52,14 @@ class AObject
 		AObject();
 
 	// methods
-		virtual float intersect(Ray *r) = 0;
+		virtual std::set<Intersection> intersect(Ray *r) = 0;
 		virtual Tuple normal(const Tuple &) = 0;
 		
-		void reflect(const Tuple&);
+		void	reflect(const Tuple&);
 		void	scale(float x, float y, float z);
+		void	translate(float x, float y, float z);
+
+		void	applyTransformations();
 
 	// setters and getters
 		void	setMatrix(Matrix &ma);

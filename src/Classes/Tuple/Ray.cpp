@@ -19,7 +19,7 @@ Tuple Ray::position(float t) {
 
 Tuple& Ray::getOrigin() {return origin;}
 Tuple& Ray::getDirection() {return direction;}
-void Ray::setDirection(Tuple& d) {direction = d;}
-void Ray::setOrigin(Tuple& o) {origin = o;}
+void Ray::setDirection(const Tuple& d) {direction = d;}
+void Ray::setOrigin(const Tuple& o) {origin = o;}
 
 // t_f4 Ray::getValue() {return value;}

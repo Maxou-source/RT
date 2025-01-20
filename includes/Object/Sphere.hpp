@@ -5,6 +5,6 @@ class Sphere : public AObject {
 	// Constructors and Destructors 
 		Sphere();
 	// methods
-		float	intersect(Ray *r);
+		std::set<Intersection>	intersect(Ray *r);
 		Tuple	normal(const Tuple&);
 };

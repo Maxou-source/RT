@@ -36,6 +36,7 @@ PARSE_DIR			=	Parse/
 TUPLE_DIR			=	Tuple/
 METHOD_DIR			=	Methods/
 XCB_DIR				=	XCB/
+WORLD_DIR			=	World/
 MATRIX_DIR			=	Matrix/
 
 INCLUDE_DIR			=	includes/
@@ -51,6 +52,7 @@ INCLUDES			=	$(INCLUDE_DIR) \
 							$(TUPLE_DIR) \
 							$(XCB_DIR) \
 							$(MATRIX_DIR) \
+							$(WORLD_DIR) \
 							)
 
 SRC_FILES			=	$(addprefix $(SRC_DIR), \
@@ -64,6 +66,13 @@ SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
 						$(SRC_TUPLE) \
 						$(SRC_XCB) \
 						$(SRC_MATRIX) \
+						$(SRC_WORLD) \
+						)
+
+SRC_WORLD			=	$(addprefix $(WORLD_DIR), \
+						World.cpp \
+						Intersection.cpp \
+						Computations.cpp \
 						)
 
 SRC_MATRIX			=	$(addprefix $(MATRIX_DIR), \

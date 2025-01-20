@@ -37,16 +37,18 @@ class Tuple {
 		Tuple();
 		Tuple(float x, float y, float z, float w);
 		Tuple(const Tuple &);
+		Tuple(t_f4 f);
 		~Tuple();
 
 	// setters and getters
-		t_f4	getValue();
+		t_f4	getValue() const;
 
 	// overload operators
 		Tuple	operator+(const Tuple&) const;
 		Tuple	operator-(const Tuple&) const;
-		const Tuple	operator*(float t) const;
-		const Tuple operator*(const Tuple &t) ;
+		Tuple	operator*(float t) const;
+		Tuple	operator*(const Tuple &t) const;
+		Tuple	operator*(const Matrix &t) const;
 
 
 	// methods
@@ -54,11 +56,13 @@ class Tuple {
 		void display();
 		float magnitude() const;
 		void normalize();
-		Tuple normalize(const Tuple&) const;
+		void negating();
+		static Tuple normalize(const Tuple&);
+		static Tuple reflect(const Tuple &in, const Tuple &normalv);
 
-		Tuple negating();
-
-		Tuple MatrixTuple(Matrix &);
+		static Tuple negating(const Tuple& t);
 };
+
+std::ostream& operator<<(std::ostream& os, const Tuple&);
 
 #endif

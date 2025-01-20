@@ -13,7 +13,7 @@ class Light {
 		Tuple position;
 	public:
 		Light();
-		Tuple lighting(t_material mat, Tuple &point,const Tuple &eyev, const Tuple& normalv);
+		Tuple lighting(t_material mat, const Tuple &point,const Tuple &eyev, const Tuple& normalv);
 };
 
 #endif

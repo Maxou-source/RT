@@ -18,10 +18,15 @@ class Matrix {
 
 	// methods
 		void	scale(float x, float y, float z);
+		void	translate(float x, float y, float z);
 		Matrix	invertedMatrix();
+		Matrix	transpose();
 
 		void	display();
 		
+	// overload operators
+
+		Matrix operator*(const Matrix& m);
 	// utils
 		t_m3	submatrix(int row, int column);
 		float	determinant();
@@ -32,7 +37,7 @@ class Matrix {
 		float	minor_f3(t_m3 m, int row, int column);
 
 	// setters and getters
-		t_m4	getMatrix() {return matrix;}
+		t_m4	getMatrix() const {return matrix;}
 };
 
 #endif

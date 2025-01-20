@@ -2,6 +2,8 @@
 #include "Sphere.hpp"
 #include <math.h>
 
+/*====== Constructors and Destructors=====*/
+
 Light::Light()
 {
 	ambient = 0.1;
@@ -13,17 +15,13 @@ Light::Light()
 	// VALEUR EN DURE A CHANGER
 }
 
-Tuple reflect(const Tuple &in, const Tuple &normalv)
-{
-	Tuple reflectv =  in - normalv * (float)2.0 * in.dot_product(normalv);
-	return reflectv;
-}
 
+/*===== Methods =====*/
 
-Tuple Light::lighting(t_material mat, Tuple& point, const Tuple& eyev, const Tuple& normalv)
+Tuple Light::lighting(t_material mat, const Tuple& point, const Tuple& eyev, const Tuple& normalv)
 {
 	Tuple eff_color = mat.color * color;
-	Tuple lightv = position.normalize(position - point);
+	Tuple lightv = Tuple::normalize(position - point);
 	Tuple new_ambient = eff_color * ambient;
 	float light_dot_normal = normalv.dot_product(lightv);
 	if (light_dot_normal < 0)
@@ -33,16 +31,7 @@ Tuple Light::lighting(t_material mat, Tuple& point, const Tuple& eyev, const Tup
 	else 
 	{
 		Tuple diffuset = eff_color * 0.9 * light_dot_normal;
-		/*
-		diffuse ← effective_color * material.diffuse * light_dot_normal
-		# reflect_dot_eye represents the cosine of the angle between the
-		# reflection vector and the eye vector. A negative number means the
-		# light reflects away from the eye.
-		reflectv ← reflect(-lightv, normalv)
-		reflect_dot_eye ← dot(reflectv, eyev)
-		*/
-		// Tuple eye = eyev.normalize(eyev);
-		Tuple reflectv = reflect(lightv.negating(), normalv);
+		Tuple reflectv = Tuple::reflect(Tuple::negating(lightv), normalv);
 		float reflect_dot_eye = reflectv.dot_product(eyev);
 		if (reflect_dot_eye < 0)
 		{

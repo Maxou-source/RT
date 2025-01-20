@@ -19,8 +19,8 @@ class Ray {
 	// getters and setters
 		Tuple& getOrigin();
 		Tuple& getDirection();
-		void setDirection(Tuple&);
-		void setOrigin(Tuple&);
+		void setDirection(const Tuple&);
+		void setOrigin(const Tuple&);
 };
 
 #endif

@@ -7,6 +7,8 @@
 # include <vector>
 # include <array>
 
+# define EPSILON 0.00001
+
 typedef float	t_f4 __attribute__((ext_vector_type(4)));
 
 

@@ -43,6 +43,14 @@ Matrix::Matrix(t_f4 a, t_f4 b, t_f4 c, t_f4 d)
 	matrix[3][3] = d.w;
 }
 
+/*======= Overload Operators =====*/
+
+Matrix Matrix::operator*(const Matrix &m)
+{
+	Matrix res;
+	res.matrix = m.matrix * this->matrix;
+	return res;
+}
 
 /*====== Methods =======*/
 
@@ -51,6 +59,13 @@ void Matrix::scale(float x, float y, float z)
 	matrix[0][0] = x;
 	matrix[1][1] = y;
 	matrix[2][2] = z;
+}
+
+void Matrix::translate(float x, float y, float z)
+{
+	matrix[0][3] = x;
+	matrix[1][3] = y;
+	matrix[2][3] = z;
 }
 
 Matrix	Matrix::invertedMatrix()
@@ -76,6 +91,26 @@ Matrix	Matrix::invertedMatrix()
 	}
 	Matrix res(cof_m);
 	return (res);
+}
+
+Matrix	Matrix::transpose()
+{
+	t_m4	res;
+	int		i;
+	int		j;
+
+	i = 0;
+	while (i < 4)
+	{
+		j = -1;
+		while (++j < 4)
+		{
+			res[j][i] = this->matrix[i][j];
+		}
+		i++;
+	}
+	Matrix tmp(res);
+	return (tmp);
 }
 
 void Matrix::display()
