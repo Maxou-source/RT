@@ -1,5 +1,7 @@
 #include "Matrix.hpp"
 #include "rt.hpp"
+#include "Tuple.hpp"
+
 /*====== Constructors and Destructors ======*/
 
 Matrix::Matrix() {
@@ -249,4 +251,64 @@ float	Matrix::cofactor3(t_m3 m, int row, int column)
 		return (res);
 	}
 	return (minor_f3(m, row, column));
+}
+
+/*
+t_m4	view_transform(t_f4 from, t_f4 forward, t_f4 up)
+{
+	t_f4	leftv;
+	t_f4	true_up;
+	t_m4	res;
+
+	leftv = cross_product(forward, normalization(up));
+	if (equal_tuple(leftv, point(0, 0, 0, 0)))
+	{
+		leftv = cross_product(forward, point(0, 0, 1, 0));
+		if (equal_tuple(leftv, point(0, 0, 0, 0)))
+			leftv = cross_product(forward, point(1, 0, 0, 0));
+	}
+	true_up = cross_product(leftv, forward);
+	res = build_identity_matrix();
+	res[0][0] = leftv.x;
+	res[0][1] = leftv.y;
+	res[0][2] = leftv.z;
+	res[1][0] = true_up.x;
+	res[1][1] = true_up.y;
+	res[1][2] = true_up.z;
+	res[2][0] = -forward.x;
+	res[2][1] = -forward.y;
+	res[2][2] = -forward.z;
+	return (res * translated_matrix(-from.x, -from.y, -from.z));
+}
+*/
+
+Matrix Matrix::view_transform(const Tuple& from, const Tuple& to, const Tuple& up)
+{
+	Tuple forward = Tuple::normalize(from - to);
+	Tuple leftv = forward.cross_product(Tuple::normalize(up));
+	if (leftv == Tuple(0,0,0,0))
+	{
+		std::cout << "la dedans" << std::endl;
+		leftv = forward.cross_product(Tuple(0,0,1,0));
+		if (leftv == Tuple(0,0,0,0))
+			leftv = forward.cross_product(Tuple(1,0,0,0));
+	}
+	Tuple true_up = leftv.cross_product(forward);
+	Matrix m;
+	m.matrix[0][0] = leftv.getValue().x;
+	m.matrix[0][1] = leftv.getValue().y;
+	m.matrix[0][2] = leftv.getValue().z;
+	m.matrix[1][0] = true_up.getValue().x;
+	m.matrix[1][1] = true_up.getValue().y;
+	m.matrix[1][2] = true_up.getValue().z;
+	m.matrix[2][0] = -forward.getValue().x;
+	m.matrix[2][1] = -forward.getValue().y;
+	m.matrix[2][2] = -forward.getValue().z;
+	std::cout << "m " << std::endl;
+	m.display();
+	forward.display();
+	Matrix tmp;
+	tmp.translate(-from.getValue().x, -from.getValue().y, -from.getValue().z);
+	tmp.display();
+	return m * tmp;
 }

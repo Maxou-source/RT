@@ -73,6 +73,7 @@ SRC_WORLD			=	$(addprefix $(WORLD_DIR), \
 						World.cpp \
 						Intersection.cpp \
 						Computations.cpp \
+						Camera.cpp \
 						)
 
 SRC_MATRIX			=	$(addprefix $(MATRIX_DIR), \

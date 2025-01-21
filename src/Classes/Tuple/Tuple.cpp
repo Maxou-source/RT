@@ -61,6 +61,29 @@ Tuple Tuple::operator*(const Matrix& m) const {
 	);
 }
 
+bool	equal(float a, float b)
+{
+	if (fabs(a - b) < EPSILON)
+		return (true);
+	return (false);
+}
+
+
+bool	Tuple::operator==(const Tuple& t) const
+{
+	int	i;
+
+	i = 0;
+	while (i < 3)
+	{
+		if (!equal(t.value[i], value[i]))
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
+
 std::ostream& operator<<(std::ostream& os, const Tuple& tu) {
 	t_f4 g = tu.getValue();
 	os << g.x << " " << g.y << " " << g.z << " " << g.w << std::endl;
@@ -94,6 +117,18 @@ float Tuple::dot_product(const Tuple& t) const
 		(value.z * t.value.z) +
 		(value.w * t.value.w) 
 	);
+}
+
+Tuple Tuple::cross_product(const Tuple& t) const
+{
+	t_f4	res;
+
+	res.x = value.y * t.value.z - value.z * t.value.y;
+	res.y = value.z * t.value.x - value.x * t.value.z;
+	res.z = value.x * t.value.y - value.y * t.value.x;
+	res.w = 0;
+	Tuple ret(res);
+	return (ret);
 }
 
 float Tuple::magnitude() const

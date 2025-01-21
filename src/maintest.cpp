@@ -56,6 +56,11 @@ Tuple color_at(World *w, Ray *r)
 
 int main()
 {
+	Tuple from(1,3,2,POINT);
+	Tuple to(4,-2,8,POINT);
+	Tuple up(1,1,0, VECTOR);
+	Matrix m = Matrix::view_transform(from, to, up);
+	m.display();
 	/*====== GRAPHICAL TESTS======*/
 	// setting up graphic stuff
 	// World w;

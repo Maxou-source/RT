@@ -49,10 +49,12 @@ class Tuple {
 		Tuple	operator*(float t) const;
 		Tuple	operator*(const Tuple &t) const;
 		Tuple	operator*(const Matrix &t) const;
+		bool	operator==(const Tuple &) const;
 
 
 	// methods
 		float dot_product(const Tuple &) const;
+		Tuple cross_product(const Tuple &) const;
 		void display();
 		float magnitude() const;
 		void normalize();

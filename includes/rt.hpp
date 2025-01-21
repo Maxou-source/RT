@@ -19,11 +19,11 @@ typedef float	t_f4 __attribute__((ext_vector_type(4)));
 # define SCANLINE_PAD 32
 
 typedef struct t_clr {
-    char r;
-    char g;
-    char b;
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
 } t_clr;
 // chaque composant de couleur r, g ou b ne peut contenir que 8 bits
-// avec chaque valeur compris entre 0 et 255 donc un CHAR pas un INT Jean Marc
+// avec chaque valeur compris entre 0 et 255 donc un UNSIGNED CHAR pas un INT Jean Marc
 
 #endif
