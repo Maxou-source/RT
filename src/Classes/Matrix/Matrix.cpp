@@ -1,8 +1,9 @@
 #include "Matrix.hpp"
 #include "rt.hpp"
 #include "Tuple.hpp"
+#include <math.h>
 
-/*====== Constructors and Destructors ======*/
+/*====== Construcforwardrs and Destructors ======*/
 
 Matrix::Matrix() {
 	int		i;
@@ -50,7 +51,7 @@ Matrix::Matrix(t_f4 a, t_f4 b, t_f4 c, t_f4 d)
 Matrix Matrix::operator*(const Matrix &m)
 {
 	Matrix res;
-	res.matrix = m.matrix * this->matrix;
+	res.matrix = this->matrix * m.matrix;
 	return res;
 }
 
@@ -68,6 +69,23 @@ void Matrix::translate(float x, float y, float z)
 	matrix[0][3] = x;
 	matrix[1][3] = y;
 	matrix[2][3] = z;
+}
+
+
+void	Matrix::rotation_matrix_x(float r)
+{
+	matrix[1][1] = cos(r);
+	matrix[2][2] = cos(r);
+	matrix[2][1] = sin(r);
+	matrix[1][2] = -sin(r);
+}
+
+void	Matrix::rotation_matrix_y(float r)
+{
+	matrix[0][0] = cos(r);
+	matrix[0][2] = sin(r);
+	matrix[2][0] = -sin(r);
+	matrix[2][2] = cos(r);
 }
 
 Matrix	Matrix::invertedMatrix()
@@ -254,7 +272,7 @@ float	Matrix::cofactor3(t_m3 m, int row, int column)
 }
 
 /*
-t_m4	view_transform(t_f4 from, t_f4 forward, t_f4 up)
+t_m4	view_transform(t_f4 from, t_f4 to, t_f4 up)
 {
 	t_f4	leftv;
 	t_f4	true_up;
@@ -282,9 +300,9 @@ t_m4	view_transform(t_f4 from, t_f4 forward, t_f4 up)
 }
 */
 
-Matrix Matrix::view_transform(const Tuple& from, const Tuple& to, const Tuple& up)
+Matrix Matrix::view_transform(const Tuple& from, const Tuple& forward, const Tuple& up)
 {
-	Tuple forward = Tuple::normalize(from - to);
+	// Tuple forward = Tuple::normalize(from - forward);
 	Tuple leftv = forward.cross_product(Tuple::normalize(up));
 	if (leftv == Tuple(0,0,0,0))
 	{
@@ -304,11 +322,12 @@ Matrix Matrix::view_transform(const Tuple& from, const Tuple& to, const Tuple& u
 	m.matrix[2][0] = -forward.getValue().x;
 	m.matrix[2][1] = -forward.getValue().y;
 	m.matrix[2][2] = -forward.getValue().z;
-	std::cout << "m " << std::endl;
+	// std::cout << "m " << std::endl;
+	// m.display();
+	// forward.display();
 	m.display();
-	forward.display();
 	Matrix tmp;
 	tmp.translate(-from.getValue().x, -from.getValue().y, -from.getValue().z);
-	tmp.display();
+	// tmp.display();
 	return m * tmp;
 }

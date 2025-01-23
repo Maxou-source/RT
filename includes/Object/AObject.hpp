@@ -35,6 +35,7 @@ class AObject
 
 		Tuple		color;
 		int			color_hex;
+		t_material	mat;
 		// on va stocker l'image directement ici Jean Marc
 
 		Tuple		origin;
@@ -62,10 +63,12 @@ class AObject
 		void	applyTransformations();
 
 	// setters and getters
-		void	setMatrix(Matrix &ma);
+		void	setMatrix(const Matrix &ma);
 		void	setIMatrix(Matrix &ma);
 		Matrix&	getMatrix();
 		Matrix&	getIMatrix();
+		Tuple getColor() const;
+		void setColor(const Tuple&);
 };
 
 #endif

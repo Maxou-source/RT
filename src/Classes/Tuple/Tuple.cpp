@@ -103,7 +103,7 @@ Tuple Tuple::reflect(const Tuple &in, const Tuple &normalv)
 	return reflectv;
 }
 
-void Tuple::display()
+void Tuple::display() const
 {
 	std::cout << "Tuple : " << "x: " << value.x
 	<< " y: " << value.y << " z: " << value.z << " w: " << value.w << std::endl;

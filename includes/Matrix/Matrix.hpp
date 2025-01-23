@@ -21,6 +21,8 @@ class Matrix {
 	// methods
 		void	scale(float x, float y, float z);
 		void	translate(float x, float y, float z);
+		void	rotation_matrix_x(float r);
+		void	rotation_matrix_y(float r);
 		Matrix	invertedMatrix();
 		Matrix	transpose();
 

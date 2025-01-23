@@ -24,6 +24,7 @@ class World {
 		void add_sphere(float size, float x, float y, float z);
 		std::set<Intersection> intersectWorld(Ray *r);
 		void printWorld();
+		void add_object(AObject *g);
 		void printIntersection();
 
 };

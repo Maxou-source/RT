@@ -14,6 +14,7 @@
 #include "World.hpp"
 #include "Intersection.hpp"
 #include "Computations.hpp"
+#include "Camera.hpp"
 
 
 /*
@@ -39,7 +40,7 @@ Tuple color_at(World *w, Ray *r)
 {
 	std::set<Intersection>	interSet;
 	Light l;
-	t_material m;
+	t_material mat;
 
 	interSet = w->intersectWorld(r);
 	if (interSet.empty())
@@ -50,79 +51,88 @@ Tuple color_at(World *w, Ray *r)
 	Computations comps(*interSet.begin(), r);
 	comps.setPoint(comps.getPoint() + (comps.getNormalv() * EPSILON * 100.0));
 
-	m.color = Tuple(0,0,1, POINT);
-	return l.lighting(m, comps.getPoint(), comps.getEyev(), comps.getNormalv());
+	mat.color = comps.getObjPtr()->getColor();
+	return l.lighting(mat, comps.getPoint(), comps.getEyev(), comps.getNormalv());
+}
+
+World buildScene1()
+{
+	World *w = new World();
+
+	// AObject *sp = new Sphere();
+	// // sp->scale(10 , 0.01, 10);
+	// // sp->translate(0 , 0, 0);
+	// // sp->applyTransformations();
+	// sp->setColor(Tuple(1,0,0,0));
+	// Matrix m0, m00;
+	// m0.scale(10, 0.01, 10);
+	// m00.translate(0,0,0);
+	// sp->setMatrix(m00 * m0);
+	// sp->applyTransformations();
+	// w->add_object(sp);
+
+	AObject *sp1 = new Sphere();
+	Matrix m, m2, m3, m4;
+	m.translate(0,0,5);
+	// m2.rotation_matrix_y((-PI)/4);
+	// m3.rotation_matrix_x(PI/2);
+	m4.scale(10, 0.01, 10);
+	sp1->setColor(Tuple(0,1,0, 0));
+	// sp1->setMatrix(((m2 * m3) * m) * m4);
+	sp1->setMatrix((m * m4) * (m2 * m3));
+	// sp1->setMatrix(m4 * m3 * m2 * m);
+	sp1->applyTransformations();
+	w->add_object(sp1);
+
+	// AObject *sp2 = new Sphere();
+	// Matrix m5, m6, m7, m8;
+	// m5.translate(0,0,5);
+	// // m6.rotation_matrix_y(PI/4);
+	// // m7.rotation_matrix_x(PI/2);
+	// m8.scale(10 , 0.01, 10);
+	// sp2->setColor(Tuple(0,0,1, 0));
+	// sp2->setMatrix(m5 * m6 * m7 * m8);
+	// sp2->applyTransformations();
+	// w->add_object(sp2);
+	return *w;
 }
 
 int main()
 {
-	Tuple from(1,3,2,POINT);
-	Tuple to(4,-2,8,POINT);
-	Tuple up(1,1,0, VECTOR);
-	Matrix m = Matrix::view_transform(from, to, up);
-	m.display();
 	/*====== GRAPHICAL TESTS======*/
 	// setting up graphic stuff
-	// World w;
-	// w.add_sphere(1, 0,0,0);
-	// // w.add_sphere(0.5, 0,0,0);
-	// Ray r(Tuple(0,0,0, POINT), Tuple(0,0,1, VECTOR));
-	// std::set<Intersection> myset = w.intersectWorld(&r);
-	// // myset.printIntersection();
-	// std::cout << myset << std::endl;
-	// Computations comps(*myset.begin(), &r);
-	// std::cout << comps << std::endl;
-	// XCB xcb;
-	// xcb.setupConnection();
-	// xcb.setupScreenAndFormat();
-	// xcb.createWindowAndGC();
-	// Image img(xcb.getFormatPtr(), 400, 400);
-	// xcb.setImage(img);
+	XCB xcb;
+	xcb.setupConnection();
+	xcb.setupScreenAndFormat();
+	xcb.createWindowAndGC();
+	Image img(xcb.getFormatPtr(), 400, 400);
+	xcb.setImage(img);
 
 
-	// Tuple origin(0,0,-5,POINT);
-	// Ray ray(Tuple(0,0,-5, POINT), Tuple(0,0,0,VECTOR));
+	Tuple origin(0,0,-5,POINT);
+	Ray ray(Tuple(0,0,0, POINT), Tuple(0,0,0,VECTOR));
 
 	// Sphere sp;
-	// World w;
-	// w.add_sphere(0.5, 0,0,1);
-	// // sp.translate(0, 0, 1);
-	// // sp.scale(2 , 2, 2);
-	// // sp.applyTransformations();
-	// // Light l;
-	// // t_material m;
+	World w = buildScene1();
+	// w.add_sphere();
+
+	Camera cam(Tuple(0,1.5,-5, POINT), Tuple(0,1,0,VECTOR), 90.0);
 
 	// float wall_z = 10;
 	// float wall_size = 7;
 	// float pixel_size = wall_size / 400;
 	// float half = wall_size /2;
 
-	// for (int y = 0; y < 399; y++)
-	// {
-	// 	float world_y = half - (pixel_size * y);
-	// 	for (int x = 0; x < 399; x++)
-	// 	{
-	// 		float world_x = -half + (pixel_size * x);
-	// 		// part of ray_for_pixel later
-	// 		Tuple position(world_x, world_y, wall_z, POINT);
-	// 		ray.setDirection(Tuple::normalize(position - ray.getOrigin()));
-
-	// 		img.pixel_put(x,y,float_to_rgba(color_at(&w, &ray).getValue()));
-	// 		// here is where i need the intersections
-	// 		// std::set<Intersection> myset = sp.intersect(&ray);
-
-	// 		// if (!myset.empty())
-	// 		// {
-	// 		// 	Tuple p = ray.position((*myset.begin()).getT());
-	// 		// 	Light l;
-	// 		// 	t_material m;
-	// 		// 	m.color = Tuple(0,0,1, POINT);
-	// 		// 	Tuple cl = l.lighting(m, p, Tuple::negating(ray.getDirection()), sp.normal(p));
-	// 		// 	img.pixel_put(x,y,float_to_rgba(cl.getValue()));
-	// 		// }
-	// 	}
-	// }
-	// xcb.loop();
+	for (int y = 0; y < 399; y++)
+	{
+		// float world_y = half - (pixel_size * y);
+		for (int x = 0; x < 399; x++)
+		{
+			cam.rayForPixel(x, y, &ray);
+			img.pixel_put(x,y,float_to_rgba(color_at(&w, &ray).getValue()));
+		}
+	}
+	xcb.loop();
 
 	/*======== MATH TESTS=========*/
 	// t_f4 a = {8, 7, -6, -3};

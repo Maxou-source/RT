@@ -42,7 +42,9 @@ return in - normal * 2 * dot(in, normal)*/
 
 /*===== Setters and Getters =======*/
 
-void		AObject::setMatrix(Matrix &ma) {m = ma;}
+void		AObject::setMatrix(const Matrix &ma) {m = ma;}
 void		AObject::setIMatrix(Matrix &ma) {i_m = ma;}
 Matrix&		AObject::getMatrix() {return m;};
 Matrix&		AObject::getIMatrix() {return i_m;};
+Tuple AObject::getColor() const {return color;}
+void AObject::setColor(const Tuple& t) { color = t;}

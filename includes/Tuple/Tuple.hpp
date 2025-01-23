@@ -55,7 +55,7 @@ class Tuple {
 	// methods
 		float dot_product(const Tuple &) const;
 		Tuple cross_product(const Tuple &) const;
-		void display();
+		void display() const;
 		float magnitude() const;
 		void normalize();
 		void negating();

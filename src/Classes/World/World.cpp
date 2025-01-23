@@ -21,6 +21,11 @@ void World::add_sphere(float size, float x, float y, float z)
 	objects.push_back(sp);
 }
 
+void World::add_object(AObject *g)
+{
+	objects.push_back(g);
+}
+
 void World::printWorld()
 {
 	std::vector<AObject *>::iterator it;
