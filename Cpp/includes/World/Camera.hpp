@@ -29,6 +29,8 @@ class Camera {
 	// Methods
 		void	rayForPixel(int px, int py, Ray *r);
 
+		void	setOpenGlObject();
+
 };
 
 #endif

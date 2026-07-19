@@ -15,8 +15,14 @@
 #include "Intersection.hpp"
 #include "Computations.hpp"
 #include "Camera.hpp"
-
-
+#include <glad/glad.h>   // must be included BEFORE glfw3.h
+#include <GLFW/glfw3.h>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+#include <filesystem>
+#include <vector>
 /*
 -Optimise Matrix operations (notably tuple * matrix)
 (almost done check later if row accessor is smart)
@@ -46,8 +52,6 @@ Tuple color_at(World *w, Ray *r)
 	if (interSet.empty())
 		return Tuple(0,0,0,POINT);
 
-	// Tuple cl = l.lighting(m, p, Tuple::negating(ray.getDirection()), sp.normal(p));
-
 	Computations comps(*interSet.begin(), r);
 	comps.setPoint(comps.getPoint() + (comps.getNormalv() * EPSILON * 100.0));
 
@@ -73,13 +77,14 @@ World buildScene1()
 
 	AObject *sp1 = new Sphere();
 	Matrix m, m2, m3, m4;
-	m.translate(0,0,5);
+	m.translate(0,0,0);
 	// m2.rotation_matrix_y((-PI)/4);
 	// m3.rotation_matrix_x(PI/2);
-	m4.scale(10, 0.01, 10);
-	sp1->setColor(Tuple(0,1,0, 0));
+	m4.scale(1, 1, 1);
+	sp1->setColor(Tuple(0,1,1, 0));
+	sp1->setMatrix(m*m4);
 	// sp1->setMatrix(((m2 * m3) * m) * m4);
-	sp1->setMatrix((m * m4) * (m2 * m3));
+	// sp1->setMatrix((m * m4) * (m2 * m3));
 	// sp1->setMatrix(m4 * m3 * m2 * m);
 	sp1->applyTransformations();
 	w->add_object(sp1);
@@ -97,10 +102,158 @@ World buildScene1()
 	return *w;
 }
 
+float vertices[] = {
+	0.5f,  0.5f, 0.0f,  // top right
+	0.5f, -0.5f, 0.0f,  // bottom right
+   -0.5f, -0.5f, 0.0f,  // bottom left
+   -0.5f,  0.5f, 0.0f   // top left 
+};
+unsigned int indices[] = {  // note that we start from 0!
+   0, 1, 3,   // first triangle
+   1, 2, 3    // second triangle
+};
+
 int main()
 {
 	/*====== GRAPHICAL TESTS======*/
+	if (!glfwInit())
+	{
+		std::cerr << "Failed to init GLFW" << std::endl;
+		return 1;
+	}
 	// setting up graphic stuff
+
+	// Request an OpenGL 4.3+ core context (compute shaders need 4.3 minimum)
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+	GLFWwindow* window = glfwCreateWindow(400, 400, "raytracer", nullptr, nullptr);
+	if (!window)
+	{
+		std::cerr << "Failed to create window caca" << std::endl;
+		glfwTerminate();
+		return 1;
+	}
+
+	glfwMakeContextCurrent(window);
+
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cerr << "Failed to init GLAD" << std::endl;
+		return 1;
+	}
+
+	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
+
+	unsigned int VBO;
+	glGenBuffers(1, &VBO);  
+	glBindBuffer(GL_ARRAY_BUFFER, VBO); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0); 
+
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	const char *vertexShaderSource = "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "}\0";
+
+	unsigned int vertexShader;
+	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+
+	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	glCompileShader(vertexShader);
+
+	int  success;
+	char infoLog[512];
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
+	if(!success)
+	{
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+	else
+		std::cout << "Success" << std::endl;
+
+
+	std::ifstream shaderFile;
+
+	
+	shaderFile.open("shader/raytracer.glsl");
+	std::stringstream shaderStream;
+	shaderStream << shaderFile.rdbuf();
+	shaderFile.close();
+	std::string fragment = shaderStream.str();
+	const char *fragmentShaderSource = fragment.c_str();
+	std::cout << "lalalal" << fragmentShaderSource << std::endl;
+
+	unsigned int fragmentShader;
+	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glCompileShader(fragmentShader);
+
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+
+	if(!success)
+	{
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		std::cout << "ERROR::SHADER::frag::COMPILATION_FAILED\n" << infoLog << std::endl;
+	}
+	else
+		std::cout << "Success" << std::endl;
+
+	unsigned int shaderProgram;
+	shaderProgram = glCreateProgram();
+
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+	glUseProgram(shaderProgram);
+
+	unsigned int VAO;
+	glGenVertexArrays(1, &VAO);  
+
+
+	glBindVertexArray(VAO);
+	// 2. copy our vertices array in a vertex buffer for OpenGL to use
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	// 3. copy our index array in a element buffer for OpenGL to use
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	// 4. then set the vertex attributes pointers
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0); 
+
+	glUniform3f(glGetUniformLocation(shaderProgram, "cam.position"), 0.0, 1.0, 0.0);
+	
+	while (!glfwWindowShouldClose(window))
+	{
+		glfwPollEvents();
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+		glUseProgram(shaderProgram);
+		glBindVertexArray(VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+
+		glfwSwapBuffers(window);
+	}
+
+	glfwTerminate();
+	exit(0);
+
 	XCB xcb;
 	xcb.setupConnection();
 	xcb.setupScreenAndFormat();
@@ -108,26 +261,26 @@ int main()
 	Image img(xcb.getFormatPtr(), 400, 400);
 	xcb.setImage(img);
 
-
 	Tuple origin(0,0,-5,POINT);
 	Ray ray(Tuple(0,0,0, POINT), Tuple(0,0,0,VECTOR));
 
-	// Sphere sp;
 	World w = buildScene1();
-	// w.add_sphere();
 
-	Camera cam(Tuple(0,1.5,-5, POINT), Tuple(0,1,0,VECTOR), 90.0);
-
-	// float wall_z = 10;
-	// float wall_size = 7;
-	// float pixel_size = wall_size / 400;
-	// float half = wall_size /2;
+	Camera cam(Tuple(0,0,-1.5, POINT), Tuple(0,0,-1,VECTOR), 90.0);
+	
+	
+	// setcameraobject for opengl
+	// open .glsl
 
 	for (int y = 0; y < 399; y++)
 	{
-		// float world_y = half - (pixel_size * y);
 		for (int x = 0; x < 399; x++)
 		{
+			// CAMERA FIXED VALUE half_width half_height ...
+			// rayforpixel(cam, x, y, &ray);
+			
+			// WORLD FIXED VALUE scene basically
+			// color at .... 
 			cam.rayForPixel(x, y, &ray);
 			img.pixel_put(x,y,float_to_rgba(color_at(&w, &ray).getValue()));
 		}
