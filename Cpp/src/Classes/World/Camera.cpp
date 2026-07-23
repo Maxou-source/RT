@@ -91,7 +91,7 @@ void	Camera::rayForPixel(int px, int py, Ray *r) {
 	// r->direction.w = 0;
 }
 
-Camera::Camera(const Tuple& pov, const Tuple& orient, float f) {
+Camera::Camera(unsigned int shaderProgram, const Tuple& pov, const Tuple& orient, float f) {
 	half_view = (f * PI) / 180.0;
 	float aspect_ratio = 400 / 400;
 	if (aspect_ratio >= 1)
@@ -105,15 +105,27 @@ Camera::Camera(const Tuple& pov, const Tuple& orient, float f) {
 		half_height = half_view;
 	}
 	pixel_size = (half_width * 2) / 400;
-	std::cout << "pixel size " << pixel_size << std::endl;
-	std::cout << "aspect  " << aspect_ratio << std::endl;
-	std::cout << "half_view  " << half_view << std::endl;
-	std::cout << "half_width  " << half_width << std::endl;
-	std::cout << "half_height " << half_height << std::endl;
+	std::cout << "wwwwwwwwwwwwwwwwhalf_view = " << half_width << std::endl;
+	std::cout << "wwwwwwwwwwwwwwwwpixel_size = " << pixel_size << std::endl;
+	// std::cout << "pixel size " << pixel_size << std::endl;
+	// std::cout << "aspect  " << aspect_ratio << std::endl;
+	// std::cout << "half_view  " << half_view << std::endl;
+	// std::cout << "half_width  " << half_width << std::endl;
+	// std::cout << "half_height " << half_height << std::endl;
 	transform = Matrix::view_transform(pov,
 			Tuple::normalize(orient), Tuple(0, 1, 0, 0));
 	transform.display();
 	inv_transform = transform.invertedMatrix();
+	inv_transform.display();
+	glUniform1f(glGetUniformLocation(shaderProgram, "cam.half_view"), half_view);
+	glUniform1f(glGetUniformLocation(shaderProgram, "cam.half_height"), half_height);
+	glUniform1f(glGetUniformLocation(shaderProgram, "cam.half_width"), half_width);
+	glUniform1f(glGetUniformLocation(shaderProgram, "cam.pixel_size"), pixel_size);
+	auto matmat = transform.getMatrix();
+	auto invmat = inv_transform.getMatrix();
+
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "cam.transform"),1, GL_TRUE, (float *)(&matmat) );
+	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "cam.inv_transform"),1, GL_TRUE, (float *)(&invmat) );
 	// viewpoint = pov;
 	// orientation = orient;
 	// fov = f;

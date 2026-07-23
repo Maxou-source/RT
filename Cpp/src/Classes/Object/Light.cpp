@@ -2,7 +2,7 @@
 #include "Sphere.hpp"
 #include <math.h>
 
-/*====== Constructors and Destructors=====*/
+/*====== Constructors and Destructors =====*/
 
 Light::Light()
 {

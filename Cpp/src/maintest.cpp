@@ -15,14 +15,13 @@
 #include "Intersection.hpp"
 #include "Computations.hpp"
 #include "Camera.hpp"
-#include <glad/glad.h>   // must be included BEFORE glfw3.h
-#include <GLFW/glfw3.h>
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <filesystem>
 #include <vector>
+#include <chrono>
 /*
 -Optimise Matrix operations (notably tuple * matrix)
 (almost done check later if row accessor is smart)
@@ -30,6 +29,32 @@
 -store intersections duuuuuh
 -make a better normalize method (shit doesnt make sense)	
 */
+
+#include <chrono>
+
+class FPSCounter {
+public:
+    void update() {
+        frames++;
+        auto now = std::chrono::high_resolution_clock::now();
+        double elapsed = std::chrono::duration<double>(now - lastTime).count();
+        if (elapsed >= 1.0) {
+            fps = frames / elapsed;
+            frames = 0;
+            lastTime = now;
+			std::cout << "FPS: " << fps << std::endl;
+        }
+    }
+
+    double getFPS() const { return fps; }
+
+private:
+    int frames = 0;
+    double fps = 0.0;
+    std::chrono::high_resolution_clock::time_point lastTime =
+        std::chrono::high_resolution_clock::now();
+};
+
 int	float_to_rgba(t_f4 color)
 {
 	int	r;
@@ -42,7 +67,7 @@ int	float_to_rgba(t_f4 color)
 	return ((r << 16) | (g << 8) | b);
 }
 
-Tuple color_at(World *w, Ray *r)
+Tuple color_at(World *w, Ray *r, int px, int py)
 {
 	std::set<Intersection>	interSet;
 	Light l;
@@ -55,6 +80,11 @@ Tuple color_at(World *w, Ray *r)
 	Computations comps(*interSet.begin(), r);
 	comps.setPoint(comps.getPoint() + (comps.getNormalv() * EPSILON * 100.0));
 
+	// if (px == 200 && py == 200)
+	// {
+	// 	std::cout<< comps << std::endl;
+	// 	std::cout << "direction " << r->getDirection() << std::endl;
+	// }
 	mat.color = comps.getObjPtr()->getColor();
 	return l.lighting(mat, comps.getPoint(), comps.getEyev(), comps.getNormalv());
 }
@@ -103,10 +133,10 @@ World buildScene1()
 }
 
 float vertices[] = {
-	0.5f,  0.5f, 0.0f,  // top right
-	0.5f, -0.5f, 0.0f,  // bottom right
-   -0.5f, -0.5f, 0.0f,  // bottom left
-   -0.5f,  0.5f, 0.0f   // top left 
+	1.0f,  1.0f, 0.0f,  // top right
+	1.0f, -1.0f, 0.0f,  // bottom right
+   -1.0f, -1.0f, 0.0f,  // bottom left
+   -1.0f,  1.0f, 0.0f   // top left 
 };
 unsigned int indices[] = {  // note that we start from 0!
    0, 1, 3,   // first triangle
@@ -125,10 +155,10 @@ int main()
 
 	// Request an OpenGL 4.3+ core context (compute shaders need 4.3 minimum)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(400, 400, "raytracer", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(1080, 1920, "raytracer", nullptr, nullptr);
 	if (!window)
 	{
 		std::cerr << "Failed to create window caca" << std::endl;
@@ -143,6 +173,9 @@ int main()
 		std::cerr << "Failed to init GLAD" << std::endl;
 		return 1;
 	}
+
+	glfwMakeContextCurrent(window);
+	glfwSwapInterval(0); 
 
 	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 
@@ -195,7 +228,6 @@ int main()
 	shaderFile.close();
 	std::string fragment = shaderStream.str();
 	const char *fragmentShaderSource = fragment.c_str();
-	std::cout << "lalalal" << fragmentShaderSource << std::endl;
 
 	unsigned int fragmentShader;
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -236,8 +268,63 @@ int main()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0); 
 
-	glUniform3f(glGetUniformLocation(shaderProgram, "cam.position"), 0.0, 1.0, 0.0);
+
+	const int width = 1080, height = 1920;
+	const int numPixels = width * height;
+
+	unsigned int debugSSBO;
+	glGenBuffers(1, &debugSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, debugSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, numPixels * sizeof(float) * 4, nullptr, GL_DYNAMIC_COPY);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, debugSSBO); // binding = 0, matches shader
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+
+	Camera cam(shaderProgram, Tuple(0,0,-2, POINT), Tuple(0,0,-1,VECTOR), 90.0);
+
+	GLfloat value;
+	std::cout << std::endl << "shaderProgram: " << shaderProgram << std::endl;
 	
+	auto location = glGetUniformLocation(shaderProgram, "cam.half_view");
+	glGetUniformfv(shaderProgram, location, &value);
+	std::cout << "half_view value: " << value << std::endl;
+
+	location = glGetUniformLocation(shaderProgram, "cam.half_height");
+	glGetUniformfv(shaderProgram, location, &value);
+	std::cout << "half_view half_height: " << value << std::endl;
+
+	 location = glGetUniformLocation(shaderProgram, "cam.half_width");
+	glGetUniformfv(shaderProgram, location, &value);
+	std::cout << "half_width value: " << value << std::endl;
+
+
+	GLfloat matrix[16];
+	GLfloat ok;
+
+	location = glGetUniformLocation(shaderProgram, "cam.transform");
+	glGetUniformfv(shaderProgram, location, matrix);
+	for (int i = 0; i < 16; i++)
+	{
+		std::cout << "" << matrix[i] << ", ";
+		if (i % 4 == 3)
+			std::cout << std::endl;
+	}
+	std::cout << std::endl;
+	location = glGetUniformLocation(shaderProgram, "cam.inv_transform");
+	glGetUniformfv(shaderProgram, location, matrix); 
+	std::cout << "transform matrix: " << matrix[0] << ", " << matrix[1] << ", " << matrix[2] << ", " << matrix[3] << std::endl;
+	for (int i = 0; i < 16; i++)
+	{
+		std::cout << "" << matrix[i] << ", ";
+		if (i % 4 == 3)
+			std::cout << std::endl;
+	}
+	std::cout << std::endl;
+	World w = buildScene1();
+
+	bool one = true;
+
+	FPSCounter fpsCounter;
 	while (!glfwWindowShouldClose(window))
 	{
 		glfwPollEvents();
@@ -249,43 +336,117 @@ int main()
 		glBindVertexArray(0);
 
 		glfwSwapBuffers(window);
+		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, debugSSBO);
+	std::vector<float> debugOut(numPixels * 4);
+	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);	
+
+	// inspect one pixel, e.g. (200,200)
+
+	fpsCounter.update();
+	
+	if (one == true)
+	{
+		int px = 0, py = 0;
+		while (py < height)
+		{
+			while (px < width)
+			{
+				int idx = (py * width + px) * 4;
+				// if (debugOut[idx+3] == 0.f)
+				// {
+				// 	px++;
+				// 	continue;
+				// }
+				// std::cout << "pixel (" << px << "," << py << ") origin: " << debugOut[idx] << ", " << debugOut[idx+1] << ", " << debugOut[idx+2]
+				// << std::endl;
+				// std::cout << "wheere = " << debugOut[idx+3] << std::endl;
+				// px++;
+				if (px != 200 || py != 200)
+				{
+					px++;
+					continue;
+				}
+				std::cout << ") normalv: " << debugOut[idx] << ", " << debugOut[idx+1] << ", " << debugOut[idx+2] << ", " << debugOut[idx+3] << std::endl;
+				idx = idx + 4;
+				std::cout << ") eyev: " << debugOut[idx] << ", " << debugOut[idx+1] << ", " << debugOut[idx+2] << ", " << debugOut[idx+3] << std::endl;
+				idx+=4;
+				std::cout << ") point: " << debugOut[idx] << ", " << debugOut[idx+1] << ", " << debugOut[idx+2] << ", " << debugOut[idx+3] << std::endl;
+				idx+=4;
+				std::cout << ") t: " << debugOut[idx] << ", " << debugOut[idx+1] << ", " << debugOut[idx+2] << ", " << debugOut[idx+3] << std::endl;
+				idx+=4;
+				std::cout << ") direction: " << debugOut[idx] << ", " << debugOut[idx+1] << ", " << debugOut[idx+2] << ", " << debugOut[idx+3] << std::endl;
+				px++;
+			}
+			px = 0;
+			py++;
+		}
+
 	}
+	one = false;
+	}
+// exit(0);
 
 	glfwTerminate();
-	exit(0);
 
 	XCB xcb;
 	xcb.setupConnection();
 	xcb.setupScreenAndFormat();
 	xcb.createWindowAndGC();
-	Image img(xcb.getFormatPtr(), 400, 400);
+	Image img(xcb.getFormatPtr(), 1080, 1920);
 	xcb.setImage(img);
 
 	Tuple origin(0,0,-5,POINT);
 	Ray ray(Tuple(0,0,0, POINT), Tuple(0,0,0,VECTOR));
 
-	World w = buildScene1();
+	// World w = buildScene1();
 
-	Camera cam(Tuple(0,0,-1.5, POINT), Tuple(0,0,-1,VECTOR), 90.0);
 	
 	
 	// setcameraobject for opengl
 	// open .glsl
-
-	for (int y = 0; y < 399; y++)
+	while (1)
 	{
-		for (int x = 0; x < 399; x++)
+	
+		for (int y = 0; y < 1920; y++)
 		{
+			for (int x = 0; x < 1080; x++)
+			{
 			// CAMERA FIXED VALUE half_width half_height ...
-			// rayforpixel(cam, x, y, &ray);
+				// rayforpixel(cam, x, y, &ray);
+				
+				// WORLD FIXED VALUE scene basically
+				// color at .... 
+				cam.rayForPixel(x, y, &ray);
+				// if (x == 200 && y == 200)
+				// {
+				// std::cout << "ray dir = " << ray.getDirection().getValue().x << ", " << ray.getDirection().getValue().y << ", " << ray.getDirection().getValue().z << std::endl;
+				// std::cout << "ray pos = " << ray.getOrigin().getValue().x << ", " << ray.getOrigin().getValue().y << ", " << ray.getOrigin().getValue().z << std::endl;
+				// }
+				img.pixel_put(x,y,float_to_rgba(color_at(&w, &ray, x, y).getValue()));
 			
-			// WORLD FIXED VALUE scene basically
-			// color at .... 
-			cam.rayForPixel(x, y, &ray);
-			img.pixel_put(x,y,float_to_rgba(color_at(&w, &ray).getValue()));
+			}
 		}
+
+		fpsCounter.update();
+
+		xcb_put_image(
+			xcb.connection,
+			XCB_IMAGE_FORMAT_Z_PIXMAP,
+			xcb.window,
+			xcb.gc,
+			xcb.xcb_image.getWidth(), xcb.xcb_image.getHeight(),			// Image dimensions
+			0, 0,				// x, y
+			0,				   // Left-pad
+			xcb.screen->root_depth,  // Depth
+			xcb.xcb_image.getTotalSize(),
+			xcb.xcb_image.getImageData());
+		// need to check return 
+		xcb_flush(xcb.connection);
 	}
-	xcb.loop();
+	// xcb.loop();
 
 	/*======== MATH TESTS=========*/
 	// t_f4 a = {8, 7, -6, -3};

@@ -8,8 +8,8 @@
 # include "Image.hpp"
 
 class XCB {
-	private:
-		// int					screen_number;
+	public:
+	// int					screen_number;
 		xcb_connection_t	*connection;
 
 		xcb_screen_t		*screen;

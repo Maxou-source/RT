@@ -52,9 +52,9 @@ return normalize(p - point(0, 0, 0))*/
 // }
 Tuple	Sphere::normal(const Tuple &t)
 {
-	Tuple object_normal = (t * i_m) - Tuple(0, 0, 0, POINT);
-	Tuple world_normal = object_normal * t_m;
-	world_normal.normalize();
-	return world_normal;
-	// return Tuple::normalize(Tuple(t - Tuple(0,0,0,POINT)));
+	// Tuple object_normal = (t * i_m) - Tuple(0, 0, 0, POINT);
+	// Tuple world_normal = object_normal * t_m;
+	// world_normal.normalize();
+	// return world_normal;
+	return Tuple::normalize(Tuple(t - Tuple(0,0,0,POINT)));
 }

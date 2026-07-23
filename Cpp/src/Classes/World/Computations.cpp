@@ -25,7 +25,7 @@ Computations::Computations(const Intersection& inter, Ray *r) {
 std::ostream& operator<<(std::ostream& os, const Computations& comps) {
 	os << "Computations:" << "\n" 
 		<< "t      : "<< comps.getT() << std::endl
-		<< "value  : "<< comps.getPoint()
+		<< "point  : "<< comps.getPoint()
 		<< "eyev   : "<< comps.getEyev()
 		<< "normal : "<< comps.getNormalv() << std::endl;
 	return os;

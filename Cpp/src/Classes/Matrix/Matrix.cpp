@@ -325,7 +325,7 @@ Matrix Matrix::view_transform(const Tuple& from, const Tuple& forward, const Tup
 	// std::cout << "m " << std::endl;
 	// m.display();
 	// forward.display();
-	m.display();
+	// m.display();
 	Matrix tmp;
 	tmp.translate(-from.getValue().x, -from.getValue().y, -from.getValue().z);
 	// tmp.display();

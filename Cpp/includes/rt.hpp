@@ -7,6 +7,9 @@
 # include <vector>
 # include <array>
 
+#include <glad/glad.h>   // must be included BEFORE glfw3.h
+#include <GLFW/glfw3.h>
+
 # define EPSILON 0.00001
 
 typedef float	t_f4 __attribute__((ext_vector_type(4)));

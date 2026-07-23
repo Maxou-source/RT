@@ -24,7 +24,7 @@ class Camera {
 	
 	// Constructors and Destructors 
 		Camera();
-		Camera(const Tuple&, const Tuple&, float );
+		Camera(unsigned int shaderProgram, const Tuple&, const Tuple&, float );
 
 	// Methods
 		void	rayForPixel(int px, int py, Ray *r);

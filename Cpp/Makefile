@@ -8,13 +8,21 @@ NAME				=	RT
 #					COMPILATION						#
  #=================================================#
 
+# CC					=	clang++
+
+# FLAGS				=	$(DBFLAGS) $(CFLAGS) $(INCLUDES_FLAGED) $(CDFLAGS)
+
+# PKG_CONFIG = pkg-config
+# CFLAGS				=	-gdwarf-4 -Wall -Wextra -Werror $(shell $(PKG_CONFIG) --cflags xcb) -fenable-matrix -lglfw -lGL -ldl -lpthread#-std=c++98 #-fsanitize=address 
+# LDFLAGS = $(shell $(PKG_CONFIG) --libs xcb)
 CC					=	clang++
+CC_C				=   clang
 
 FLAGS				=	$(DBFLAGS) $(CFLAGS) $(INCLUDES_FLAGED) $(CDFLAGS)
 
 PKG_CONFIG = pkg-config
-CFLAGS				=	-gdwarf-4 -Wall -Wextra -Werror $(shell $(PKG_CONFIG) --cflags xcb) -fenable-matrix#-std=c++98 #-fsanitize=address
-LDFLAGS = $(shell $(PKG_CONFIG) --libs xcb)
+CFLAGS				=	-gdwarf-4  $(shell $(PKG_CONFIG) --cflags xcb) -fenable-matrix
+LDFLAGS = $(shell $(PKG_CONFIG) --libs xcb) -lglfw -lGL -ldl -lpthread
 
 DBFLAGS				=	-g3
 
@@ -38,6 +46,7 @@ METHOD_DIR			=	Methods/
 XCB_DIR				=	XCB/
 WORLD_DIR			=	World/
 MATRIX_DIR			=	Matrix/
+GLAD_DIR			=   glad/
 
 INCLUDE_DIR			=	includes/
 
@@ -55,9 +64,13 @@ INCLUDES			=	$(INCLUDE_DIR) \
 							$(WORLD_DIR) \
 							)
 
-SRC_FILES			=	$(addprefix $(SRC_DIR), \
+SRC_FILES_CPP			=	$(addprefix $(SRC_DIR), \
 						maintest.cpp \
 						$(SRC_CLASSES) \
+						)
+
+SRC_FILES_C			=	$(addprefix $(SRC_DIR), \
+						$(SRC_GLAD) \
 						)
 
 SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
@@ -100,15 +113,8 @@ SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
 						parse.cpp \
 						)
 
-# SRC_METHODS			=	$(addprefix $(METHOD_DIR), \
-# 						Method.cpp \
-# 						Get.cpp \
-# 						Post.cpp \
-# 						Delete.cpp \
-# 						)
+SRC_GLAD			= $(addprefix $(GLAD_DIR), glad.c)
 
-# $(addprefix $(UTILS), FunctionWrapper.cpp)
-# $(addprefix $(CLASSES_DIR), Func.cpp)
 
  #=============================================================================#
 #									OBJETS										#
@@ -116,7 +122,10 @@ SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
 
 OBJS_DIR	=	.objects/
 
-OBJS		=	$(subst $(SRC_DIR), $(OBJS_DIR), $(SRC_FILES:%.cpp=%.o))
+OBJS_CPP	=	$(subst $(SRC_DIR), $(OBJS_DIR), $(SRC_FILES_CPP:%.cpp=%.o))
+OBJS_C		=	$(subst $(SRC_DIR), $(OBJS_DIR), $(SRC_FILES_C:%.c=%.o))
+
+OBJS		=	$(OBJS_CPP) $(OBJS_C)
 
 DEPS		=	$(OBJS:%.o=%.d)
 
@@ -125,9 +134,12 @@ DEPS		=	$(OBJS:%.o=%.d)
  #=============================================================================#
 
 $(OBJS_DIR)%.o : $(SRC_DIR)%.cpp
-				echo $(dir $@)
 				mkdir -p $(dir $@)
 				$(CC) $(FLAGS) -c $< -o $@
+
+$(OBJS_DIR)%.o : $(SRC_DIR)%.c
+				mkdir -p $(dir $@)
+				$(CC_C) $(FLAGS) -c $< -o $@
 
 all : $(NAME)
 
