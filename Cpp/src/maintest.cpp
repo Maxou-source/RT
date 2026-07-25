@@ -16,8 +16,7 @@
 #include "Computations.hpp"
 #include "Camera.hpp"
 #include <string>
-#include <fstream>
-#include <sstream>
+
 #include <iostream>
 #include <filesystem>
 #include <vector>
@@ -93,18 +92,6 @@ World buildScene1()
 {
 	World *w = new World();
 
-	// AObject *sp = new Sphere();
-	// // sp->scale(10 , 0.01, 10);
-	// // sp->translate(0 , 0, 0);
-	// // sp->applyTransformations();
-	// sp->setColor(Tuple(1,0,0,0));
-	// Matrix m0, m00;
-	// m0.scale(10, 0.01, 10);
-	// m00.translate(0,0,0);
-	// sp->setMatrix(m00 * m0);
-	// sp->applyTransformations();
-	// w->add_object(sp);
-
 	AObject *sp1 = new Sphere();
 	Matrix m, m2, m3, m4;
 	m.translate(0,0,0);
@@ -119,16 +106,7 @@ World buildScene1()
 	sp1->applyTransformations();
 	w->add_object(sp1);
 
-	// AObject *sp2 = new Sphere();
-	// Matrix m5, m6, m7, m8;
-	// m5.translate(0,0,5);
-	// // m6.rotation_matrix_y(PI/4);
-	// // m7.rotation_matrix_x(PI/2);
-	// m8.scale(10 , 0.01, 10);
-	// sp2->setColor(Tuple(0,0,1, 0));
-	// sp2->setMatrix(m5 * m6 * m7 * m8);
-	// sp2->applyTransformations();
-	// w->add_object(sp2);
+
 	return *w;
 }
 
@@ -146,142 +124,13 @@ unsigned int indices[] = {  // note that we start from 0!
 int main()
 {
 	/*====== GRAPHICAL TESTS======*/
-	if (!glfwInit())
-	{
-		std::cerr << "Failed to init GLFW" << std::endl;
-		return 1;
-	}
-	// setting up graphic stuff
-
-	// Request an OpenGL 4.3+ core context (compute shaders need 4.3 minimum)
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	GLFWwindow* window = glfwCreateWindow(1080, 1920, "raytracer", nullptr, nullptr);
-	if (!window)
-	{
-		std::cerr << "Failed to create window caca" << std::endl;
-		glfwTerminate();
-		return 1;
-	}
-
-	glfwMakeContextCurrent(window);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		std::cerr << "Failed to init GLAD" << std::endl;
-		return 1;
-	}
-
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(0); 
-
-	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
-
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);  
-	glBindBuffer(GL_ARRAY_BUFFER, VBO); 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0); 
-
-	unsigned int EBO;
-	glGenBuffers(1, &EBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-
-	int  success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-	if(!success)
-	{
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-	else
-		std::cout << "Success" << std::endl;
 
 
-	std::ifstream shaderFile;
+
 
 	
-	shaderFile.open("shader/raytracer.glsl");
-	std::stringstream shaderStream;
-	shaderStream << shaderFile.rdbuf();
-	shaderFile.close();
-	std::string fragment = shaderStream.str();
-	const char *fragmentShaderSource = fragment.c_str();
-
-	unsigned int fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
-	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
-	if(!success)
-	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::frag::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-	else
-		std::cout << "Success" << std::endl;
-
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
-
-	glUseProgram(shaderProgram);
-
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);  
-
-
-	glBindVertexArray(VAO);
-	// 2. copy our vertices array in a vertex buffer for OpenGL to use
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	// 3. copy our index array in a element buffer for OpenGL to use
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	// 4. then set the vertex attributes pointers
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0); 
-
-
-	const int width = 1080, height = 1920;
-	const int numPixels = width * height;
-
-	unsigned int debugSSBO;
-	glGenBuffers(1, &debugSSBO);
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, debugSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, numPixels * sizeof(float) * 4, nullptr, GL_DYNAMIC_COPY);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, debugSSBO); // binding = 0, matches shader
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
-
 	Camera cam(shaderProgram, Tuple(0,0,-2, POINT), Tuple(0,0,-1,VECTOR), 90.0);
-
+	
 	GLfloat value;
 	std::cout << std::endl << "shaderProgram: " << shaderProgram << std::endl;
 	

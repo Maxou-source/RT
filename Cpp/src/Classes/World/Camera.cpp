@@ -1,6 +1,8 @@
 #include "Camera.hpp"
 #include "rt.hpp"
 #include "Ray.hpp"
+#include <glad/glad.h>   // must be included BEFORE glfw3.h
+#include <GLFW/glfw3.h>
 
 /*====== Constructors and Destructors =====*/
 
