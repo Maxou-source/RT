@@ -1,7 +1,11 @@
 #include "OpenGLObject.hpp"
+#include <string.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
+constexpr float OpenGLObject::vertices[12];
+constexpr unsigned int OpenGLObject::indices[6];
 
 OpenGLObject::OpenGLObject()
 {
@@ -16,10 +20,10 @@ OpenGLObject::OpenGLObject()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	window = glfwCreateWindow(1080, 1920, "raytracer", nullptr, nullptr);
+	window = glfwCreateWindow(WIN_HEIGHT, WIN_HEIGHT, "raytracer", nullptr, nullptr);
 	if (!window)
 	{
-		std::cerr << "Failed to create window caca" << std::endl;
+		std::cerr << "Failed to create window" << std::endl;
 		glfwTerminate();
 		return ;
 	}
@@ -93,7 +97,7 @@ bool OpenGLObject::SetFragmentShader(const char *fileName)
 	std::ifstream shaderFile;
 	
 		
-	shaderFile.open(filename);
+	shaderFile.open(fileName);
 	std::stringstream shaderStream;
 	shaderStream << shaderFile.rdbuf();
 	shaderFile.close();
@@ -142,7 +146,7 @@ bool OpenGLObject::Whatever()
 	glEnableVertexAttribArray(0); 
 
 
-	const int width = 1080, height = 1920;
+	const int width = 400, height = 400;
 	const int numPixels = width * height;
 
 	
@@ -151,6 +155,7 @@ bool OpenGLObject::Whatever()
 	glBufferData(GL_SHADER_STORAGE_BUFFER, numPixels * sizeof(float) * 4, nullptr, GL_DYNAMIC_COPY);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, debugSSBO); // binding = 0, matches shader
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	return true;
 }
 
 

@@ -1,4 +1,5 @@
 #pragma once 
+#include "rt.hpp"
 #include <glad/glad.h>   // must be included BEFORE glfw3.h
 #include <GLFW/glfw3.h>
 
@@ -12,7 +13,7 @@ class OpenGLObject
 
 		// Setters and getters
 		unsigned int getShaderProgram() const;
-		void setShaderProgram(int);
+		void setShaderProgram(unsigned int);
 
 		const char* getInfoLog() const;
 		void setInfoLog(const char*);
@@ -51,4 +52,15 @@ void setWindow(GLFWwindow*);
 		unsigned int debugSSBO;
 
 		GLFWwindow* window;
+
+		static constexpr float vertices[12] = {
+			1.0f,  1.0f, 0.0f,  // top right
+			1.0f, -1.0f, 0.0f,  // bottom right
+			-1.0f, -1.0f, 0.0f,  // bottom left
+			-1.0f,  1.0f, 0.0f   // top left 
+		};
+		static constexpr unsigned int indices[6] = {  // note that we start from 0!
+			0, 1, 3,   // first triangle
+			1, 2, 3    // second triangle
+		};
 };

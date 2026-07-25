@@ -106,27 +106,16 @@ World buildScene1()
 	// sp1->setMatrix(m4 * m3 * m2 * m);
 	sp1->applyTransformations();
 	w->add_object(sp1);
-
-
 	return *w;
 }
 
-float vertices[] = {
-	1.0f,  1.0f, 0.0f,  // top right
-	1.0f, -1.0f, 0.0f,  // bottom right
-   -1.0f, -1.0f, 0.0f,  // bottom left
-   -1.0f,  1.0f, 0.0f   // top left 
-};
-unsigned int indices[] = {  // note that we start from 0!
-   0, 1, 3,   // first triangle
-   1, 2, 3    // second triangle
-};
+ 
 
 int main()
 {
 	/*====== GRAPHICAL TESTS======*/
 
-	OpenGLOBject OpenGLObj;
+	OpenGLObject OpenGLObj;
 
 	OpenGLObj.SetVertexShader();
 	OpenGLObj.SetFragmentShader("shader/raytracer.glsl");
@@ -177,7 +166,7 @@ int main()
 	bool one = true;
 
 	FPSCounter fpsCounter;
-	while (!glfwWindowShouldClose(window))
+	while (!glfwWindowShouldClose(OpenGLObj.getWindow()))
 	{
 		glfwPollEvents();
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -187,11 +176,11 @@ int main()
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(OpenGLObj.getWindow());
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, OpenGLObj.getDebugSSBO());
-	std::vector<float> debugOut(numPixels * 4);
+	std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4);
 	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);	
 
@@ -202,11 +191,11 @@ int main()
 	if (one == true)
 	{
 		int px = 0, py = 0;
-		while (py < height)
+		while (py < WIN_HEIGHT)
 		{
-			while (px < width)
+			while (px < WIN_WIDTH)
 			{
-				int idx = (py * width + px) * 4;
+				int idx = (py * WIN_WIDTH + px) * 4;
 				// if (debugOut[idx+3] == 0.f)
 				// {
 				// 	px++;

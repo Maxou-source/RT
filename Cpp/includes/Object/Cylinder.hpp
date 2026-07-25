@@ -3,8 +3,13 @@
 
 # include "AObject.hpp"
 
-class Cylinder : AObject
+class Cylinder : public AObject
 {
+    private:
+        vec4    orient;
+        float   width;
+        float   height;
+
     public:
         Cylinder();
         bool intersect(Ray *r);

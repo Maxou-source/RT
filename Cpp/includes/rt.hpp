@@ -7,6 +7,9 @@
 # include <vector>
 # include <array>
 
+#define WIN_HEIGHT 400
+#define WIN_WIDTH 400
+
 
 # define EPSILON 0.00001
 
