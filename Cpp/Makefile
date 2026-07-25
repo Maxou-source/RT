@@ -43,6 +43,7 @@ CLASSES_DIR			=	Classes/
 PARSE_DIR			=	Parse/
 TUPLE_DIR			=	Tuple/
 METHOD_DIR			=	Methods/
+OPENGL_HANDLING		=	OpenGLHandling/
 XCB_DIR				=	XCB/
 WORLD_DIR			=	World/
 MATRIX_DIR			=	Matrix/
@@ -62,6 +63,7 @@ INCLUDES			=	$(INCLUDE_DIR) \
 							$(XCB_DIR) \
 							$(MATRIX_DIR) \
 							$(WORLD_DIR) \
+							$(OPENGL_HANDLING) \
 							)
 
 SRC_FILES_CPP			=	$(addprefix $(SRC_DIR), \
@@ -80,6 +82,7 @@ SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
 						$(SRC_XCB) \
 						$(SRC_MATRIX) \
 						$(SRC_WORLD) \
+						$(SRC_OPENGLHANDLING) \
 						)
 
 SRC_WORLD			=	$(addprefix $(WORLD_DIR), \
@@ -114,6 +117,8 @@ SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
 						)
 
 SRC_GLAD			= $(addprefix $(GLAD_DIR), glad.c)
+
+SRC_OPENGLHANDLING	= $(addprefix $(OPENGL_HANDLING), OpenGLObject.cpp)
 
 
  #=============================================================================#

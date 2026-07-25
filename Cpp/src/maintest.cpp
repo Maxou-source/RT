@@ -15,6 +15,7 @@
 #include "Intersection.hpp"
 #include "Computations.hpp"
 #include "Camera.hpp"
+#include "OpenGLObject.hpp"
 #include <string>
 
 #include <iostream>
@@ -125,33 +126,35 @@ int main()
 {
 	/*====== GRAPHICAL TESTS======*/
 
+	OpenGLOBject OpenGLObj;
 
-
-
+	OpenGLObj.SetVertexShader();
+	OpenGLObj.SetFragmentShader("shader/raytracer.glsl");
+	OpenGLObj.Whatever();
 	
-	Camera cam(shaderProgram, Tuple(0,0,-2, POINT), Tuple(0,0,-1,VECTOR), 90.0);
+	Camera cam(OpenGLObj.getShaderProgram(), Tuple(0,0,-2, POINT), Tuple(0,0,-1,VECTOR), 90.0);
 	
 	GLfloat value;
-	std::cout << std::endl << "shaderProgram: " << shaderProgram << std::endl;
+	std::cout << std::endl << "shaderProgram: " << OpenGLObj.getShaderProgram() << std::endl;
 	
-	auto location = glGetUniformLocation(shaderProgram, "cam.half_view");
-	glGetUniformfv(shaderProgram, location, &value);
+	auto location = glGetUniformLocation(OpenGLObj.getShaderProgram(), "cam.half_view");
+	glGetUniformfv(OpenGLObj.getShaderProgram(), location, &value);
 	std::cout << "half_view value: " << value << std::endl;
 
-	location = glGetUniformLocation(shaderProgram, "cam.half_height");
-	glGetUniformfv(shaderProgram, location, &value);
+	location = glGetUniformLocation(OpenGLObj.getShaderProgram(), "cam.half_height");
+	glGetUniformfv(OpenGLObj.getShaderProgram(), location, &value);
 	std::cout << "half_view half_height: " << value << std::endl;
 
-	 location = glGetUniformLocation(shaderProgram, "cam.half_width");
-	glGetUniformfv(shaderProgram, location, &value);
+	 location = glGetUniformLocation(OpenGLObj.getShaderProgram(), "cam.half_width");
+	glGetUniformfv(OpenGLObj.getShaderProgram(), location, &value);
 	std::cout << "half_width value: " << value << std::endl;
 
 
 	GLfloat matrix[16];
 	GLfloat ok;
 
-	location = glGetUniformLocation(shaderProgram, "cam.transform");
-	glGetUniformfv(shaderProgram, location, matrix);
+	location = glGetUniformLocation(OpenGLObj.getShaderProgram(), "cam.transform");
+	glGetUniformfv(OpenGLObj.getShaderProgram(), location, matrix);
 	for (int i = 0; i < 16; i++)
 	{
 		std::cout << "" << matrix[i] << ", ";
@@ -159,8 +162,8 @@ int main()
 			std::cout << std::endl;
 	}
 	std::cout << std::endl;
-	location = glGetUniformLocation(shaderProgram, "cam.inv_transform");
-	glGetUniformfv(shaderProgram, location, matrix); 
+	location = glGetUniformLocation(OpenGLObj.getShaderProgram(), "cam.inv_transform");
+	glGetUniformfv(OpenGLObj.getShaderProgram(), location, matrix); 
 	std::cout << "transform matrix: " << matrix[0] << ", " << matrix[1] << ", " << matrix[2] << ", " << matrix[3] << std::endl;
 	for (int i = 0; i < 16; i++)
 	{
@@ -179,15 +182,15 @@ int main()
 		glfwPollEvents();
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
+		glUseProgram(OpenGLObj.getShaderProgram());
+		glBindVertexArray(OpenGLObj.getVAO());
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 
 		glfwSwapBuffers(window);
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, debugSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, OpenGLObj.getDebugSSBO());
 	std::vector<float> debugOut(numPixels * 4);
 	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);	

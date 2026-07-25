@@ -48,14 +48,12 @@ OpenGLObject::OpenGLObject()
 	   1, 2, 3    // second triangle
 	};
 
-	unsigned int VBO;
 	glGenBuffers(1, &VBO);  
 	glBindBuffer(GL_ARRAY_BUFFER, VBO); 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0); 
 
-	unsigned int EBO;
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -95,7 +93,7 @@ bool OpenGLObject::SetFragmentShader(const char *fileName)
 	std::ifstream shaderFile;
 	
 		
-	shaderFile.open("shader/raytracer.glsl");
+	shaderFile.open(filename);
 	std::stringstream shaderStream;
 	shaderStream << shaderFile.rdbuf();
 	shaderFile.close();
@@ -121,7 +119,6 @@ bool OpenGLObject::SetFragmentShader(const char *fileName)
 
 bool OpenGLObject::Whatever()
 {
-	unsigned int shaderProgram;
 	shaderProgram = glCreateProgram();
 
 	glAttachShader(shaderProgram, vertexShader);
@@ -130,7 +127,6 @@ bool OpenGLObject::Whatever()
 
 	glUseProgram(shaderProgram);
 
-	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);  
 
 
@@ -149,7 +145,7 @@ bool OpenGLObject::Whatever()
 	const int width = 1080, height = 1920;
 	const int numPixels = width * height;
 
-	unsigned int debugSSBO;
+	
 	glGenBuffers(1, &debugSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, debugSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, numPixels * sizeof(float) * 4, nullptr, GL_DYNAMIC_COPY);
@@ -158,4 +154,89 @@ bool OpenGLObject::Whatever()
 }
 
 
+/*============= SETTERS && GETTERS ===========*/
+
+
+const char* OpenGLObject::getInfoLog() const {
+    return infoLog;
+}
+
+void OpenGLObject::setInfoLog(const char* log) {
+    if (log != nullptr) {
+        strncpy(infoLog, log, sizeof(infoLog) - 1);
+        infoLog[sizeof(infoLog) - 1] = '\0'; // Ensure null termination
+    }
+}
+
+// vertexShader getters and setters
+unsigned int OpenGLObject::getVertexShader() const {
+    return vertexShader;
+}
+
+void OpenGLObject::setVertexShader(unsigned int shader) {
+    vertexShader = shader;
+}
+
+// fragmentShader getters and setters
+unsigned int OpenGLObject::getFragmentShader() const {
+    return fragmentShader;
+}
+
+void OpenGLObject::setFragmentShader(unsigned int shader) {
+    fragmentShader = shader;
+}
+
+// shaderProgram getters and setters
+unsigned int OpenGLObject::getShaderProgram() const {
+    return shaderProgram;
+}
+
+void OpenGLObject::setShaderProgram(unsigned int program) {
+    shaderProgram = program;
+}
+
+// VBO getters and setters
+unsigned int OpenGLObject::getVBO() const {
+    return VBO;
+}
+
+void OpenGLObject::setVBO(unsigned int vbo) {
+    VBO = vbo;
+}
+
+// EBO getters and setters
+unsigned int OpenGLObject::getEBO() const {
+    return EBO;
+}
+
+void OpenGLObject::setEBO(unsigned int ebo) {
+    EBO = ebo;
+}
+
+// VAO getters and setters
+unsigned int OpenGLObject::getVAO() const {
+    return VAO;
+}
+
+void OpenGLObject::setVAO(unsigned int vao) {
+    VAO = vao;
+}
+
+// debugSSBO getters and setters
+unsigned int OpenGLObject::getDebugSSBO() const {
+    return debugSSBO;
+}
+
+void OpenGLObject::setDebugSSBO(unsigned int ssbo) {
+    debugSSBO = ssbo;
+}
+
+// window getters and setters
+GLFWwindow* OpenGLObject::getWindow() const {
+    return window;
+}
+
+void OpenGLObject::setWindow(GLFWwindow* win) {
+    window = win;
+}
 
