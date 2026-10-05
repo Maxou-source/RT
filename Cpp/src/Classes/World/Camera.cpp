@@ -95,7 +95,7 @@ void	Camera::rayForPixel(int px, int py, Ray *r) {
 
 Camera::Camera(unsigned int shaderProgram, const Tuple& pov, const Tuple& orient, float f) {
 	half_view = (f * PI) / 180.0;
-	float aspect_ratio = 400 / 400;
+	float aspect_ratio = WIN_WIDTH / WIN_HEIGHT;
 	if (aspect_ratio >= 1)
 	{
 		half_width = half_view;
@@ -106,7 +106,7 @@ Camera::Camera(unsigned int shaderProgram, const Tuple& pov, const Tuple& orient
 		half_width = half_view * aspect_ratio;
 		half_height = half_view;
 	}
-	pixel_size = (half_width * 2) / 400;
+	pixel_size = (half_width * 2) / WIN_WIDTH;
 	std::cout << "wwwwwwwwwwwwwwwwhalf_view = " << half_width << std::endl;
 	std::cout << "wwwwwwwwwwwwwwwwpixel_size = " << pixel_size << std::endl;
 	// std::cout << "pixel size " << pixel_size << std::endl;
@@ -128,6 +128,35 @@ Camera::Camera(unsigned int shaderProgram, const Tuple& pov, const Tuple& orient
 
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "cam.transform"),1, GL_TRUE, (float *)(&matmat) );
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "cam.inv_transform"),1, GL_TRUE, (float *)(&invmat) );
+	// viewpoint = pov;
+	// orientation = orient;
+	// fov = f;
+}
+
+Camera::Camera(const Tuple& pov, const Tuple& orient, float f) {
+	half_view = (f * PI) / 180.0;
+	float aspect_ratio = WIN_WIDTH / WIN_HEIGHT;
+	if (aspect_ratio >= 1)
+	{
+		half_width = half_view;
+		half_height = half_view / aspect_ratio;
+	}
+	else
+	{
+		half_width = half_view * aspect_ratio;
+		half_height = half_view;
+	}
+	pixel_size = (half_width * 2) / WIN_WIDTH;
+	std::cout << "wwwwwwwwwwwwwwwwhalf_view = " << half_width << std::endl;
+	std::cout << "wwwwwwwwwwwwwwwwpixel_size = " << pixel_size << std::endl;
+	// std::cout << "pixel size " << pixel_size << std::endl;
+	// std::cout << "aspect  " << aspect_ratio << std::endl;
+	// std::cout << "half_view  " << half_view << std::endl;
+	// std::cout << "half_width  " << half_width << std::endl;
+	// std::cout << "half_height " << half_height << std::endl;
+	transform = Matrix::view_transform(pov,
+			Tuple::normalize(orient), Tuple(0, 1, 0, 0));
+	inv_transform = transform.invertedMatrix();
 	// viewpoint = pov;
 	// orientation = orient;
 	// fov = f;

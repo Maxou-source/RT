@@ -22,7 +22,7 @@ FLAGS				=	$(DBFLAGS) $(CFLAGS) $(INCLUDES_FLAGED) $(CDFLAGS)
 
 PKG_CONFIG = pkg-config
 CFLAGS				=	-gdwarf-4  $(shell $(PKG_CONFIG) --cflags xcb) -fenable-matrix
-LDFLAGS = $(shell $(PKG_CONFIG) --libs xcb) -lglfw -lGL -ldl -lpthread
+LDFLAGS = $(shell $(PKG_CONFIG) --libs xcb) -lglfw -lGL -ldl -g -O0 -lpthread -lglfw -lvulkan -ldl -lpthread -lX11 -D NDEBUG=1 -DGLFW_INCLUDE_VULKAN
 
 DBFLAGS				=	-g3
 
@@ -47,7 +47,8 @@ OPENGL_HANDLING		=	OpenGLHandling/
 XCB_DIR				=	XCB/
 WORLD_DIR			=	World/
 MATRIX_DIR			=	Matrix/
-GLAD_DIR			=   glad/
+GLAD_DIR			=	glad/
+VULKAN_APP_DIR		=	VulkanApp
 
 INCLUDE_DIR			=	includes/
 
@@ -64,10 +65,11 @@ INCLUDES			=	$(INCLUDE_DIR) \
 							$(MATRIX_DIR) \
 							$(WORLD_DIR) \
 							$(OPENGL_HANDLING) \
+							$(VULKAN_APP_DIR) \
 							)
 
 SRC_FILES_CPP			=	$(addprefix $(SRC_DIR), \
-						maintest.cpp \
+						mainfullcpu.cpp \
 						$(SRC_CLASSES) \
 						)
 

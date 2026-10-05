@@ -9,6 +9,10 @@ constexpr unsigned int OpenGLObject::indices[6];
 
 OpenGLObject::OpenGLObject()
 {
+	glfwSetErrorCallback([](int code, const char* desc) {
+	std::cerr << "GLFW error " << code << ": " << desc << std::endl;
+	});
+
 	if (!glfwInit())
 	{
 		std::cerr << "Failed to init GLFW" << std::endl;
@@ -17,8 +21,8 @@ OpenGLObject::OpenGLObject()
 	// setting up graphic stuff
 
 	// Request an OpenGL 4.3+ core context (compute shaders need 4.3 minimum)
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	window = glfwCreateWindow(WIN_HEIGHT, WIN_HEIGHT, "raytracer", nullptr, nullptr);
 	if (!window)

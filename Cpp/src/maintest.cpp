@@ -121,10 +121,10 @@ int main()
 	OpenGLObj.SetFragmentShader("shader/raytracer.glsl");
 	OpenGLObj.Whatever();
 	
-	Camera cam(OpenGLObj.getShaderProgram(), Tuple(0,0,-2, POINT), Tuple(0,0,-1,VECTOR), 90.0);
+	Camera cam(OpenGLObj.getShaderProgram(), Tuple(0,0,-10, POINT), Tuple(0,0,-1,VECTOR), 90.0);
 	
 	GLfloat value;
-	std::cout << std::endl << "shaderProgram: " << OpenGLObj.getShaderProgram() << std::endl;
+	std::cout << std::endl << "shaderProgra   m: " << OpenGLObj.getShaderProgram() << std::endl;
 	
 	auto location = glGetUniformLocation(OpenGLObj.getShaderProgram(), "cam.half_view");
 	glGetUniformfv(OpenGLObj.getShaderProgram(), location, &value);
@@ -287,7 +287,7 @@ int main()
 		// need to check return 
 		xcb_flush(xcb.connection);
 	}
-	// xcb.loop();
+	xcb.loop();
 
 	/*======== MATH TESTS=========*/
 	// t_f4 a = {8, 7, -6, -3};

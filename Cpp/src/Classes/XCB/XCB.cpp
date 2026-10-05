@@ -60,8 +60,8 @@ bool XCB::createWindowAndGC()
 		XCB_COPY_FROM_PARENT,	// Depth
 		window,					// Window ID
 		screen->root,			// Parent window
-		0, 0,				// x, y position
-		400, 400,				// Width, height
+		0, 0,					// x, y position
+		WIN_WIDTH, WIN_HEIGHT,	// Width, height
 		0,						// Border width
 		XCB_WINDOW_CLASS_INPUT_OUTPUT, // Window class
 		screen->root_visual,	// Visual

@@ -29,27 +29,13 @@ std::set<Intersection> Sphere::intersect(Ray *r)
 		return myset;
 	Intersection t1(((-b - sqrtf(discriminant)) / (2 * a)), this);
 	Intersection t2(((-b + sqrtf(discriminant)) / (2 * a)), this);
-	myset.insert(t1);
-	myset.insert(t2);
+	if (t1.getT() > 0)
+		myset.insert(t1);
+	if (t2.getT() > 0)
+		myset.insert(t2);
 	return myset;
 }
-/*function normal_at(sphere, p)
-return normalize(p - point(0, 0, 0))*/
 
-// t_f4	normal_at(t_object *m, t_f4 p)
-// {
-// 	t_f4	object_point;
-// 	t_f4	object_normal;
-// 	t_f4	world_normal;
-// 	t_f4	tmp;
-
-// 	object_point = matrix_tuple(m->i_m, p);
-// 	object_normal = object_point - point(0, 0, 0, 1);
-// 	world_normal = matrix_tuple(m->t_m, object_normal);
-// 	tmp = normalization(world_normal);
-// 	world_normal.w = 0;
-// 	return (tmp);
-// }
 Tuple	Sphere::normal(const Tuple &t)
 {
 	// Tuple object_normal = (t * i_m) - Tuple(0, 0, 0, POINT);

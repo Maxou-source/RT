@@ -7,9 +7,18 @@
 # include <vector>
 # include <array>
 
-#define WIN_HEIGHT 400
-#define WIN_WIDTH 400
+#define WIN_HEIGHT 800
+#define WIN_WIDTH 1000
 
+const std::vector<const char*> validationLayers = {
+    "VK_LAYER_KHRONOS_validation"
+};
+
+#ifdef NDEBUG
+    const bool enableValidationLayers = false;
+#else
+    const bool enableValidationLayers = true;
+#endif
 
 # define EPSILON 0.00001
 

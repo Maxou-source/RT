@@ -18,7 +18,7 @@ Light::Light()
 
 /*===== Methods =====*/
 
-Tuple Light::lighting(t_material mat, const Tuple& point, const Tuple& eyev, const Tuple& normalv)
+Tuple	Light::lighting(t_material mat, const Tuple& point, const Tuple& eyev, const Tuple& normalv)
 {
 	Tuple eff_color = mat.color * color;
 	Tuple lightv = Tuple::normalize(position - point);
@@ -28,7 +28,7 @@ Tuple Light::lighting(t_material mat, const Tuple& point, const Tuple& eyev, con
 	{
 		return new_ambient;
 	}
-	else 
+	else
 	{
 		Tuple diffuset = eff_color * 0.9 * light_dot_normal;
 		Tuple reflectv = Tuple::reflect(Tuple::negating(lightv), normalv);

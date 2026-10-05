@@ -63,11 +63,11 @@ Ray	rayForPixel(int px, int py) {
 	r.direction = (normalize(pixel - r.origin));
 	// r->direction = normalization(pixel - r->origin);
 	// r->direction.w = 0;
-	 return r;
+	return r;
 }
 
 float intersect_sp(Ray r, Sphere sphere)
- {
+{
 	Ray newR;
 	newR.origin = r.origin * sphere.i_matrix;
 	newR.direction = r.direction * sphere.i_matrix;
