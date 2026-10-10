@@ -10,9 +10,13 @@
 #define WIN_HEIGHT 800
 #define WIN_WIDTH 1000
 
-const std::vector<const char*> validationLayers = {
-    "VK_LAYER_KHRONOS_validation"
-};
+namespace colorprint {
+    constexpr const char* reset  = "\033[0m";
+    constexpr const char* red    = "\033[31m";
+    constexpr const char* green  = "\033[32m";
+    constexpr const char* yellow = "\033[33m";
+    constexpr const char* blue   = "\033[34m";
+}
 
 #ifdef NDEBUG
     const bool enableValidationLayers = false;

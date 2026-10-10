@@ -107,30 +107,24 @@ Camera::Camera(unsigned int shaderProgram, const Tuple& pov, const Tuple& orient
 		half_height = half_view;
 	}
 	pixel_size = (half_width * 2) / WIN_WIDTH;
-	std::cout << "wwwwwwwwwwwwwwwwhalf_view = " << half_width << std::endl;
-	std::cout << "wwwwwwwwwwwwwwwwpixel_size = " << pixel_size << std::endl;
-	// std::cout << "pixel size " << pixel_size << std::endl;
-	// std::cout << "aspect  " << aspect_ratio << std::endl;
-	// std::cout << "half_view  " << half_view << std::endl;
-	// std::cout << "half_width  " << half_width << std::endl;
-	// std::cout << "half_height " << half_height << std::endl;
+	std::cout << "(FROM CPU) half_view = " << half_width << std::endl;
+	std::cout << "(FROM CPU) pixel_size = " << pixel_size << std::endl;
+
 	transform = Matrix::view_transform(pov,
 			Tuple::normalize(orient), Tuple(0, 1, 0, 0));
-	transform.display();
+
 	inv_transform = transform.invertedMatrix();
-	inv_transform.display();
+
 	glUniform1f(glGetUniformLocation(shaderProgram, "cam.half_view"), half_view);
 	glUniform1f(glGetUniformLocation(shaderProgram, "cam.half_height"), half_height);
 	glUniform1f(glGetUniformLocation(shaderProgram, "cam.half_width"), half_width);
 	glUniform1f(glGetUniformLocation(shaderProgram, "cam.pixel_size"), pixel_size);
+
 	auto matmat = transform.getMatrix();
 	auto invmat = inv_transform.getMatrix();
-
+	transform.display();
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "cam.transform"),1, GL_TRUE, (float *)(&matmat) );
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "cam.inv_transform"),1, GL_TRUE, (float *)(&invmat) );
-	// viewpoint = pov;
-	// orientation = orient;
-	// fov = f;
 }
 
 Camera::Camera(const Tuple& pov, const Tuple& orient, float f) {
@@ -147,16 +141,16 @@ Camera::Camera(const Tuple& pov, const Tuple& orient, float f) {
 		half_height = half_view;
 	}
 	pixel_size = (half_width * 2) / WIN_WIDTH;
-	std::cout << "wwwwwwwwwwwwwwwwhalf_view = " << half_width << std::endl;
-	std::cout << "wwwwwwwwwwwwwwwwpixel_size = " << pixel_size << std::endl;
-	// std::cout << "pixel size " << pixel_size << std::endl;
-	// std::cout << "aspect  " << aspect_ratio << std::endl;
-	// std::cout << "half_view  " << half_view << std::endl;
-	// std::cout << "half_width  " << half_width << std::endl;
-	// std::cout << "half_height " << half_height << std::endl;
+	std::cout << colorprint::green << "CAMERA (CPU)" << colorprint::reset << std::flush;
+	std::cout << " half_width: " << half_width << std::flush;
+	std::cout << " half_height: " << half_height << std::flush;
+	std::cout << " half_view: " << half_view << std::flush;
+	std::cout << " pixel_size: " << pixel_size << std::endl;
 	transform = Matrix::view_transform(pov,
 			Tuple::normalize(orient), Tuple(0, 1, 0, 0));
 	inv_transform = transform.invertedMatrix();
+	transform.display();
+	inv_transform.display();
 	// viewpoint = pov;
 	// orientation = orient;
 	// fov = f;

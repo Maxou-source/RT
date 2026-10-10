@@ -73,15 +73,16 @@ World buildScene1()
 	// sp1->setMatrix((m * m4) * (m2 * m3));
 	// sp1->setMatrix(m4 * m3 * m2 * m);
 	sp1->applyTransformations();
+	sp1->getIMatrix().display();
 	w->add_object(sp1);
 	return *w;
 }
 
 int main()
 {
-	VulkanApp vApp;
+	// VulkanApp vApp;
 
-	vApp.run();
+	// vApp.run();
 
 	XCB xcb;
 	xcb.setupConnection();

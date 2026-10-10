@@ -3,9 +3,6 @@
 out vec4 FragColor;
 
 struct camera {
-	vec3 position;
-	vec3 direction;
-
 	float	half_width;
 	float	half_height;
 	float	half_view;
@@ -52,8 +49,8 @@ Ray	rayForPixel(int px, int py) {
 	vec4	pixel;
 	Ray r;
 
-	world_x = cam.half_width - ((float(px) + 0.5) * cam.pixel_size);
-	world_y = cam.half_height - ((float(py) + 0.5) * cam.pixel_size);
+	world_x = cam.half_width - ((float(px)) * cam.pixel_size);
+	world_y = cam.half_height - ((float(py)) * cam.pixel_size);
 	world_point = vec4(world_x, world_y, -1.0, 1.0);
 	pixel = world_point * cam.inv_transform;
 	// pixel = matrix_tuple(inv_transform, world_point);
@@ -76,7 +73,7 @@ float intersect_sp(Ray r, Sphere sphere)
 	vec4 sphere_to_ray = newR.origin - vec4(0,0,0,1);
 
 	float a = dot(direction, direction);
-	float b = 2 * (dot(sphere_to_ray, direction));
+	float b = 2 * (dot(direction, sphere_to_ray));
 	float c = dot(sphere_to_ray, sphere_to_ray) - 1;
 
 	float discriminant = (b * b) - (4 * a * c);
@@ -84,7 +81,14 @@ float intersect_sp(Ray r, Sphere sphere)
 	if (discriminant < 0) {
 		return 0.0f;
 	}
-	return ((-b - sqrt(discriminant)) / (2 * a));
+	// return (-b - sqrtf(discriminant)) / (2 * a);
+	float t1 = (-b - sqrt(discriminant)) / (2 * a);
+	float t2 = (-b + sqrt(discriminant)) / (2 * a);
+	if (t1 > 0)
+		return t1;
+	if (t2 > 0)
+		return t2;
+	return 0.0f;
 
 }
 
@@ -101,11 +105,11 @@ vec4 lighting(Material mat, PointLight lgt, vec4 point, vec4 eyev, vec4 normalv)
 	int px = int(gl_FragCoord.x);
 	int py = int(gl_FragCoord.y);
 	int index = py * 1080 + px; 
-		debugData[index] = vec4(mat.color.xyz, 1.0);
+		// debugData[index] = vec4(mat.color.xyz, 1.0);
 
 	if (light_dot_normal < 0.0)
 	{
-		debugData[index] = vec4(mat.color.xyz, 2.0);
+		// debugData[index] = vec4(mat.color.xyz, 2.0);
 		return new_ambient;
 	}
 	else
@@ -119,12 +123,12 @@ vec4 lighting(Material mat, PointLight lgt, vec4 point, vec4 eyev, vec4 normalv)
 
 		if (reflect_dot_eye < 0.0)
 		{
-			debugData[index] = vec4(mat.color.xyz, 3.0);
+			// debugData[index] = vec4(mat.color.xyz, 3.0);
 			vec4 new_specular = vec4(0, 0, 0, 0);
 			return new_ambient + diffuset + new_specular;
 		}
 		
-		debugData[index] = vec4(mat.color.xyz, 4.0);
+		// debugData[index] = vec4(mat.color.xyz, 4.0);
 		float factor = pow(reflect_dot_eye, lgt.shininess);
 		vec4 specularv = lgt.color * lgt.specular * factor;
 		return new_ambient + diffuset + specularv;
@@ -133,6 +137,21 @@ vec4 lighting(Material mat, PointLight lgt, vec4 point, vec4 eyev, vec4 normalv)
 
 void main()
 {
+	int px = int(gl_FragCoord.x);
+    int py = int(gl_FragCoord.y);
+    int index = py * 1000 + px; // one slot per pixel
+
+	// debugData[index] = normalv;
+	// debugData[index+1] = eyev;
+	// debugData[index+2] = point;
+	// debugData[index+3] = vec4(t);
+	// debugData[index+4] = r.direction;
+	debugData[index] = vec4(cam.half_width, cam.half_height, cam.half_view, cam.pixel_size);
+	debugData[index + 1] = cam.transform[0];
+	debugData[index + 2] = cam.transform[1];
+	debugData[index + 3] = cam.transform[2];
+	debugData[index + 4] = cam.transform[3];
+
 
 	Sphere s;
 	s.radius = 1.0;
@@ -151,10 +170,6 @@ void main()
 	light.shininess = 200.0;
 
 
-	int px = int(gl_FragCoord.x);
-    int py = int(gl_FragCoord.y);
-    int index = py * 1080 + px; // one slot per pixel
-
     Ray r = rayForPixel(px, py);
 
 	// r.origin = vec4(float(px)/200 - 1, float(py)/200 -1, -4, 1.0);
@@ -172,23 +187,13 @@ void main()
 	vec4 eyev = -r.direction;
 
 	vec4 normalv = normalize(point - s.center);
-	// if (dot(eyev, normalv) < 0)
-	// {
-	// 	inside = true;
-	// 	normalv.negating();
-	// }
-	// else
-	// 	inside = false;
 	point = point + normalv* 0.00001 * 100.0;
 
 	FragColor = lighting(mat, light,point, eyev, normalv);
 
-	if (px == 200 && py == 200)
-	{
-		debugData[index] = normalv;
-		debugData[index+1] = eyev;
-		debugData[index+2] = point;
-		debugData[index+3] = vec4(t);
-		debugData[index+4] = r.direction;
-	}
+	debugData[index] = normalv;
+	debugData[index+1] = eyev;
+	debugData[index+2] = point;
+	debugData[index+3] = vec4(t);
+	debugData[index+4] = r.direction;
 }

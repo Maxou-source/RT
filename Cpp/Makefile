@@ -69,7 +69,7 @@ INCLUDES			=	$(INCLUDE_DIR) \
 							)
 
 SRC_FILES_CPP			=	$(addprefix $(SRC_DIR), \
-						mainfullcpu.cpp \
+						maintest.cpp \
 						$(SRC_CLASSES) \
 						)
 

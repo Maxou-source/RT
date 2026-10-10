@@ -57,7 +57,7 @@ int main(int ac, char **av)
         window,                  // Window ID
         screen->root,            // Parent window
         100, 100,                // x, y position
-        400, 300,                // Width, height
+        WIN_WIDTH, WIN_HEIGHT,                // Width, height
         10,                      // Border width
         XCB_WINDOW_CLASS_INPUT_OUTPUT, // Window class
         screen->root_visual,     // Visual

@@ -150,13 +150,16 @@ bool OpenGLObject::Whatever()
 	glEnableVertexAttribArray(0); 
 
 
-	const int width = 400, height = 400;
+	const int width = WIN_WIDTH, height = WIN_HEIGHT;
 	const int numPixels = width * height;
 
 	
 	glGenBuffers(1, &debugSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, debugSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, numPixels * sizeof(float) * 4, nullptr, GL_DYNAMIC_COPY);
+	const int slotsPerPixel = 5;
+	glBufferData(GL_SHADER_STORAGE_BUFFER,
+				(size_t)numPixels * slotsPerPixel * sizeof(float) * 4,
+				nullptr, GL_DYNAMIC_READ);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, debugSSBO); // binding = 0, matches shader
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	return true;
