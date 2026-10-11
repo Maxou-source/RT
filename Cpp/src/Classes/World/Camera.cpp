@@ -84,18 +84,14 @@ void	Camera::rayForPixel(int px, int py, Ray *r) {
 	world_y = half_height - (((float)py + 0.5) * pixel_size);
 	world_point = Tuple(world_x, world_y, -1.0, 1.0);
 	pixel = world_point * inv_transform;
-	// pixel = matrix_tuple(inv_transform, world_point);
 	r->setOrigin(Tuple(0,0,0,1.0) * inv_transform);
-	// r->origin.w = 1.0;
-	// r->origin = matrix_tuple(inv_transform, point(0, 0, 0, 1.0));
 	r->setDirection(Tuple::normalize(pixel - r->getOrigin()));
-	// r->direction = normalization(pixel - r->origin);
-	// r->direction.w = 0;
 }
 
 Camera::Camera(unsigned int shaderProgram, const Tuple& pov, const Tuple& orient, float f) {
 	half_view = (f * PI) / 180.0;
-	float aspect_ratio = WIN_WIDTH / WIN_HEIGHT;
+	float aspect_ratio = (float)WIN_WIDTH / (float)WIN_HEIGHT;
+	std::cout << "aspect _ratio "  << aspect_ratio << std::endl;
 	if (aspect_ratio >= 1)
 	{
 		half_width = half_view;
@@ -106,7 +102,7 @@ Camera::Camera(unsigned int shaderProgram, const Tuple& pov, const Tuple& orient
 		half_width = half_view * aspect_ratio;
 		half_height = half_view;
 	}
-	pixel_size = (half_width * 2) / WIN_WIDTH;
+	pixel_size = (half_width * 2) / (float)WIN_WIDTH;
 	std::cout << "(FROM CPU) half_view = " << half_width << std::endl;
 	std::cout << "(FROM CPU) pixel_size = " << pixel_size << std::endl;
 

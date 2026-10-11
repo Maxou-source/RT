@@ -24,7 +24,7 @@ OpenGLObject::OpenGLObject()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	window = glfwCreateWindow(WIN_HEIGHT, WIN_HEIGHT, "raytracer", nullptr, nullptr);
+	window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, "raytracer", nullptr, nullptr);
 	if (!window)
 	{
 		std::cerr << "Failed to create window" << std::endl;

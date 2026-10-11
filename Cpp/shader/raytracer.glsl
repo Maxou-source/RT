@@ -49,17 +49,12 @@ Ray	rayForPixel(int px, int py) {
 	vec4	pixel;
 	Ray r;
 
-	world_x = cam.half_width - ((float(px)) * cam.pixel_size);
-	world_y = cam.half_height - ((float(py)) * cam.pixel_size);
+	world_x = cam.half_height - ((float(px)) * cam.pixel_size);
+	world_y = cam.half_width - ((float(py)) * cam.pixel_size);
 	world_point = vec4(world_x, world_y, -1.0, 1.0);
 	pixel = world_point * cam.inv_transform;
-	// pixel = matrix_tuple(inv_transform, world_point);
 	r.origin = (vec4(0,0,0,1.0) * cam.inv_transform);
-	// r->origin.w = 1.0;
-	// r->origin = matrix_tuple(inv_transform, point(0, 0, 0, 1.0));
 	r.direction = (normalize(pixel - r.origin));
-	// r->direction = normalization(pixel - r->origin);
-	// r->direction.w = 0;
 	return r;
 }
 
@@ -104,7 +99,6 @@ vec4 lighting(Material mat, PointLight lgt, vec4 point, vec4 eyev, vec4 normalv)
 
 	int px = int(gl_FragCoord.x);
 	int py = int(gl_FragCoord.y);
-	int index = py * 1080 + px; 
 		// debugData[index] = vec4(mat.color.xyz, 1.0);
 
 	if (light_dot_normal < 0.0)
@@ -141,16 +135,16 @@ void main()
     int py = int(gl_FragCoord.y);
     int index = py * 1000 + px; // one slot per pixel
 
-	// debugData[index] = normalv;
-	// debugData[index+1] = eyev;
-	// debugData[index+2] = point;
-	// debugData[index+3] = vec4(t);
-	// debugData[index+4] = r.direction;
-	debugData[index] = vec4(cam.half_width, cam.half_height, cam.half_view, cam.pixel_size);
-	debugData[index + 1] = cam.transform[0];
-	debugData[index + 2] = cam.transform[1];
-	debugData[index + 3] = cam.transform[2];
-	debugData[index + 4] = cam.transform[3];
+	if (px == 200 && py == 200)
+	{
+		debugData[index] = vec4(cam.half_width, cam.half_height, cam.half_view, cam.pixel_size);
+		debugData[index + 1] = cam.transform[0];
+		debugData[index + 2] = cam.transform[1];
+		debugData[index + 3] = cam.transform[2];
+		debugData[index + 4] = cam.transform[3];
+		FragColor = vec4(1, 1, 1, 1);
+		return;
+	}
 
 
 	Sphere s;
@@ -191,9 +185,9 @@ void main()
 
 	FragColor = lighting(mat, light,point, eyev, normalv);
 
-	debugData[index] = normalv;
-	debugData[index+1] = eyev;
-	debugData[index+2] = point;
-	debugData[index+3] = vec4(t);
-	debugData[index+4] = r.direction;
+	// debugData[index] = normalv;
+	// debugData[index+1] = eyev;
+	// debugData[index+2] = point;
+	// debugData[index+3] = vec4(t);
+	// debugData[index+4] = r.direction;
 }

@@ -215,7 +215,7 @@ int main()
 						continue;
 					}
 					std::cout << colorprint::green <<"CAMERA " << colorprint::reset << "half_width: " << debugOut[idx] << " half_height: " << debugOut[idx+1] << " half_view: " << debugOut[idx+2] << " pixel_size: " << debugOut[idx+3] << std::endl;
-					printMat4(&debugOut[idx+1], "CAMERA TRANSFORM");
+					printMat4(&debugOut[idx+4], "CAMERA TRANSFORM");
 					px++;
 					// std::cout << "normalv: " << debugOut[idx] << ", " << debugOut[idx+1] << ", " << debugOut[idx+2] << ", " << debugOut[idx+3] << std::endl;
 					// idx = idx + 4;
