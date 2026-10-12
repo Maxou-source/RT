@@ -197,9 +197,9 @@ int main()
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 		
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, OpenGLObj.getDebugSSBO());
-		std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 5);
+		std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 8);
 		glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);	
+		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		
 		if (one == true)
 		{
@@ -214,19 +214,17 @@ int main()
 						px++;
 						continue;
 					}
-					std::cout << colorprint::green <<"CAMERA " << colorprint::reset << "half_width: " << debugOut[idx] << " half_height: " << debugOut[idx+1] << " half_view: " << debugOut[idx+2] << " pixel_size: " << debugOut[idx+3] << std::endl;
-					printMat4(&debugOut[idx+4], "CAMERA TRANSFORM");
+					std::cout << colorprint::green <<"CAMERA :: " << colorprint::reset << "half_width: " << debugOut[idx] << " half_height: " << debugOut[idx+1] << " half_view: " << debugOut[idx+2] << " pixel_size: " << debugOut[idx+3] << std::endl;
+					idx = idx + 4;
+					printMat4(&debugOut[idx], "CAMERA TRANSFORM :: ");
+					idx = idx + 16;
+					std::cout << colorprint::red << "RAY_FOR_PIXEL :: " << colorprint::reset << std::endl;
+					std::cout << " world_point x " << debugOut[idx+1] << ", y" << debugOut[idx+2] << ", z" << debugOut[idx+3] << "w " << debugOut[idx+4] << std::endl;
+					idx = idx + 4;
+					std::cout << " r.origin x " << debugOut[idx+1] << ", y" << debugOut[idx+2] << ", z" << debugOut[idx+3] << "w " << debugOut[idx+4] << std::endl;
+					idx = idx + 4;
+					std::cout << " r.direction x " << debugOut[idx+1] << ", y" << debugOut[idx+2] << ", z" << debugOut[idx+3] << "w " << debugOut[idx+4] << std::endl;
 					px++;
-					// std::cout << "normalv: " << debugOut[idx] << ", " << debugOut[idx+1] << ", " << debugOut[idx+2] << ", " << debugOut[idx+3] << std::endl;
-					// idx = idx + 4;
-					// std::cout << "eyev: " << debugOut[idx] << ", " << debugOut[idx+1] << ", " << debugOut[idx+2] << ", " << debugOut[idx+3] << std::endl;
-					// idx+=4;
-					// std::cout << "point: " << debugOut[idx] << ", " << debugOut[idx+1] << ", " << debugOut[idx+2] << ", " << debugOut[idx+3] << std::endl;
-					// idx+=4;
-					// std::cout << "t: " << debugOut[idx] << ", " << debugOut[idx+1] << ", " << debugOut[idx+2] << ", " << debugOut[idx+3] << std::endl;
-					// idx+=4;
-					// std::cout << "direction: " << debugOut[idx] << ", " << debugOut[idx+1] << ", " << debugOut[idx+2] << ", " << debugOut[idx+3] << std::endl;
-					// idx+=4;
 				}
 				px = 0;
 				py++;

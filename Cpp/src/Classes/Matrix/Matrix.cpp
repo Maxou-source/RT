@@ -311,6 +311,7 @@ Matrix Matrix::view_transform(const Tuple& from, const Tuple& forward, const Tup
 		if (leftv == Tuple(0,0,0,0))
 			leftv = forward.cross_product(Tuple(1,0,0,0));
 	}
+	std::cout << "leftv " << leftv << std::endl;
 	Tuple true_up = leftv.cross_product(forward);
 	Matrix m;
 	m.matrix[0][0] = leftv.getValue().x;
