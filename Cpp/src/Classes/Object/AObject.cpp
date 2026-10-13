@@ -46,5 +46,20 @@ void		AObject::setMatrix(const Matrix &ma) {m = ma;}
 void		AObject::setIMatrix(Matrix &ma) {i_m = ma;}
 Matrix&		AObject::getMatrix() {return m;};
 Matrix&		AObject::getIMatrix() {return i_m;};
-Tuple AObject::getColor() const {return color;}
-void AObject::setColor(const Tuple& t) { color = t;}
+// Tuple AObject::getColor() const {return color;}
+// void AObject::setColor(const Tuple& t) { color = t;}
+
+void AObject::setColor(const t_clr& c) {color = c;}
+void AObject::setDiameter(const float d) {diameter = d;}
+void AObject::setSpecular(const float s) {specular = s;}
+void AObject::setPattern(const bool b) {pattern = b;}
+
+t_clr AObject::getColor() const {return color;}
+float AObject::getDiameter() const {return diameter;}
+float AObject::getSpecular() const {return specular;}
+bool  AObject::getPattern() const {return pattern;}
+		// t_clr		color;
+		// float		diameter;
+		// float		specular;
+		// bool		pattern;
+

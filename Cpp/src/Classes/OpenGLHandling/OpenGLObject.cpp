@@ -99,10 +99,9 @@ bool OpenGLObject::SetFragmentShader(const char *fileName)
 {
 
 	std::ifstream shaderFile;
-	
-		
-	shaderFile.open(fileName);
 	std::stringstream shaderStream;
+
+	shaderFile.open(fileName);
 	shaderStream << shaderFile.rdbuf();
 	shaderFile.close();
 	std::string fragment = shaderStream.str();
@@ -112,7 +111,7 @@ bool OpenGLObject::SetFragmentShader(const char *fileName)
 	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragmentShader);
 
-	int  success;
+	int	success;
 
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
 

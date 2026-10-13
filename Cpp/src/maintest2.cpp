@@ -21,11 +21,11 @@ int main(int ac, char **av)
     Parse parser;
     parser.parse(filename);
 
-	XCB xcb;
-	xcb.setupConnection();
-	xcb.setupScreen();
-	xcb.createWindow();
-	xcb.loop();
+	// XCB xcb;
+	// xcb.setupConnection();
+	// xcb.setupScreen();
+	// xcb.createWindow();
+	// xcb.loop();
     // xcb_connection_t *connection = xcb_connect(NULL, NULL);
 
     // if (xcb_connection_has_error(connection)) {

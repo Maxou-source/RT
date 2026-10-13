@@ -1,6 +1,7 @@
 #include "World.hpp"
 #include "Sphere.hpp"
 #include "Ray.hpp"
+# include <memory>
 
 /*===== Construcors an Destructors =======*/
 
@@ -12,26 +13,33 @@ World::World() {
 
 /*===== Methods ======*/
 
-void World::add_sphere(float size, float x, float y, float z)
-{
-	Sphere *sp = new Sphere;
-	sp->translate(x, y, z);
-	sp->scale(size, size, size);
-	sp->applyTransformations();
-	objects.push_back(sp);
-}
+// void World::add_sphere(float size, float x, float y, float z)
+// {
+// 	Sphere *sp = new Sphere;
+// 	sp->translate(x, y, z);
+// 	sp->scale(size, size, size);
+// 	sp->applyTransformations();
+// 	objects.push_back(sp);
+// }
 
-void World::add_object(AObject *g)
+AObject* World::AddObject(ObjectId id)
 {
-	objects.push_back(g);
+	switch (id)
+	{
+		case ObjectId::SPHERE:		objects.push_back(std::make_unique<Sphere>()); break;
+		case ObjectId::CYLINDER:	objects.push_back(std::make_unique<Sphere>()); break;
+		default: return nullptr;
+	}
+	return (objects.back().get());
 }
 
 void World::printWorld()
 {
-	std::vector<AObject *>::iterator it;
-	for (it = objects.begin(); it != objects.end(); it++)
+	// std::vector<AObject *>::iterator it;
+	for (auto it = objects.begin(); it != objects.end(); it++)
 	{
 		std::cout << "object " << std::endl;
+		std::cout << "Specular " << (*it)->getSpecular() << std::endl;
 	}
 }
 
@@ -44,16 +52,16 @@ void World::printIntersection()
 	}
 }
 
-std::set<Intersection> World::intersectWorld(Ray *r)
-{
-	std::vector<AObject *>::iterator it;
-	std::set<Intersection> result;
-	for (it = objects.begin(); it != objects.end(); it++)
-	{
-		std::set<Intersection> tmp = (*it)->intersect(r);
-		if (!tmp.empty())
-			result.insert(tmp.begin(), tmp.end());
-	}
-	return result;
-}
+// std::set<Intersection> World::intersectWorld(Ray *r)
+// {
+// 	std::vector<AObject *>::iterator it;
+// 	std::set<Intersection> result;
+// 	for (it = objects.begin(); it != objects.end(); it++)
+// 	{
+// 		std::set<Intersection> tmp = (*it)->intersect(r);
+// 		if (!tmp.empty())
+// 			result.insert(tmp.begin(), tmp.end());
+// 	}
+// 	return result;
+// }
 // if need more then one intersection just handle it over here

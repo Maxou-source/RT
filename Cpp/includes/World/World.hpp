@@ -4,8 +4,10 @@
 # include <set>
 # include <vector>
 # include <iostream>
+# include <memory>
 
 # include "Intersection.hpp"
+# include "rt.hpp"
 
 class AObject;
 class Light;
@@ -13,20 +15,19 @@ class Ray;
 
 class World {
 	private:
-		std::set<Intersection> intersects;
-		std::vector<AObject *> objects;
-		std::vector<Light *> lights;
+		std::set<Intersection>					intersects;
+		std::vector<std::unique_ptr<AObject>>	objects;
+		std::vector<Light *>					lights;
 	public:
 	// Constructors and Destructors
 		World();
 
 	// method
-		void add_sphere(float size, float x, float y, float z);
-		std::set<Intersection> intersectWorld(Ray *r);
+		AObject*				AddObject(ObjectId id);
+		void					add_sphere(float size, float x, float y, float z);
+		std::set<Intersection>	intersectWorld(Ray *r);
 		void printWorld();
-		void add_object(AObject *g);
 		void printIntersection();
-
 };
 
 #endif

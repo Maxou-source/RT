@@ -2,6 +2,8 @@
 # define RT_HPP
 
 # include <fstream>
+# include <algorithm>
+# include <sstream>
 # include <string>
 # include <iostream>
 # include <vector>
@@ -17,6 +19,14 @@ namespace colorprint {
     constexpr const char* yellow = "\033[33m";
     constexpr const char* blue   = "\033[34m";
 }
+
+typedef enum {
+	NONE,
+	SPHERE,
+	CYLINDER,
+	CAMERA
+} ObjectId;
+
 
 #ifdef NDEBUG
     const bool enableValidationLayers = false;

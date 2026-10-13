@@ -67,47 +67,47 @@ int	float_to_rgba(t_f4 color)
 	return ((r << 16) | (g << 8) | b);
 }
 
-Tuple color_at(World *w, Ray *r, int px, int py)
-{
-	std::set<Intersection>	interSet;
-	Light l;
-	t_material mat;
+// Tuple color_at(World *w, Ray *r, int px, int py)
+// {
+// 	std::set<Intersection>	interSet;
+// 	Light l;
+// 	t_material mat;
 
-	interSet = w->intersectWorld(r);
-	if (interSet.empty())
-		return Tuple(0,0,0,POINT);
+// 	interSet = w->intersectWorld(r);
+// 	if (interSet.empty())
+// 		return Tuple(0,0,0,POINT);
 
-	Computations comps(*interSet.begin(), r);
-	comps.setPoint(comps.getPoint() + (comps.getNormalv() * EPSILON * 100.0));
+// 	Computations comps(*interSet.begin(), r);
+// 	comps.setPoint(comps.getPoint() + (comps.getNormalv() * EPSILON * 100.0));
 
-	// if (px == 200 && py == 200)
-	// {
-	// 	std::cout<< comps << std::endl;
-	// 	std::cout << "direction " << r->getDirection() << std::endl;
-	// }
-	mat.color = comps.getObjPtr()->getColor();
-	return l.lighting(mat, comps.getPoint(), comps.getEyev(), comps.getNormalv());
-}
+// 	// if (px == 200 && py == 200)
+// 	// {
+// 	// 	std::cout<< comps << std::endl;
+// 	// 	std::cout << "direction " << r->getDirection() << std::endl;
+// 	// }
+// 	mat.color = comps.getObjPtr()->getColor();
+// 	return l.lighting(mat, comps.getPoint(), comps.getEyev(), comps.getNormalv());
+// }
 
-World buildScene1()
-{
-	World *w = new World();
+// World buildScene1()
+// {
+// 	World *w = new World();
 
-	AObject *sp1 = new Sphere();
-	Matrix m, m2, m3, m4;
-	m.translate(0,0,0);
-	// m2.rotation_matrix_y((-PI)/4);
-	// m3.rotation_matrix_x(PI/2);
-	m4.scale(1, 1, 1);
-	sp1->setColor(Tuple(0,1,1, 0));
-	sp1->setMatrix(m*m4);
-	// sp1->setMatrix(((m2 * m3) * m) * m4);
-	// sp1->setMatrix((m * m4) * (m2 * m3));
-	// sp1->setMatrix(m4 * m3 * m2 * m);
-	sp1->applyTransformations();
-	w->add_object(sp1);
-	return *w;
-}
+// 	AObject *sp1 = new Sphere();
+// 	Matrix m, m2, m3, m4;
+// 	m.translate(0,0,0);
+// 	// m2.rotation_matrix_y((-PI)/4);
+// 	// m3.rotation_matrix_x(PI/2);
+// 	m4.scale(1, 1, 1);
+// 	// sp1->setColor(Tuple(0,1,1, 0));
+// 	sp1->setMatrix(m*m4);
+// 	// sp1->setMatrix(((m2 * m3) * m) * m4);
+// 	// sp1->setMatrix((m * m4) * (m2 * m3));
+// 	// sp1->setMatrix(m4 * m3 * m2 * m);
+// 	sp1->applyTransformations();
+// 	w->add_object(sp1);
+// 	return *w;
+// }
 
 void debugMessages(OpenGLObject OpenGLObj)
 {
@@ -164,74 +164,90 @@ void printMat4(const float* m, const char* name)
     }
 }
 
-int main()
+int main(int ac, char **av)
 {
 	/*====== GRAPHICAL TESTS======*/
+	Parse	par;
+	World	*w;
 
-	OpenGLObject OpenGLObj;
-
-	OpenGLObj.SetVertexShader();
-	OpenGLObj.SetFragmentShader("shader/raytracer.glsl");
-	OpenGLObj.Whatever();
-	
-	Camera cam(OpenGLObj.getShaderProgram(), Tuple(0,0,-2, POINT), Tuple(0,0,1,VECTOR), 90.0);
-
-	debugMessages(OpenGLObj);
-
-	// World w = buildScene1();
-
-	
-	FPSCounter fpsCounter;
-	bool one = true;
-	while (!glfwWindowShouldClose(OpenGLObj.getWindow()))
+	if (ac != 2 || par.parseFileAndName(av[1]))
 	{
-		glfwPollEvents();
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-		glUseProgram(OpenGLObj.getShaderProgram());
-		glBindVertexArray(OpenGLObj.getVAO());
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-		
-		glfwSwapBuffers(OpenGLObj.getWindow());
-		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-		
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, OpenGLObj.getDebugSSBO());
-		std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 8);
-		glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-		
-		if (one == true)
-		{
-			int px = 0, py = 0;
-			while (py < WIN_HEIGHT)
-			{
-				while (px < WIN_WIDTH)
-				{
-					int idx = (py * WIN_WIDTH + px) * 4;
-					if (px != 200 || py != 200)
-					{
-						px++;
-						continue;
-					}
-					std::cout << colorprint::green <<"CAMERA :: " << colorprint::reset << "half_width: " << debugOut[idx] << " half_height: " << debugOut[idx+1] << " half_view: " << debugOut[idx+2] << " pixel_size: " << debugOut[idx+3] << std::endl;
-					idx = idx + 4;
-					printMat4(&debugOut[idx], "CAMERA TRANSFORM :: ");
-					idx = idx + 16;
-					std::cout << colorprint::red << "RAY_FOR_PIXEL :: " << colorprint::reset << std::endl;
-					std::cout << " world_point x " << debugOut[idx+1] << ", y" << debugOut[idx+2] << ", z" << debugOut[idx+3] << "w " << debugOut[idx+4] << std::endl;
-					idx = idx + 4;
-					std::cout << " r.origin x " << debugOut[idx+1] << ", y" << debugOut[idx+2] << ", z" << debugOut[idx+3] << "w " << debugOut[idx+4] << std::endl;
-					idx = idx + 4;
-					std::cout << " r.direction x " << debugOut[idx+1] << ", y" << debugOut[idx+2] << ", z" << debugOut[idx+3] << "w " << debugOut[idx+4] << std::endl;
-					px++;
-				}
-				px = 0;
-				py++;
-			}
-
-		}
-		one = false;
+		std::cerr << "KO:: Wrong number of arguments" << std::endl;
+		return (1);
 	}
-	glfwTerminate();
+
+	if (!par.getBase()) {
+		std::cerr << "KO:: Something wrong with your file" << std::endl;
+		return (1);
+	}
+
+	w = par.GetMyWorld();
+
+	w->printWorld();
+	// OpenGLObject OpenGLObj;
+
+	// OpenGLObj.SetVertexShader();
+	// OpenGLObj.SetFragmentShader("shader/raytracer.glsl");
+	// OpenGLObj.Whatever();
+	
+	// Camera cam(OpenGLObj.getShaderProgram(), Tuple(0,0,-2, POINT), Tuple(0,0,1,VECTOR), 90.0);
+
+	// debugMessages(OpenGLObj);
+
+	// // World w = buildScene1();
+
+	
+	// FPSCounter fpsCounter;
+	// bool one = true;
+	// while (!glfwWindowShouldClose(OpenGLObj.getWindow()))
+	// {
+	// 	glfwPollEvents();
+	// 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    //     glClear(GL_COLOR_BUFFER_BIT);
+	// 	glUseProgram(OpenGLObj.getShaderProgram());
+	// 	glBindVertexArray(OpenGLObj.getVAO());
+	// 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	// 	glBindVertexArray(0);
+		
+	// 	glfwSwapBuffers(OpenGLObj.getWindow());
+	// 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+		
+	// 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, OpenGLObj.getDebugSSBO());
+	// 	std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 8);
+	// 	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
+	// 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+		
+	// 	if (one == true)
+	// 	{
+	// 		int px = 0, py = 0;
+	// 		while (py < WIN_HEIGHT)
+	// 		{
+	// 			while (px < WIN_WIDTH)
+	// 			{
+	// 				int idx = (py * WIN_WIDTH + px) * 4;
+	// 				if (px != 200 || py != 200)
+	// 				{
+	// 					px++;
+	// 					continue;
+	// 				}
+	// 				std::cout << colorprint::green <<"CAMERA :: " << colorprint::reset << "half_width: " << debugOut[idx] << " half_height: " << debugOut[idx+1] << " half_view: " << debugOut[idx+2] << " pixel_size: " << debugOut[idx+3] << std::endl;
+	// 				idx = idx + 4;
+	// 				printMat4(&debugOut[idx], "CAMERA TRANSFORM :: ");
+	// 				idx = idx + 16;
+	// 				std::cout << colorprint::red << "RAY_FOR_PIXEL :: " << colorprint::reset << std::endl;
+	// 				std::cout << " world_point x " << debugOut[idx+1] << ", y" << debugOut[idx+2] << ", z" << debugOut[idx+3] << "w " << debugOut[idx+4] << std::endl;
+	// 				idx = idx + 4;
+	// 				std::cout << " r.origin x " << debugOut[idx+1] << ", y" << debugOut[idx+2] << ", z" << debugOut[idx+3] << "w " << debugOut[idx+4] << std::endl;
+	// 				idx = idx + 4;
+	// 				std::cout << " r.direction x " << debugOut[idx+1] << ", y" << debugOut[idx+2] << ", z" << debugOut[idx+3] << "w " << debugOut[idx+4] << std::endl;
+	// 				px++;
+	// 			}
+	// 			px = 0;
+	// 			py++;
+	// 		}
+
+	// 	}
+	// 	one = false;
+	// }
+	// glfwTerminate();
 }

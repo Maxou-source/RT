@@ -12,11 +12,6 @@
 
 class Ray;
 
-enum OBJECT_ID
-{
-	SPHERE,
-	CYLINDER,
-};
 
 typedef struct s_material {
 	Tuple color;
@@ -33,7 +28,6 @@ class AObject
 		Matrix		i_m;
 		Matrix		t_m;
 
-		Tuple		color;
 		int			color_hex;
 		t_material	mat;
 		// on va stocker l'image directement ici Jean Marc
@@ -41,10 +35,10 @@ class AObject
 		Tuple		origin;
 		Tuple		normalv;
 		Tuple		reflectv;
-		// t_clr		color;
-		// float		diameter;
-		// float		specular;
-		// bool		pattern;
+		t_clr		color;
+		float		diameter;
+		float		specular;
+		bool		pattern;
 
 
 	public:
@@ -67,8 +61,18 @@ class AObject
 		void	setIMatrix(Matrix &ma);
 		Matrix&	getMatrix();
 		Matrix&	getIMatrix();
-		Tuple getColor() const;
-		void setColor(const Tuple&);
+		// Tuple getColor() const;
+		// void setColor(const Tuple&);
+
+		void setColor(const t_clr& c);
+		void setDiameter(const float d);
+		void setSpecular(const float s);
+		void setPattern(const bool b);
+
+		t_clr getColor() const;
+		float getDiameter() const;
+		float getSpecular() const;
+		bool  getPattern() const;
 };
 
 #endif
