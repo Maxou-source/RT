@@ -25,6 +25,11 @@ AObject* World::AddObject(ObjectId id)
 	return (objects.back().get());
 }
 
+void	World::SetUpMatrixWorld()
+{
+	
+}
+
 const char* World::objectName(ObjectId id)
 {
 	static const char* names[] = {"None", "Sphere", "Cylinder"};

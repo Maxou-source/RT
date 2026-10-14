@@ -8,7 +8,7 @@ class OpenGLObject
 	public:
 		OpenGLObject();
 		bool SetVertexShader();
-		bool SetFragmentShader(const char *fileName);
+		bool SetFragmentShader(const std::string& rootFile);
 		bool Whatever();
 
 		// Setters and getters

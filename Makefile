@@ -118,7 +118,10 @@ SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
 
 SRC_GLAD			= $(addprefix $(GLAD_DIR), glad.c)
 
-SRC_OPENGLHANDLING	= $(addprefix $(OPENGL_HANDLING), OpenGLObject.cpp)
+SRC_OPENGLHANDLING	= $(addprefix $(OPENGL_HANDLING), \
+						OpenGLObject.cpp \
+						ShaderLoader.cpp \
+						)
 
 
  #=============================================================================#

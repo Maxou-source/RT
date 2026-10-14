@@ -1,4 +1,5 @@
 #include "OpenGLObject.hpp"
+#include "ShaderLoader.hpp"
 #include <string.h>
 #include <iostream>
 #include <fstream>
@@ -95,35 +96,40 @@ bool OpenGLObject::SetVertexShader()
 	return true;
 }
 
-bool OpenGLObject::SetFragmentShader(const char *fileName)
+bool OpenGLObject::SetFragmentShader(const std::string& rootFile)
 {
+	ShaderLoader loader;
+	std::string  source;
 
-	std::ifstream shaderFile;
-	std::stringstream shaderStream;
+	if (!loader.load(rootFile, {
+			{"MAX_OBJECTS",  std::to_string(1000)},
+			{"MAX_LIGHTS",   std::to_string(100)},
+			{"OBJ_SPHERE",   std::to_string((int)ObjectId::SPHERE)},
+			{"OBJ_CYLINDER", std::to_string((int)ObjectId::CYLINDER)},
+		}, source))
+		return false;
 
-	shaderFile.open(fileName);
-	shaderStream << shaderFile.rdbuf();
-	shaderFile.close();
-	std::string fragment = shaderStream.str();
-	const char *fragmentShaderSource = fragment.c_str();
+	std::vector<std::string> shaderFiles = loader.files();
 
+	const char* src = source.c_str();
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+	glShaderSource(fragmentShader, 1, &src, NULL);
 	glCompileShader(fragmentShader);
 
-	int	success;
-
+	GLint success;
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-
-	if(!success)
+	if (!success)
 	{
-		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::frag::COMPILATION_FAILED\n" << infoLog << std::endl;
+		char log[2048];                                // 512 is easily too small for GLSL errors
+		glGetShaderInfoLog(fragmentShader, sizeof(log), NULL, log);
+		std::cerr << "KO:: fragment shader compilation failed\n" << log << std::endl;
+		for (size_t i = 0; i < shaderFiles.size(); i++)
+			std::cerr << "  file " << i << " = " << shaderFiles[i] << std::endl;
+		glDeleteShader(fragmentShader);
 		return false;
 	}
 	return true;
 }
-
 bool OpenGLObject::Whatever()
 {
 	shaderProgram = glCreateProgram();

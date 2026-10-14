@@ -1,76 +1,8 @@
 
-#version 460 core
 out vec4 FragColor;
 
-struct camera {
-	float	half_width;
-	float	half_height;
-	float	half_view;
-	float	pixel_size;
-
-	mat4	inv_transform;
-};
-
-struct Ray {
-	vec4	origin;
-	vec4	direction;
-};
-
-struct Sphere {
-	vec4	center;
-	float	radius;
-
-	mat4 i_matrix;
-};
-
-struct Material {
-	vec4 color;
-};
-
-struct PointLight {
-	vec4  position;
-	vec4  color;
-	float ambient;
-	float specular;
-	float shininess;
-};
-
-layout(std430, binding = 0) buffer DebugBuffer {
-    vec4 debugData[];
-};
-
-uniform camera cam;
-
-
-
-float intersect_sp(Ray r, Sphere sphere)
-{
-	Ray newR;
-	newR.origin = r.origin * sphere.i_matrix;
-	newR.direction = r.direction * sphere.i_matrix;
-
-	vec4 direction = newR.direction;
-	vec4 sphere_to_ray = newR.origin - vec4(0,0,0,1);
-
-	float a = dot(direction, direction);
-	float b = 2 * (dot(direction, sphere_to_ray));
-	float c = dot(sphere_to_ray, sphere_to_ray) - 1;
-
-	float discriminant = (b * b) - (4 * a * c);
-
-	if (discriminant < 0) {
-		return 0.0f;
-	}
-	float t1 = (-b - sqrt(discriminant)) / (2 * a);
-	float t2 = (-b + sqrt(discriminant)) / (2 * a);
-	if (t1 > 0)
-		return t1;
-	if (t2 > 0)
-		return t2;
-	return 0.0f;
-
-}
-
+//!include "common/objects.glsl"
+//!include "intersections/sphere.glsl"
 
 uniform PointLight light;
 
@@ -138,7 +70,7 @@ void main()
 
 	if (px == 200 && py == 200)
 	{
-		debugData[index] = vec4(cam.half_width, cam.half_height, cam.half_view, cam.pixel_size);
+		debugData[index] = vec4(cam.half_width, cam.half_height, 0.f, cam.pixel_size);
 		debugData[index + 1] = cam.inv_transform[0];
 		debugData[index + 2] = cam.inv_transform[1];
 		debugData[index + 3] = cam.inv_transform[2];

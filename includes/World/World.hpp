@@ -25,6 +25,7 @@ class World {
 		World();
 
 	// method
+		void					SetUpMatrixWorld();
 		AObject*				AddObject(ObjectId id);
 		void					add_sphere(float size, float x, float y, float z);
 		std::set<Intersection>	intersectWorld(Ray *r);
