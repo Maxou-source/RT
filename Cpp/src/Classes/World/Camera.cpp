@@ -92,4 +92,14 @@ Camera::Camera(const Tuple& pov, const Tuple& orient, float f) {
 	inv_transform.display();
 }
 
+bool Camera::buildMatrix() {
+	return true;
+}
 
+bool Camera::setProperty(const std::string& key, const std::string& val)
+{
+	if (key == "position")    return parsePosition(val, position);
+	if (key == "orientation") return parseVec(val, orientation, 0.f);
+	if (key == "fov")         { try { fov = std::stof(val); } catch (...) { return false; } return true; }
+	return false;
+}

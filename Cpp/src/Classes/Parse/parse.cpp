@@ -27,7 +27,7 @@ bool Parse::checkFileRights(const char *fileName, std::ifstream *fileStream)
 
 ObjectId findObjectId(std::string& s)
 {
-	const std::array<std::string, 3> strings_id = {"None","Sphere", "Cylinder"};
+	const std::array<std::string, 4> strings_id = {"None","Sphere", "Cylinder", "Camera"};
 	
 	for (size_t i = 1; i < strings_id.size(); i++) {
 		if (s.find(strings_id[i]) != std::string::npos)
@@ -36,89 +36,27 @@ ObjectId findObjectId(std::string& s)
 	return ObjectId::NONE;
 }
 
-std::string trim(const std::string& s)
+bool Parse::parseBlock(IterVectorString& it, IterVectorString end, IParsable& target)
 {
-	size_t posParam = s.find_first_not_of(" \t\r");
-	if (posParam == std::string::npos)
-		return "";
-	size_t posEndParam = s.find_last_not_of(" \t\r");
-	return s.substr(posParam, posEndParam - posParam + 1);
-}
-
-// bool parseColor(std::string v, float outColor[3])
-// {
-// 	for (char& c : v)
-// 	{
-// 		if (c == '[' || c == ']' || c == ',')
-// 			c = ' ';
-// 		std::istringstream ss(v);
-// 		return (ss >> outColor[0] >> outColor[1] >> outColor[2] ? true : false);
-// 	}
-// 	return false;
-// }
-
-bool	Parse::AddObject(IterVectorString& it, IterVectorString end, ObjectId id)
-{
-	// s'arreter si on arrive a la fin ou si on arrive a un '}'
-	AObject *obj = w->AddObject(id);
 	++it;
-	for (; it != end; ++it) {
+	for (; it != end; ++it)
+	{
 		std::string line = trim(*it);
-		if (line.empty())
-			continue ;
-		if (line[0] == '}')
-		{
-			++it;
-			return true;
-		}
+		if (line.empty()) continue;
+		if (line[0] == '}') { ++it; return true; }
 
-		size_t posColon = line.find(':');
-		if (posColon == std::string::npos)
+		size_t colon = line.find(':');
+		if (colon == std::string::npos) return false;
+		std::string key = trim(line.substr(0, colon));
+		std::string val = trim(line.substr(colon + 1));
+
+		if (!target.setProperty(key, val))
 		{
-			std::cout << "KO :: file is not as expected" << std::endl;
-			return false;
-		}
-		std::string key = trim(line.substr(0, posColon));
-		std::string value = trim(line.substr(posColon + 1));
-		if (!applyProperty(obj, key, value))
-		{
-			std::cout << "exiting at apply property" << std::endl;
+			std::cout << "KO :: unknown or invalid property '" << key << "'" << std::endl;
 			return false;
 		}
 	}
 	return false;
-}
-
-bool Parse::applyProperty(AObject* obj, const std::string& key, const std::string& val)
-{
-	try
-	{
-		if (key == "color")
-		{
-			float c[3];
-			// if (!parseColor(val, c))
-			// 	return false;
-			t_clr clr;
-			clr.r = c[0];
-			clr.g = c[1];
-			clr.b = c[2];
-			obj->setColor(clr);
-		}
-		else if (key == "specular")  obj->setSpecular(std::stof(val));
-		else if (key == "diameter")  obj->setDiameter(std::stof(val));
-		else if (key == "pattern")   obj->setPattern(val == "true");
-		else
-		{
-			std::cout << "ERROR::PARSE: unknown key '" << key << "'" << std::endl;
-			return false;
-		}
-	}
-	catch (const std::exception&)    // stof throws on bad input
-	{
-		std::cout << "ERROR::PARSE: bad value for '" << key << "': " << val << std::endl;
-		return false;
-	}
-	return true;
 }
 
 bool	Parse::getBase()
@@ -132,8 +70,21 @@ bool	Parse::getBase()
 			continue ;
 		}
 		objId = findObjectId(*it);
+		if (objId == ObjectId::CAMERA)
+		{
+			bool blockResult = parseBlock(it, lines.end(), w->getCamera());
+			if (!blockResult) {
+				return false;
+			}
+			continue ;
+		}
 		if (objId != ObjectId::NONE) {
-			AddObject(it, lines.end(), objId);
+			AObject* obj = w->AddObject(objId);
+			bool blockResult = obj && parseBlock(it, lines.end(), *obj);
+			if (!blockResult){
+				std::cerr << "Something wrong with file" << std::endl;
+				return false;
+			}
 			continue ;
 		}
 		else

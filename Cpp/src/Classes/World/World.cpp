@@ -1,5 +1,6 @@
 #include "World.hpp"
 #include "Sphere.hpp"
+#include "Cylinder.hpp"
 #include "Ray.hpp"
 # include <memory>
 
@@ -13,36 +14,46 @@ World::World() {
 
 /*===== Methods ======*/
 
-// void World::add_sphere(float size, float x, float y, float z)
-// {
-// 	Sphere *sp = new Sphere;
-// 	sp->translate(x, y, z);
-// 	sp->scale(size, size, size);
-// 	sp->applyTransformations();
-// 	objects.push_back(sp);
-// }
-
 AObject* World::AddObject(ObjectId id)
 {
 	switch (id)
 	{
 		case ObjectId::SPHERE:		objects.push_back(std::make_unique<Sphere>()); break;
-		case ObjectId::CYLINDER:	objects.push_back(std::make_unique<Sphere>()); break;
+		case ObjectId::CYLINDER:	objects.push_back(std::make_unique<Cylinder>()); break;
 		default: return nullptr;
 	}
 	return (objects.back().get());
 }
 
-void World::printWorld()
+static const char* objectName(ObjectId id)
 {
-	// std::vector<AObject *>::iterator it;
-	for (auto it = objects.begin(); it != objects.end(); it++)
-	{
-		std::cout << "object " << std::endl;
-		std::cout << "Specular " << (*it)->getSpecular() << std::endl;
-	}
+	static const char* names[] = {"None", "Sphere", "Cylinder"};
+	return names[static_cast<int>(id)];
 }
 
+void World::printWorld() const
+{
+	size_t i = 0;
+	for (const auto& obj : objects)
+	{
+		const Material& m = obj->getMaterial();
+		t_f4 pos = obj->getPosition();
+
+		std::cout << "object " << i++ << colorprint::green
+		          << " [" << objectName(obj->type()) << "]\n" << colorprint::reset
+		          << "  position:   (" << pos.x << ", " << pos.y << ", " << pos.z << ")\n"
+		          << "  color:      (" << m.color.r << ", " << m.color.g << ", " << m.color.b << ")\n"
+		          << "  ambient:    " << m.ambient << "\n"
+		          << "  diffuse:    " << m.diffuse << "\n"
+		          << "  specular:   " << m.specular << "\n"
+		          << "  shininess:  " << m.shininess << "\n"
+		          << "  reflective: " << m.reflective << "\n"
+		          << "  pattern:    " << (m.pattern ? "true" : "false") << "\n"
+		          << "  texture:    " << (m.texture.empty() ? "none" : m.texture) << "\n";
+		obj->printSpecific(std::cout);   // shape-specific properties
+	}
+	std::cout << objects.size() << " object(s) in world" << std::endl;
+}
 void World::printIntersection()
 {
 	std::set<Intersection>::iterator it;
@@ -52,16 +63,7 @@ void World::printIntersection()
 	}
 }
 
-// std::set<Intersection> World::intersectWorld(Ray *r)
-// {
-// 	std::vector<AObject *>::iterator it;
-// 	std::set<Intersection> result;
-// 	for (it = objects.begin(); it != objects.end(); it++)
-// 	{
-// 		std::set<Intersection> tmp = (*it)->intersect(r);
-// 		if (!tmp.empty())
-// 			result.insert(tmp.begin(), tmp.end());
-// 	}
-// 	return result;
-// }
-// if need more then one intersection just handle it over here
+/*================ SETTERS AND GETTERS =========================*/
+
+void World::setCamera(Camera &c) {cam = c;}
+Camera& World::getCamera() {return cam;}

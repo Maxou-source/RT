@@ -3,11 +3,25 @@
 
 Cylinder::Cylinder()
 {
-    
 }
 
-bool Cylinder::intersect(Ray *r)
+void Cylinder::printSpecific(std::ostream& os) const
 {
-    (void)r;
-    return false;
+	os << "  diameter:   " << diameter << "\n"
+	   << "  height:     " << height << "\n";
+}
+
+bool Cylinder::setProperty(const std::string& key, const std::string& val)
+{
+	if (key == "height")
+	{
+		try { height = std::stof(val); } catch (...) { return false; }
+		return true;
+	}
+	else if (key == "diameter")
+	{
+		try { diameter = std::stof(val); } catch (...) { return false; }
+		return true;
+	}
+	return AObject::setProperty(key, val);
 }

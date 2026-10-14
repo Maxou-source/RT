@@ -1,10 +1,13 @@
 #include "AObject.hpp"
 
-class Sphere : public AObject {
+class Sphere : public AObject
+{
+	private:
+		float diameter = 1.f;
 	public:
-	// Constructors and Destructors 
 		Sphere();
-	// methods
-		std::set<Intersection>	intersect(Ray *r);
-		Tuple	normal(const Tuple&);
+		ObjectId type() const override {return ObjectId::SPHERE;}
+		void printSpecific(std::ostream& os) const override;
+
+		bool setProperty(const std::string& key, const std::string& val) override;
 };

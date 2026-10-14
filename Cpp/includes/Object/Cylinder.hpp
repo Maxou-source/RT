@@ -6,13 +6,14 @@
 class Cylinder : public AObject
 {
     private:
-        vec4    orient;
-        float   width;
-        float   height;
-
+        float height = 1.0f;
+		float		diameter;
     public:
         Cylinder();
-        bool intersect(Ray *r);
+        ObjectId type() const override {return ObjectId::SPHERE;}
+        void printSpecific(std::ostream& os) const override;
+
+        bool setProperty(const std::string& key, const std::string& val) override;
 };
 
 #endif

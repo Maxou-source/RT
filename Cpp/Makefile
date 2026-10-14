@@ -90,7 +90,6 @@ SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
 SRC_WORLD			=	$(addprefix $(WORLD_DIR), \
 						World.cpp \
 						Intersection.cpp \
-						Computations.cpp \
 						Camera.cpp \
 						)
 
@@ -102,6 +101,7 @@ SRC_MATRIX			=	$(addprefix $(MATRIX_DIR), \
 SRC_OBJECTS			= $(addprefix $(OBJECTS_DIR), \
 						AObject.cpp \
 						Sphere.cpp \
+						Cylinder.cpp \
 						Light.cpp \
 						)
 
@@ -116,6 +116,7 @@ SRC_XCB				= $(addprefix $(XCB_DIR), \
 						)
 SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
 						parse.cpp \
+						Parseutils.cpp \
 						)
 
 SRC_GLAD			= $(addprefix $(GLAD_DIR), glad.c)

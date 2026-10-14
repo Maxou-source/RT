@@ -9,70 +9,75 @@
 # include "Tuple.hpp"
 # include "Matrix.hpp"
 # include "rt.hpp"
+# include "ParseUtils.hpp"
+# include "IParsable.hpp"
 
 class Ray;
 
+using namespace ParseUtils;
 
-typedef struct s_material {
-	Tuple color;
-} t_material;
+struct Material
+{
+	t_clr       color     = {1.f, 1.f, 1.f};
+	float       ambient   = 0.1f;
+	float       diffuse   = 0.9f;
+	float       specular  = 0.9f;
+	float       shininess = 200.f;
+	float       reflective = 0.f;
+	bool        pattern   = false;
+	std::string texture;               // empty = none
 
-class AObject
+	bool setProperty(const std::string& key, const std::string& val)
+	{
+		try {
+			if (key == "color")           return parseColor(val, color);
+			if (key == "ambient")         ambient = std::stof(val);
+			else if (key == "diffuse")    diffuse = std::stof(val);
+			else if (key == "specular")   specular = std::stof(val);
+			else if (key == "shininess")  shininess = std::stof(val);
+			else if (key == "reflective") reflective = std::stof(val);
+			else if (key == "pattern")    pattern = (val == "true");
+			else if (key == "texture")    texture = val;
+			else return false;           // not a material key
+		} catch (const std::exception&) { return false; }
+		return true;
+	}
+};
+
+class AObject : public IParsable
 {
 	protected:
-		static int	idCounter;
-		int			id;
-		t_f4		center;
+		t_f4		position;
+		float		specular;
+		Material	material;
+		bool		pattern;
 
 		Matrix		m;
 		Matrix		i_m;
 		Matrix		t_m;
 
-		int			color_hex;
-		t_material	mat;
-		// on va stocker l'image directement ici Jean Marc
-
-		Tuple		origin;
-		Tuple		normalv;
-		Tuple		reflectv;
-		t_clr		color;
-		float		diameter;
-		float		specular;
-		bool		pattern;
-
-
 	public:
 	// Constructors and Destructors
 		virtual ~AObject() {}
 		AObject();
-
-	// methods
-		virtual std::set<Intersection> intersect(Ray *r) = 0;
-		virtual Tuple normal(const Tuple &) = 0;
-		
-		void	reflect(const Tuple&);
-		void	scale(float x, float y, float z);
-		void	translate(float x, float y, float z);
-
+		virtual ObjectId type() const = 0;
+		virtual void printSpecific(std::ostream&) const {}
 		void	applyTransformations();
 
 	// setters and getters
-		void	setMatrix(const Matrix &ma);
-		void	setIMatrix(Matrix &ma);
-		Matrix&	getMatrix();
-		Matrix&	getIMatrix();
-		// Tuple getColor() const;
-		// void setColor(const Tuple&);
+		bool setProperty(const std::string& key, const std::string& val) override;
 
-		void setColor(const t_clr& c);
-		void setDiameter(const float d);
-		void setSpecular(const float s);
-		void setPattern(const bool b);
-
-		t_clr getColor() const;
-		float getDiameter() const;
-		float getSpecular() const;
-		bool  getPattern() const;
+		bool buildMatrix() override {return true;}
+		
+		void	setPosition(t_f4);
+		void	setSpecular(const float s);
+		void	setMaterial(const Material&);
+		void	setPattern(const bool b);
+		
+		t_f4			getPosition() const;
+		float			getSpecular() const;
+		const Material&	getMaterial() const;
+		bool			getPattern() const;
 };
 
 #endif

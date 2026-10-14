@@ -7,6 +7,7 @@
 # include <memory>
 
 # include "Intersection.hpp"
+# include "Camera.hpp"
 # include "rt.hpp"
 
 class AObject;
@@ -18,6 +19,7 @@ class World {
 		std::set<Intersection>					intersects;
 		std::vector<std::unique_ptr<AObject>>	objects;
 		std::vector<Light *>					lights;
+		Camera									cam;
 	public:
 	// Constructors and Destructors
 		World();
@@ -26,8 +28,11 @@ class World {
 		AObject*				AddObject(ObjectId id);
 		void					add_sphere(float size, float x, float y, float z);
 		std::set<Intersection>	intersectWorld(Ray *r);
-		void printWorld();
+		void printWorld() const;
 		void printIntersection();
+
+		void setCamera(Camera &c);
+		Camera& getCamera();
 };
 
 #endif

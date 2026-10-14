@@ -3,25 +3,29 @@
 
 # include "Tuple.hpp"
 # include "Matrix.hpp"
+# include "IParsable.hpp"
+# include "ParseUtils.hpp"
 
 class Ray;
 
-class Camera {
-	private:
-		Tuple	viewpoint;
-		Tuple	orientation;
+using namespace ParseUtils;
 
-		// float	fov;
+class Camera : public IParsable{
+	private:
+		t_f4  position = {0, 0, 0, 1};
+		t_f4  orientation = {0, 0, 1, 0};
+		float fov = 60.f;
 
 		float	half_width;
 		float	half_height;
 		float	half_view;
 		float	pixel_size;
-
+		
 		Matrix	transform;
 		Matrix	inv_transform;
 	public:
-	
+		
+		bool setProperty(const std::string& key, const std::string& val) override;
 	// Constructors and Destructors 
 		Camera();
 		Camera(unsigned int shaderProgram, const Tuple&, const Tuple&, float );
@@ -31,6 +35,8 @@ class Camera {
 		void	rayForPixel(int px, int py, Ray *r);
 
 		void	setOpenGlObject();
+
+		bool	buildMatrix() override;
 
 };
 

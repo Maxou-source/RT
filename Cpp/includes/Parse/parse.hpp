@@ -4,6 +4,7 @@
 
 # include "rt.hpp"
 # include "World.hpp"
+# include "IParsable.hpp"
 
 using IterVectorString = std::vector<std::string>::iterator;
 
@@ -20,8 +21,7 @@ class Parse {
 		bool	checkFileRights(const char *fileName, std::ifstream *filestream);
 
 		bool	getBase();
-		bool	AddObject(IterVectorString& it, IterVectorString end, ObjectId id);
-		bool	applyProperty(AObject* obj, const std::string& key, const std::string& val);
+		bool	parseBlock(IterVectorString& it, IterVectorString end, IParsable& target);
 
 		World	*GetMyWorld();
 };
