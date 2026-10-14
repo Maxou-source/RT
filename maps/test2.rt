@@ -1,0 +1,21 @@
+Sphere {
+    color: [0, 0, 10]
+    position: [0,0,2]
+    specular: .23
+    diameter: .146
+    pattern: true
+}
+
+Cylinder {
+    color: [0, 0, 10]
+    position: [0,0,3]
+    specular: .23
+    diameter: .146
+    height: .8
+    pattern: true
+}
+
+Camera {
+    position: [0,0,-2]
+    orientation: [0,0,1]
+}
