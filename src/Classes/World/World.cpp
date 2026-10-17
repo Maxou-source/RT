@@ -48,6 +48,7 @@ const char* World::objectName(ObjectId id)
 
 void World::printWorld() const
 {
+	cam.print();                       // camera first
 	size_t i = 0;
 	for (const auto& obj : objects)
 	{

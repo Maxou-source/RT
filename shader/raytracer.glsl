@@ -2,10 +2,8 @@
 out vec4 FragColor;
 
 //!include "common/objects.glsl"
-
+//!include "common/scene.glsl"
 //!include "intersections/sphere.glsl"
-
-uniform PointLight light;
 
 vec4 lighting(Material mat, PointLight lgt, vec4 point, vec4 eyev, vec4 normalv)
 {
@@ -84,7 +82,7 @@ void main()
 	s.i_matrix = mat4(1.0);
 
 	Material mat;
-	mat.color = vec4(1, 0, 0, 1);
+	mat.color = vec4(1, 0, 0,0);
 
 	PointLight light;
 	light.position = vec4(-10, 10, -10, 1.0);

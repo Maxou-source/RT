@@ -275,3 +275,10 @@ void OpenGLObject::setWindow(GLFWwindow* win) {
     window = win;
 }
 
+void OpenGLObject::setUbo(GLuint gl) {
+	ubo = gl;
+}
+
+GLuint OpenGLObject::getUbo(void) const {
+	return ubo;
+}

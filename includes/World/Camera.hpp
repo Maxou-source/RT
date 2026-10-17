@@ -34,6 +34,7 @@ class Camera : public IParsable {
 		Camera();
 		Camera(unsigned int shaderProgram, const Tuple&, const Tuple&, float );
 		Camera(const Tuple& pov, const Tuple& orient, float f);
+		void print() const;
 
 	// Methods
 		void	rayForPixel(int px, int py, Ray *r);

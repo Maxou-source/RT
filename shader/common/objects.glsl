@@ -12,6 +12,10 @@ struct Ray {
 	vec4	direction;
 };
 
+struct Light {
+    vec3  position;   float _pad0;
+    vec3  intensity;  float _pad1;
+};
 
 struct Sphere {
 	vec4	center;
@@ -21,7 +25,19 @@ struct Sphere {
 };
 
 struct Material {
-	vec4 color;
+    vec4  color;                          // slot 0: rgb + w (alpha / HDR intensity)
+    float ambient;    float diffuse;      // slot 1
+    float specular;   float shininess;
+    float reflective; int   pattern;      // slot 2
+    int   texture;    int   _pad0;
+};
+
+struct Obj {
+    mat4     inv_transform;
+    Material mat;
+    int      type;        // OBJ_SPHERE, OBJ_CUBE, ...
+    float    param;       // the one shape-specific value (meaning depends on type)
+    int      _pad0, _pad1;
 };
 
 struct PointLight {
@@ -35,5 +51,3 @@ struct PointLight {
 layout(std430, binding = 0) buffer DebugBuffer {
     vec4 debugData[];
 };
-
-uniform camera cam;

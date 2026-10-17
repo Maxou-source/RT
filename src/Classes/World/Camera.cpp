@@ -75,6 +75,14 @@ Camera::Camera(unsigned int shaderProgram, const Tuple& pov, const Tuple& orient
 	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "cam.inv_transform"),1, GL_TRUE, (float *)(&invmat) );
 }
 
+void Camera::print() const
+{
+	std::cout << colorprint::green << "camera\n" << colorprint::reset
+	          << "  position:    (" << position.x << ", " << position.y << ", " << position.z << ")\n"
+	          << "  orientation: (" << orientation.x << ", " << orientation.y << ", " << orientation.z << ")\n"
+	          << "  fov:         " << fov << std::endl;
+}
+
 Camera::Camera(const Tuple& pov, const Tuple& orient, float f) {
 	half_view = (f * PI) / 180.0;
 	float aspect_ratio = WIN_WIDTH / WIN_HEIGHT;
@@ -118,7 +126,7 @@ bool Camera::preBuild() {
 	pixel_size = (half_width * 2) / (float)WIN_WIDTH;
 	transform = Matrix::view_transform(position,
 		Tuple::normalize(orientation), Tuple(0, 1, 0, 0));
-	inv_transform = transform.invertedMatrix();
+	inv_transform = transform.invertedMatrix().transpose();
 	return true;
 }
 

@@ -23,6 +23,10 @@
 #include <vector>
 #include <chrono>
 
+// GpuScenePrinter.hpp / .cpp
+#include <iostream>
+#include <iomanip>
+
 class FPSCounter {
 public:
     void update() {
@@ -46,46 +50,26 @@ private:
         std::chrono::high_resolution_clock::now();
 };
 
-void debugMessages(OpenGLObject OpenGLObj)
+void debugMessages(const OpenGLObject& gl)
 {
-	GLfloat value;
-	std::cout << std::endl << "shaderProgram: " << OpenGLObj.getShaderProgram() << std::endl;
-	
-	auto location = glGetUniformLocation(OpenGLObj.getShaderProgram(), "cam.half_view");
-	glGetUniformfv(OpenGLObj.getShaderProgram(), location, &value);
-	std::cout << "half_view value: " << value << std::endl;
+	GpuScene back{};
+	glBindBuffer(GL_UNIFORM_BUFFER, gl.getUbo());          // add a getUbo() getter
+	glGetBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GpuScene), &back);
 
-	location = glGetUniformLocation(OpenGLObj.getShaderProgram(), "cam.half_height");
-	glGetUniformfv(OpenGLObj.getShaderProgram(), location, &value);
-	std::cout << "half_view half_height: " << value << std::endl;
+	std::cout << "\nshaderProgram: " << gl.getShaderProgram() << std::endl;
+	std::cout << "half_width:  " << back.cam.half_width  << "\n"
+	          << "half_height: " << back.cam.half_height << "\n"
+	          << "pixel_size:  " << back.cam.pixel_size  << "\n"
+	          << "objects: " << back.object_count
+	          << "  lights: " << back.light_count << std::endl;
 
-	location = glGetUniformLocation(OpenGLObj.getShaderProgram(), "cam.half_width");
-	glGetUniformfv(OpenGLObj.getShaderProgram(), location, &value);
-	std::cout << "half_width value: " << value << std::endl;
-
-	GLfloat matrix[16];
-	GLfloat ok;
-
-	location = glGetUniformLocation(OpenGLObj.getShaderProgram(), "cam.transform");
-	glGetUniformfv(OpenGLObj.getShaderProgram(), location, matrix);
-	std::cout << "transform matrix: " << std::endl;
-	for (int i = 0; i < 16; i++)
+	std::cout << "inv_transform:\n";
+	for (int r = 0; r < 4; r++)
 	{
-		std::cout << "" << matrix[i] << ", ";
-		if (i % 4 == 3)
-			std::cout << std::endl;
+		for (int c = 0; c < 4; c++)
+			std::cout << back.cam.inv_transform[r][c] << ", ";
+		std::cout << "\n";
 	}
-	std::cout << std::endl;
-	location = glGetUniformLocation(OpenGLObj.getShaderProgram(), "cam.inv_transform");
-	glGetUniformfv(OpenGLObj.getShaderProgram(), location, matrix); 
-	std::cout << "inv transform matrix: " << std::endl;
-	for (int i = 0; i < 16; i++)
-	{
-		std::cout << "" << matrix[i] << ", ";
-		if (i % 4 == 3)
-			std::cout << std::endl;
-	}
-	std::cout << std::endl;
 }
 
 void printMat4(const float* m, const char* name)
@@ -122,15 +106,15 @@ int main(int ac, char **av)
 	w->printWorld();
 
 	GpuScene gpuS = w->buildGpuScene();
-
+	// printGpuScene(gpuS);
 	OpenGLObject OpenGLObj;
 
 	OpenGLObj.SetVertexShader();
 	OpenGLObj.SetFragmentShader("shader/raytracer.glsl");
 	OpenGLObj.Whatever();
-	// OpenGLObj.UploadScene(gpuS);
+	OpenGLObj.UploadScene(gpuS);
 	
-	Camera cam(OpenGLObj.getShaderProgram(), Tuple(0,0,-2, POINT), Tuple(0,0,1,VECTOR), 90.0);
+	// Camera cam(OpenGLObj.getShaderProgram(), Tuple(0,0,-2, POINT), Tuple(0,0,1,VECTOR), 90.0);
 
 	debugMessages(OpenGLObj);
 

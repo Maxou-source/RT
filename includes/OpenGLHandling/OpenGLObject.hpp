@@ -40,7 +40,12 @@ class OpenGLObject
 
 		GLFWwindow* getWindow() const;
 		void setWindow(GLFWwindow*);
-	private:
+
+		void setUbo(GLuint gl);
+
+		GLuint getUbo(void) const;
+	
+		private:
 		char infoLog[512];
 		unsigned int vertexShader;
 		unsigned int fragmentShader;
