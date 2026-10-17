@@ -30,3 +30,11 @@ std::vector<std::string> Sphere::requiredKeys()  const {
 const char * Sphere::typeString() const {
 	return "Sphere";
 }
+
+bool Sphere::preBuild() {
+	return true;
+}
+
+bool Sphere::packIntoGpuScene(GpuScene& s) {
+	return true;
+}

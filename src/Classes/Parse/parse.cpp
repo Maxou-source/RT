@@ -90,10 +90,12 @@ bool	Parse::getBase()
 		objId = findObjectId(*it);
 		if (objId == ObjectId::CAMERA)
 		{
-			bool blockResult = parseBlock(it, lines.end(), w->getCamera());
+			Camera objCamera = w->getCamera();
+			bool blockResult = parseBlock(it, lines.end(), objCamera);
 			if (!blockResult) {
 				return false;
 			}
+			objCamera.preBuild();
 			continue ;
 		}
 		if (objId != ObjectId::NONE) {

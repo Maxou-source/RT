@@ -2,6 +2,7 @@
 out vec4 FragColor;
 
 //!include "common/objects.glsl"
+
 //!include "intersections/sphere.glsl"
 
 uniform PointLight light;

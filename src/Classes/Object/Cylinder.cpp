@@ -33,3 +33,10 @@ bool Cylinder::setProperty(const std::string& key, const std::string& val)
 const char * Cylinder::typeString() const {
 	return "Cylinder";
 }
+
+bool Cylinder::preBuild() {return true;}
+
+bool Cylinder::packIntoGpuScene(GpuScene& s) {
+	return true;
+}
+

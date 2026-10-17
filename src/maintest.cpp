@@ -22,15 +22,6 @@
 #include <filesystem>
 #include <vector>
 #include <chrono>
-/*
--Optimise Matrix operations (notably tuple * matrix)
-(almost done check later if row accessor is smart)
--correctly implement normal at (much better)
--store intersections duuuuuh
--make a better normalize method (shit doesnt make sense)	
-*/
-
-#include <chrono>
 
 class FPSCounter {
 public:
@@ -128,14 +119,16 @@ int main(int ac, char **av)
 	}
 
 	w = par.GetMyWorld();
-	w->SetUpMatrixWorld();
 	w->printWorld();
+
+	GpuScene gpuS = w->buildGpuScene();
 
 	OpenGLObject OpenGLObj;
 
 	OpenGLObj.SetVertexShader();
 	OpenGLObj.SetFragmentShader("shader/raytracer.glsl");
 	OpenGLObj.Whatever();
+	// OpenGLObj.UploadScene(gpuS);
 	
 	Camera cam(OpenGLObj.getShaderProgram(), Tuple(0,0,-2, POINT), Tuple(0,0,1,VECTOR), 90.0);
 

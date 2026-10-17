@@ -4,12 +4,14 @@ struct camera {
 	float	half_width;
 	float	half_height;
 	float	pixel_size;
+	float	_paddingA;
 };
 
 struct Ray {
 	vec4	origin;
 	vec4	direction;
 };
+
 
 struct Sphere {
 	vec4	center;

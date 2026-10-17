@@ -1,7 +1,7 @@
 #include "Camera.hpp"
 #include "rt.hpp"
 #include "Ray.hpp"
-#include <glad/glad.h>   // must be included BEFORE glfw3.h
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 /*====== Constructors and Destructors =====*/
@@ -11,7 +11,7 @@ Camera::Camera() {
 }
 
 std::vector<std::string> Camera::requiredKeys() const {
-	return {"position", "orientation"};
+	return {"position", "orientation", "fov"};
 }
 
 const char * Camera::typeString() const {
@@ -101,8 +101,33 @@ Camera::Camera(const Tuple& pov, const Tuple& orient, float f) {
 	inv_transform.display();
 }
 
-bool Camera::buildMatrix() {
-	
+bool Camera::preBuild() {
+	half_view = (fov * PI) / 180.0;
+	float aspect_ratio = (float)WIN_WIDTH / (float)WIN_HEIGHT;
+	std::cout << "aspect _ratio "  << aspect_ratio << std::endl;
+	if (aspect_ratio >= 1)
+	{
+		half_width = half_view;
+		half_height = half_view / aspect_ratio;
+	}
+	else
+	{
+		half_width = half_view * aspect_ratio;
+		half_height = half_view;
+	}
+	pixel_size = (half_width * 2) / (float)WIN_WIDTH;
+	transform = Matrix::view_transform(position,
+		Tuple::normalize(orientation), Tuple(0, 1, 0, 0));
+	inv_transform = transform.invertedMatrix();
+	return true;
+}
+
+bool Camera::packIntoGpuScene(GpuScene& s)
+{
+	s.cam.inv_transform = inv_transform.getMatrix();
+	s.cam.half_width = half_width;
+	s.cam.half_height = half_height;
+	s.cam.pixel_size = pixel_size;
 	return true;
 }
 

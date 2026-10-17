@@ -29,6 +29,11 @@ std::vector<std::string> AObject::requiredKeys() const {
 	return {"position"};
 }
 
+bool AObject::packIntoGpuScene(GpuScene& s) {
+	return true;
+}
+
+
 /*===== Setters and Getters =======*/
 
 void	AObject::setPosition(t_f4 p) {position = p;}

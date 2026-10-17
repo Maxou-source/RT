@@ -2,6 +2,7 @@
 #include "rt.hpp"
 #include <glad/glad.h>   // must be included BEFORE glfw3.h
 #include <GLFW/glfw3.h>
+#include "GpuObjects.hpp"
 
 class OpenGLObject
 {
@@ -9,6 +10,7 @@ class OpenGLObject
 		OpenGLObject();
 		bool SetVertexShader();
 		bool SetFragmentShader(const std::string& rootFile);
+		void UploadScene(const GpuScene& scene);
 		bool Whatever();
 
 		// Setters and getters
@@ -36,8 +38,8 @@ class OpenGLObject
 		unsigned int getDebugSSBO() const;
 		void setDebugSSBO(unsigned int);
 
-GLFWwindow* getWindow() const;
-void setWindow(GLFWwindow*);
+		GLFWwindow* getWindow() const;
+		void setWindow(GLFWwindow*);
 	private:
 		char infoLog[512];
 		unsigned int vertexShader;
@@ -50,6 +52,8 @@ void setWindow(GLFWwindow*);
 
 		unsigned int VAO;
 		unsigned int debugSSBO;
+
+		unsigned int ubo = 0;
 
 		GLFWwindow* window;
 

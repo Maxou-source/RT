@@ -102,8 +102,8 @@ bool OpenGLObject::SetFragmentShader(const std::string& rootFile)
 	std::string  source;
 
 	if (!loader.load(rootFile, {
-			{"MAX_OBJECTS",  std::to_string(1000)},
-			{"MAX_LIGHTS",   std::to_string(100)},
+			{"MAX_OBJECTS",  std::to_string(MAX_OBJECTS)},
+			{"MAX_LIGHTS",   std::to_string(MAX_LIGHTS)},
 			{"OBJ_SPHERE",   std::to_string((int)ObjectId::SPHERE)},
 			{"OBJ_CYLINDER", std::to_string((int)ObjectId::CYLINDER)},
 		}, source))
@@ -170,7 +170,25 @@ bool OpenGLObject::Whatever()
 	return true;
 }
 
-
+void OpenGLObject::UploadScene(const GpuScene& scene)
+{
+	if (!ubo)
+	{
+		glGenBuffers(1, &ubo);                                   // create a GPU buffer
+		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(GpuScene),        // <- TRANSFER HERE:
+		             &scene, GL_DYNAMIC_DRAW);                   //    copies sizeof(GpuScene) bytes
+		                                                         //    from &scene into GPU memory
+		GLuint idx = glGetUniformBlockIndex(shaderProgram, "Scene");
+		glUniformBlockBinding(shaderProgram, idx, 0);            // shader block "Scene" -> slot 0
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo);             // buffer -> slot 0
+	}
+	else
+	{
+		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GpuScene), &scene);  // <- TRANSFER on updates
+	}
+}
 /*============= SETTERS && GETTERS ===========*/
 
 

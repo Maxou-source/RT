@@ -27,7 +27,9 @@ class Camera : public IParsable {
 		
 		bool setProperty(const std::string& key, const std::string& val) override;
 		std::vector<std::string> requiredKeys() const override;
-	    const char * typeString() const override;
+		const char * typeString() const override;
+		bool preBuild() override;
+		bool packIntoGpuScene(GpuScene& s) override;
 	// Constructors and Destructors 
 		Camera();
 		Camera(unsigned int shaderProgram, const Tuple&, const Tuple&, float );
@@ -38,7 +40,7 @@ class Camera : public IParsable {
 
 		void	setOpenGlObject();
 
-		bool	buildMatrix() override;
+		// bool	buildMatrix() override;
 
 };
 

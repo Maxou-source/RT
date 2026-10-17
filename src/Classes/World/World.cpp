@@ -25,10 +25,20 @@ AObject* World::AddObject(ObjectId id)
 	return (objects.back().get());
 }
 
-void	World::SetUpMatrixWorld()
+GpuScene World::buildGpuScene()
 {
-	
+	GpuScene s{};
+	cam.packIntoGpuScene(s);
+	// for (const auto& o : objects)
+	// 	if (!o.PackIntoGpuScene(s))
+			// std::cerr << "KO:: too many objects (max " << MAX_OBJECTS << ")" << std::endl;
+	// for (const auto& l : lights)
+	// 	if (!l.PackIntoGpuScene(s))
+	// 		std::cerr << "KO:: too many lights (max " << MAX_LIGHTS << ")" << std::endl;
+	return s;
 }
+
+
 
 const char* World::objectName(ObjectId id)
 {

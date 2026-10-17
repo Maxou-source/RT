@@ -9,6 +9,7 @@
 # include "Intersection.hpp"
 # include "Camera.hpp"
 # include "rt.hpp"
+# include "GpuObjects.hpp"
 
 class AObject;
 class Light;
@@ -36,7 +37,11 @@ class World {
 		Camera& getCamera();
 
 		static const char* objectName(ObjectId id);
+		GpuScene	buildGpuScene();
 
+
+
+	// to gpu
 };
 
 #endif
