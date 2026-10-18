@@ -1,17 +1,16 @@
 Sphere {
-    color: [0, 0, 10]
-    position: [0,0,2]
+    color: [0, 0, 1]
+    position: [1,0,0]
     specular: .23
-    diameter: .146
+    diameter: 1
     pattern: true
 }
 
-Cylinder {
-    color: [0, 0, 10]
-    position: [0,0,3]
+Sphere {
+    color: [0, 0, 1]
+    position: [-1,0,0]
     specular: .23
-    diameter: .146
-    height: .8
+    diameter: 1
     pattern: true
 }
 

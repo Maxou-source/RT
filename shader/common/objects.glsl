@@ -48,6 +48,11 @@ struct PointLight {
 	float shininess;
 };
 
+struct Intersection {
+	float	t;
+	int		object_id;
+};
+
 layout(std430, binding = 0) buffer DebugBuffer {
     vec4 debugData[];
 };

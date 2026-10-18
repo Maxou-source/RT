@@ -1,8 +1,8 @@
-float intersect_sp(Ray r, Sphere sphere)
+float intersect_sp(Ray r, Obj sphere)
 {
 	Ray newR;
-	newR.origin = r.origin * sphere.i_matrix;
-	newR.direction = r.direction * sphere.i_matrix;
+	newR.origin = r.origin * sphere.inv_transform;
+	newR.direction = r.direction * sphere.inv_transform;
 
 	vec4 direction = newR.direction;
 	vec4 sphere_to_ray = newR.origin - vec4(0,0,0,1);
@@ -14,7 +14,7 @@ float intersect_sp(Ray r, Sphere sphere)
 	float discriminant = (b * b) - (4 * a * c);
 
 	if (discriminant < 0) {
-		return 0.0f;
+		return INF;
 	}
 	float t1 = (-b - sqrt(discriminant)) / (2 * a);
 	float t2 = (-b + sqrt(discriminant)) / (2 * a);
@@ -22,6 +22,6 @@ float intersect_sp(Ray r, Sphere sphere)
 		return t1;
 	if (t2 > 0)
 		return t2;
-	return 0.0f;
+	return INF;
 
 }

@@ -105,6 +105,7 @@ bool	Parse::getBase()
 				std::cerr << "Something wrong with file" << std::endl;
 				return false;
 			}
+			obj->preBuild();
 			continue ;
 		}
 		else

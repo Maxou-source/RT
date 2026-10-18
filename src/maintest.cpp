@@ -137,7 +137,7 @@ int main(int ac, char **av)
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 		
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, OpenGLObj.getDebugSSBO());
-		std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 8);
+		std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 12);
 		glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 		
@@ -158,6 +158,8 @@ int main(int ac, char **av)
 					idx = idx + 4;
 					printMat4(&debugOut[idx], "CAMERA TRANSFORM :: ");
 					idx = idx + 16;
+					printMat4(&debugOut[idx], "CAMERA TRANSFORM :: ");
+					// idx = idx + 16;
 					std::cout << colorprint::red << "RAY_FOR_PIXEL :: " << colorprint::reset << std::endl;
 					std::cout << " world_point x " << debugOut[idx+1] << ", y" << debugOut[idx+2] << ", z" << debugOut[idx+3] << "w " << debugOut[idx+4] << std::endl;
 					idx = idx + 4;

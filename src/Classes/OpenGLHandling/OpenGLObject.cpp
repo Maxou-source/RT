@@ -161,7 +161,7 @@ bool OpenGLObject::Whatever()
 	
 	glGenBuffers(1, &debugSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, debugSSBO);
-	const int slotsPerPixel = 8;
+	const int slotsPerPixel = 12;
 	glBufferData(GL_SHADER_STORAGE_BUFFER,
 				(size_t)numPixels * slotsPerPixel * sizeof(float) * 4,
 				nullptr, GL_DYNAMIC_READ);

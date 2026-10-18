@@ -1,6 +1,6 @@
 
 out vec4 FragColor;
-
+const float INF     = 1e30;
 //!include "common/objects.glsl"
 //!include "common/scene.glsl"
 //!include "intersections/sphere.glsl"
@@ -39,6 +39,14 @@ vec4 lighting(Material mat, PointLight lgt, vec4 point, vec4 eyev, vec4 normalv)
 	}
 }
 
+vec4 normal_at(Obj o, vec4 world_point)
+{
+	vec4 local_point  = world_point * o.inv_transform;        // same convention as your intersect_sp
+	vec4 local_normal = vec4(local_point.xyz, 0.0);           // unit sphere at origin
+	vec4 n            = o.inv_transform * local_normal;
+	return vec4(normalize(n.xyz), 0.0);
+}
+
 Ray	rayForPixel(int px, int py, int index) {
 	float	world_x;
 	float	world_y;
@@ -54,11 +62,27 @@ Ray	rayForPixel(int px, int py, int index) {
 	r.direction = (normalize(pixel - r.origin));
 	if (px == 200 && py == 200)
 	{
-		debugData[index+5] = world_point;
-		debugData[index+6] = r.origin;
-		debugData[index+7] = r.direction;
+		debugData[index+9] = world_point;
+		debugData[index+10] = r.origin;
+		debugData[index+11] = r.direction;
 	}
 	return r;
+}
+
+Intersection intersect_world(Ray r)
+{
+	Intersection best = Intersection(INF, -1);
+	for (int i = 0; i < object_count; i++)
+	{
+		float t = INF;
+		if (objs[i].type == OBJ_SPHERE) {
+			t = intersect_sp(r, objs[i]);
+		}
+		
+		if (t < best.t)
+			best = Intersection(t, i);
+	}
+	return best;
 }
 
 void main()
@@ -70,19 +94,16 @@ void main()
 	if (px == 200 && py == 200)
 	{
 		debugData[index] = vec4(cam.half_width, cam.half_height, 0.f, cam.pixel_size);
-		debugData[index + 1] = cam.inv_transform[0];
-		debugData[index + 2] = cam.inv_transform[1];
-		debugData[index + 3] = cam.inv_transform[2];
-		debugData[index + 4] = cam.inv_transform[3];
+		debugData[index + 1] = objs[0].inv_transform[0];
+		debugData[index + 2] = objs[0].inv_transform[1];
+		debugData[index + 3] = objs[0].inv_transform[2];
+		debugData[index + 4] = objs[0].inv_transform[3];
+
+		debugData[index + 5] = objs[1].inv_transform[0];
+		debugData[index + 6] = objs[1].inv_transform[1];
+		debugData[index + 7] = objs[1].inv_transform[2];
+		debugData[index + 8] = objs[1].inv_transform[3];
 	}
-
-	Sphere s;
-	s.radius = 1.0;
-	s.center = vec4(0, 0, 0, 1.0);
-	s.i_matrix = mat4(1.0);
-
-	Material mat;
-	mat.color = vec4(1, 0, 0,0);
 
 	PointLight light;
 	light.position = vec4(-10, 10, -10, 1.0);
@@ -93,23 +114,17 @@ void main()
 
 	Ray r = rayForPixel(px, py, index);
 
-	float t = intersect_sp(r, s);
-	if (t == 0.0)
+	Intersection interMilan = intersect_world(r);
+	if (interMilan.object_id < 0)
 	{
 		FragColor = vec4(0.0, 0, 0.0, 1);
 		return;
 	}
-	vec4 point = r.origin + t * r.direction;
+	vec4 point = r.origin + interMilan.t * r.direction;
 	vec4 eyev = -r.direction;
 
-	vec4 normalv = normalize(point - s.center);
+	vec4 normalv = normal_at(objs[interMilan.object_id],point);
 	point = point + normalv* 0.00001 * 100.0;
 
-	FragColor = lighting(mat, light,point, eyev, normalv);
-
-	// debugData[index] = normalv;
-	// debugData[index+1] = eyev;
-	// debugData[index+2] = point;
-	// debugData[index+3] = vec4(t);
-	// debugData[index+4] = r.direction;
+	FragColor = lighting(objs[interMilan.object_id].mat, light,point, eyev, normalv);
 }
