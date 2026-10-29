@@ -27,7 +27,8 @@ typedef enum {
 	NONE,
 	SPHERE,
 	CYLINDER,
-	CAMERA
+	CAMERA,
+    LIGHT
 } ObjectId;
 
 

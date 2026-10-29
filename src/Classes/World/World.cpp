@@ -25,6 +25,13 @@ AObject* World::AddObject(ObjectId id)
 	return (objects.back().get());
 }
 
+Light& World::AddLight()
+{
+	lights.emplace_back();
+	return lights.back();
+}
+
+
 GpuScene World::buildGpuScene()	
 {
 	GpuScene s{};
@@ -32,13 +39,11 @@ GpuScene World::buildGpuScene()
 	for (const auto& o : objects)
 		if (!o->packIntoGpuScene(s))
 			std::cerr << "KO:: too many objects (max " << MAX_OBJECTS << ")" << std::endl;
-	// for (const auto& l : lights)
-	// 	if (!l.PackIntoGpuScene(s))
-	// 		std::cerr << "KO:: too many lights (max " << MAX_LIGHTS << ")" << std::endl;
+	for (const auto& l : lights)
+		if (!l.packIntoGpuScene(s))
+			std::cerr << "KO:: too many lights (max " << MAX_LIGHTS << ")" << std::endl;
 	return s;
 }
-
-
 
 const char* World::objectName(ObjectId id)
 {
@@ -48,7 +53,7 @@ const char* World::objectName(ObjectId id)
 
 void World::printWorld() const
 {
-	cam.print();                       // camera first
+	cam.print();
 	size_t i = 0;
 	for (const auto& obj : objects)
 	{
@@ -68,8 +73,13 @@ void World::printWorld() const
 		          << "  texture:    " << (m.texture.empty() ? "none" : m.texture) << "\n";
 		obj->printSpecific(std::cout);   // shape-specific properties
 	}
+	size_t j = 0;
+	for (const auto& light : lights)
+		light.print(j++);
+	std::cout << lights.size() << " light(s) in world" << std::endl;
 	std::cout << objects.size() << " object(s) in world" << std::endl;
 }
+
 void World::printIntersection()
 {
 	std::set<Intersection>::iterator it;

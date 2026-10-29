@@ -130,7 +130,7 @@ bool Camera::preBuild() {
 	return true;
 }
 
-bool Camera::packIntoGpuScene(GpuScene& s)
+bool Camera::packIntoGpuScene(GpuScene& s) const
 {
 	s.cam.inv_transform = inv_transform.getMatrix();
 	s.cam.half_width = half_width;

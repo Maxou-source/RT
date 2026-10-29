@@ -10,16 +10,16 @@
 # include "Camera.hpp"
 # include "rt.hpp"
 # include "GpuObjects.hpp"
+# include "Light.hpp"
 
 class AObject;
-class Light;
 class Ray;
 
 class World {
 	private:
 		std::set<Intersection>					intersects;
 		std::vector<std::unique_ptr<AObject>>	objects;
-		std::vector<Light *>					lights;
+		std::vector<Light>		lights;
 		Camera									cam;
 	public:
 	// Constructors and Destructors
@@ -28,16 +28,17 @@ class World {
 	// method
 		void					SetUpMatrixWorld();
 		AObject*				AddObject(ObjectId id);
+		Light&					AddLight();
 		void					add_sphere(float size, float x, float y, float z);
 		std::set<Intersection>	intersectWorld(Ray *r);
-		void printWorld() const;
-		void printIntersection();
+		void					printWorld() const;
+		void					printIntersection();
 
-		void setCamera(Camera &c);
-		Camera& getCamera();
+		void					setCamera(Camera &c);
+		Camera&					getCamera();
 
-		static const char* objectName(ObjectId id);
-		GpuScene	buildGpuScene();
+		static const char*		objectName(ObjectId id);
+		GpuScene				buildGpuScene();
 
 
 

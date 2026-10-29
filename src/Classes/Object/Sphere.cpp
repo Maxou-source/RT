@@ -45,6 +45,6 @@ bool Sphere::preBuild() {
 	return true;
 }
 
-bool Sphere::packIntoGpuScene(GpuScene& s) {
+bool Sphere::packIntoGpuScene(GpuScene& s) const {
 	return AObject::packIntoGpuScene(s);
 }

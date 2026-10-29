@@ -1,8 +1,9 @@
 #include "Light.hpp"
 #include "Sphere.hpp"
+#include "ParseUtils.hpp"
 #include <math.h>
 
-/*====== Constructors and Destructors =====*/
+// using namespace ParseUtils;
 
 Light::Light()
 {
@@ -10,36 +11,61 @@ Light::Light()
 	diffuse = 0.9;
 	specular = 0.9;
 	shininess = 200.0;
-	color = Tuple(1,1,1,POINT);
-	position = Tuple(-10, 10, -10, POINT);
-	// VALEUR EN DURE A CHANGER
+	color = {1.0f,1.0f,1.0f};
+	position = {-10, 10, -10, 0.0f};
 }
 
+bool	Light::packIntoGpuScene(GpuScene& s) const {
+	std::cout << "packing light" << std::endl;
+	if (s.light_count >= MAX_LIGHTS)
+		return false;
+	GpuLight& l = s.lights[s.light_count++];
 
-/*===== Methods =====*/
+	l.color[0] = color.r;
+	l.color[1] = color.g;
+	l.color[2] = color.b;
 
-// Tuple	Light::lighting(t_material mat, const Tuple& point, const Tuple& eyev, const Tuple& normalv)
-// {
-// 	Tuple eff_color = mat.color * color;
-// 	Tuple lightv = Tuple::normalize(position - point);
-// 	Tuple new_ambient = eff_color * ambient;
-// 	float light_dot_normal = normalv.dot_product(lightv);
-// 	if (light_dot_normal < 0)
-// 	{
-// 		return new_ambient;
-// 	}
-// 	else
-// 	{
-// 		Tuple diffuset = eff_color * 0.9 * light_dot_normal;
-// 		Tuple reflectv = Tuple::reflect(Tuple::negating(lightv), normalv);
-// 		float reflect_dot_eye = reflectv.dot_product(eyev);
-// 		if (reflect_dot_eye < 0)
-// 		{
-// 			Tuple new_specular = Tuple(0,0,0,POINT);
-// 			return new_ambient + diffuset + new_specular;
-// 		}
-// 		float factor = powf(reflect_dot_eye, shininess);
-// 		Tuple specularv = color * specular * factor;
-// 		return new_ambient + diffuset + specularv;
-// 	}
-// }
+	l.position[0] = position[0];
+	l.position[1] = position[1];
+	l.position[2] = position[2];
+
+	l.ambient = ambient;
+	l.specular = specular;
+	l.diffuse = diffuse;
+	return true;
+}
+
+bool	Light::setProperty(const std::string& key, const std::string& val) {
+	if (key == "position")
+		return parsePosition(val, position);
+		try {
+			if (key == "color")           return ParseUtils::parseColor(val, color);
+			if (key == "ambient")         ambient = std::stof(val);
+			else if (key == "diffuse")    diffuse = std::stof(val);
+			else if (key == "specular")   specular = std::stof(val);
+			else if (key == "shininess")  shininess = std::stof(val);
+			else return false;           // not a material key
+		} catch (const std::exception&) { return false; }
+		return true;
+}
+
+bool Light::preBuild() {
+	return true;
+}
+
+std::vector<std::string> Light::requiredKeys() const {
+	return {"position", "ambient", "diffuse", "color"};
+}
+
+const char * Light::typeString() const {
+	return "Light";
+}
+
+void Light::print(size_t index) const
+{
+	std::cout << "light " << index << colorprint::green << " [point]\n" << colorprint::reset
+	          << "  position:  (" << position.x << ", " << position.y << ", " << position.z << ")\n"
+	          << "  color:     (" << color.r << ", " << color.g << ", " << color.b << ")\n"
+	          << "  shininess: " << shininess << "\n";
+}
+

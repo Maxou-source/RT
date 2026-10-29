@@ -114,12 +114,7 @@ int main(int ac, char **av)
 	OpenGLObj.Whatever();
 	OpenGLObj.UploadScene(gpuS);
 	
-	// Camera cam(OpenGLObj.getShaderProgram(), Tuple(0,0,-2, POINT), Tuple(0,0,1,VECTOR), 90.0);
-
 	debugMessages(OpenGLObj);
-
-	// World w = buildScene1();
-
 	
 	FPSCounter fpsCounter;
 	bool one = true;
@@ -178,11 +173,10 @@ int main(int ac, char **av)
 	glfwTerminate();
 }
 
-/*=== TODO LIST ====*/
+// okay next
 /*
-	-finish buildMatrix at the end of matrix
-	-setup OpenGL
-		- clean stuff in OpenGl Object
-		- OpenGL include process
-	- cpu to gpu object
+	-implement cylinder
+	-check inside stuff is it okay
+	-cube, plane, cone
+	- movement
 */

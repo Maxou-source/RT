@@ -37,7 +37,7 @@ void packMatrix(const Matrix& m, t_m4& out)
 			out[r][c] = static_cast<float>(ret[r][c]);
 }
 
-bool AObject::packIntoGpuScene(GpuScene& s) {
+bool AObject::packIntoGpuScene(GpuScene& s) const {
 	std::cout << "packing"<< std::endl;
 	if (s.object_count >= MAX_OBJECTS)
 		return false;

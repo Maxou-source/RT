@@ -65,7 +65,7 @@ class AObject : public IParsable
 		virtual void printSpecific(std::ostream&) const {}
 		std::vector<std::string> requiredKeys() const override;
 		void	applyTransformations();
-		bool packIntoGpuScene(GpuScene& s) override;
+		bool packIntoGpuScene(GpuScene& s) const override;
 
 	// setters and getters
 		bool	setProperty(const std::string& key, const std::string& val) override;

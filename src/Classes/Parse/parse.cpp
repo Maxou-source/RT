@@ -1,5 +1,6 @@
 #include "parse.hpp"
 #include "AObject.hpp"
+#include "Light.hpp"
 
 Parse::Parse() {
 	w = new World;
@@ -27,7 +28,7 @@ bool Parse::checkFileRights(const char *fileName, std::ifstream *fileStream)
 
 ObjectId findObjectId(std::string& s)
 {
-	const std::array<std::string, 4> strings_id = {"None","Sphere", "Cylinder", "Camera"};
+	const std::array<std::string, 5> strings_id = {"None","Sphere", "Cylinder", "Camera", "Light"};
 	
 	for (size_t i = 1; i < strings_id.size(); i++) {
 		if (s.find(strings_id[i]) != std::string::npos)
@@ -98,7 +99,13 @@ bool	Parse::getBase()
 			objCamera.preBuild();
 			continue ;
 		}
-		if (objId != ObjectId::NONE) {
+		else if (objId == ObjectId::LIGHT) {
+			Light& objLight = w->AddLight();
+			if (!parseBlock(it, lines.end(), objLight)) {
+				return false;
+			}
+		}
+		else if (objId != ObjectId::NONE) {
 			AObject* obj = w->AddObject(objId);
 			bool blockResult = obj && parseBlock(it, lines.end(), *obj);
 			if (!blockResult){

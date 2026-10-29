@@ -36,7 +36,7 @@ const char * Cylinder::typeString() const {
 
 bool Cylinder::preBuild() {return true;}
 
-bool Cylinder::packIntoGpuScene(GpuScene& s) {
+bool Cylinder::packIntoGpuScene(GpuScene& s) const {
 	return true;
 }
 

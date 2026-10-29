@@ -18,7 +18,14 @@ struct GpuObject
 	int			_pad0 = 0, _pad1 = 0, _pad2 = 0;
 };
 
-struct GpuLight  { float position[3]; float _pad0 = 0; float intensity[3]; float _pad1 = 0; };
+struct GpuLight
+{
+	float position[3];  float _pad0 = 0;    // slot 0
+	float color[3];     float _pad1 = 0;    // slot 1
+	float ambient;      float diffuse;      // slot 2
+	float specular;     float _pad2 = 0;
+};
+static_assert(sizeof(GpuLight) == 48, "GpuLight must be 48 bytes");
 
 struct GpuCamera {
 	t_m4	inv_transform;

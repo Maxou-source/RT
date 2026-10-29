@@ -10,7 +10,7 @@ class Sphere : public AObject
 		void printSpecific(std::ostream& os) const override;
 		std::vector<std::string> requiredKeys() const override;
 	    const char * typeString() const override;
-	    bool packIntoGpuScene(GpuScene& s) override;
+	    bool packIntoGpuScene(GpuScene& s) const override;
 		bool preBuild() override;
 
 		bool setProperty(const std::string& key, const std::string& val) override;

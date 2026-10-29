@@ -9,5 +9,5 @@ struct IParsable
 	virtual bool preBuild() = 0;
 	virtual std::vector<std::string> requiredKeys() const = 0;
 	virtual const char * typeString() const = 0;
-	virtual bool packIntoGpuScene(GpuScene&) = 0;
+	virtual bool packIntoGpuScene(GpuScene&) const = 0;
 };

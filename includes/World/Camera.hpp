@@ -29,7 +29,7 @@ class Camera : public IParsable {
 		std::vector<std::string> requiredKeys() const override;
 		const char * typeString() const override;
 		bool preBuild() override;
-		bool packIntoGpuScene(GpuScene& s) override;
+		bool packIntoGpuScene(GpuScene& s) const override;
 	// Constructors and Destructors 
 		Camera();
 		Camera(unsigned int shaderProgram, const Tuple&, const Tuple&, float );

@@ -4,40 +4,7 @@ const float INF     = 1e30;
 //!include "common/objects.glsl"
 //!include "common/scene.glsl"
 //!include "intersections/sphere.glsl"
-
-vec4 lighting(Material mat, PointLight lgt, vec4 point, vec4 eyev, vec4 normalv)
-{
-	vec4  eff_color         = mat.color * lgt.color;
-	vec4  lightv            = normalize(lgt.position - point);
-	vec4  new_ambient       = eff_color * lgt.ambient;
-	float light_dot_normal  = dot(normalv, lightv);
-
-	int px = int(gl_FragCoord.x);
-	int py = int(gl_FragCoord.y);
-
-	if (light_dot_normal < 0.0)
-	{
-		return new_ambient;
-	}
-	else
-	{
-		vec4 diffuset = eff_color * 0.9 * light_dot_normal;
-		vec4 reflectv = reflect(-lightv, normalv);
-		float reflect_dot_eye = dot(reflectv, eyev);
-
-		if (reflect_dot_eye < 0.0)
-		{
-			// debugData[index] = vec4(mat.color.xyz, 3.0);
-			vec4 new_specular = vec4(0, 0, 0, 0);
-			return new_ambient + diffuset + new_specular;
-		}
-		
-		// debugData[index] = vec4(mat.color.xyz, 4.0);
-		float factor = pow(reflect_dot_eye, lgt.shininess);
-		vec4 specularv = lgt.color * lgt.specular * factor;
-		return new_ambient + diffuset + specularv;
-	}
-}
+//!include "lights/lighting.glsl"
 
 vec4 normal_at(Obj o, vec4 world_point)
 {
@@ -85,6 +52,19 @@ Intersection intersect_world(Ray r)
 	return best;
 }
 
+bool is_shadowed(vec4 point, Light lgt)
+{
+	vec4  v        = lgt.position - point;
+	float distance = length(v.xyz);
+
+	Ray shadowRay;
+	shadowRay.origin    = point;
+	shadowRay.direction = vec4(normalize(v.xyz), 0.0);   // w = 0: it's a direction
+
+	Intersection h = intersect_world(shadowRay);
+	return (h.object_id >= 0 && h.t < distance);
+}
+
 void main()
 {
 	int px = int(gl_FragCoord.x);
@@ -93,7 +73,7 @@ void main()
 
 	if (px == 200 && py == 200)
 	{
-		debugData[index] = vec4(cam.half_width, cam.half_height, 0.f, cam.pixel_size);
+		debugData[index] = vec4(light_count, cam.half_height, 0.f, cam.pixel_size);
 		debugData[index + 1] = objs[0].inv_transform[0];
 		debugData[index + 2] = objs[0].inv_transform[1];
 		debugData[index + 3] = objs[0].inv_transform[2];
@@ -104,14 +84,6 @@ void main()
 		debugData[index + 7] = objs[1].inv_transform[2];
 		debugData[index + 8] = objs[1].inv_transform[3];
 	}
-
-	PointLight light;
-	light.position = vec4(-10, 10, -10, 1.0);
-	light.color = vec4(1, 1, 1, 1);
-	light.ambient = 0.1;
-	light.specular = 0.9;
-	light.shininess = 200.0;
-
 	Ray r = rayForPixel(px, py, index);
 
 	Intersection interMilan = intersect_world(r);
@@ -120,11 +92,20 @@ void main()
 		FragColor = vec4(0.0, 0, 0.0, 1);
 		return;
 	}
+
 	vec4 point = r.origin + interMilan.t * r.direction;
 	vec4 eyev = -r.direction;
 
 	vec4 normalv = normal_at(objs[interMilan.object_id],point);
+	if (dot(normalv, eyev) < 0.0) {
+		normalv = -normalv;
+	}
 	point = point + normalv* 0.00001 * 100.0;
-
-	FragColor = lighting(objs[interMilan.object_id].mat, light,point, eyev, normalv);
+	FragColor = vec4(0.0, 0, 0.0, 1);
+	for (int i = 0; i < light_count; i++)
+	{
+		bool shadowed = is_shadowed(point, lights[i]);
+		FragColor += lighting(objs[interMilan.object_id].mat, lights[i] ,point, eyev, normalv, shadowed);
+	}
+	
 }

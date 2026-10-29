@@ -13,8 +13,10 @@ struct Ray {
 };
 
 struct Light {
-    vec3  position;   float _pad0;
-    vec3  intensity;  float _pad1;
+    vec4  position;
+    vec4  color;
+    float ambient;   float diffuse;    // slot 2 (16 bytes)
+    float specular;  float _pad2;
 };
 
 struct Sphere {
