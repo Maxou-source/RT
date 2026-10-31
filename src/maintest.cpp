@@ -85,6 +85,8 @@ void printMat4(const float* m, const char* name)
     }
 }
 
+
+
 int main(int ac, char **av)
 {
 	/*====== GRAPHICAL TESTS======*/
@@ -107,6 +109,10 @@ int main(int ac, char **av)
 
 	GpuScene gpuS = w->buildGpuScene();
 	// printGpuScene(gpuS);
+
+	std::cout << "scene scale is " << w->sceneScale() << std::endl;
+	float baseSpeed  = w->sceneScale() * 0.25f;   // cross a quarter of the scene per second
+	float speedMul   = 1.0f;                         // runtime multiplier
 	OpenGLObject OpenGLObj;
 
 	OpenGLObj.SetVertexShader();
@@ -118,6 +124,7 @@ int main(int ac, char **av)
 	
 	FPSCounter fpsCounter;
 	bool one = true;
+	double last = glfwGetTime();
 	while (!glfwWindowShouldClose(OpenGLObj.getWindow()))
 	{
 		glfwPollEvents();
@@ -135,7 +142,27 @@ int main(int ac, char **av)
 		std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 12);
 		glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-		
+
+		double now = glfwGetTime();
+		float  dt  = float(now - last);
+		last = now;
+
+		float step = baseSpeed * speedMul * dt;
+		float fwd = 0, rgt = 0, upw = 0;
+		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_W) == GLFW_PRESS) fwd += step;
+		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_S) == GLFW_PRESS) fwd -= step;
+		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_D) == GLFW_PRESS) rgt += step;
+		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_A) == GLFW_PRESS) rgt -= step;
+		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_E) == GLFW_PRESS) upw += step;
+		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_Q) == GLFW_PRESS) upw -= step;
+
+		if (fwd || rgt || upw)
+		{
+			w->getCamera().move(fwd, rgt, upw);
+			w->getCamera().packIntoGpuScene(gpuS);
+			OpenGLObj.UploadCamera(gpuS);   // only when something changed
+		}
+
 		if (one == true)
 		{
 			int px = 0, py = 0;

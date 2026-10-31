@@ -31,10 +31,6 @@ void	Camera::rayForPixel(int px, int py, Ray *r) {
 	pixel = world_point * inv_transform;
 	r->setOrigin(Tuple(0,0,0,1.0) * inv_transform);
 	r->setDirection(Tuple::normalize(pixel - r->getOrigin()));
-	if (px == 200 && px == 200)
-	{
-
-	}
 }
 
 Camera::Camera(unsigned int shaderProgram, const Tuple& pov, const Tuple& orient, float f) {
@@ -145,4 +141,19 @@ bool Camera::setProperty(const std::string& key, const std::string& val)
 	if (key == "orientation") return parseVec(val, orientation, 0.f);
 	if (key == "fov")         { try { fov = std::stof(val); } catch (...) { return false; } return true; }
 	return false;
+}
+
+void Camera::move(float forward, float right, float up)
+{
+	Tuple f = orientation;
+	f.normalize();
+	Tuple r(0, 1, 0, 0);
+	r = r.cross_product(f);
+	r.normalize();
+	// normalize(cross_product(f, t_f4{0, 1, 0, 0}));  // flip the order if left/right is inverted
+	Tuple u = r.cross_product(f);
+
+	Tuple pos = (f * forward + r * right + u * up) + position;
+	position = pos.getValue();
+	preBuild();                                              // rebuild the view matrix
 }

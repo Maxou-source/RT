@@ -332,3 +332,43 @@ Matrix Matrix::view_transform(const Tuple& from, const Tuple& forward, const Tup
 	// tmp.display();
 	return m * tmp;
 }
+
+
+// Matrix.cpp
+void Matrix::orientation(float x, float y, float z)
+{
+	float len = sqrtf(x * x + y * y + z * z);
+	if (len < 1e-6f)
+		return;                          // no direction: keep current matrix
+	x /= len; y /= len; z /= len;
+
+	// axis = cross((0,1,0), dir) = (z, 0, -x)
+	// cos(t) = dot((0,1,0), dir) = y
+	float c = y;
+	float ax = z, ay = 0.0f, az = -x;
+	float s = sqrtf(ax * ax + az * az);  // sin(t) = |axis|, no acos needed
+
+	if (s < 1e-6f)                       // dir parallel to Y
+	{
+		if (c > 0.0f)
+			return;                      // same direction: identity rotation
+		// opposite direction: 180 degrees around X
+		matrix[1][1] = -1.0f;
+		matrix[2][2] = -1.0f;
+		return;
+	}
+	ax /= s; az /= s;                    // normalize the axis
+	float k = 1.0f - c;
+
+	matrix[0][0] = c + k * ax * ax;
+	matrix[0][1] = k * ax * ay - s * az;
+	matrix[0][2] = k * ax * az + s * ay;
+
+	matrix[1][0] = k * ax * ay + s * az;
+	matrix[1][1] = c + k * ay * ay;
+	matrix[1][2] = k * ay * az - s * ax;
+
+	matrix[2][0] = k * ax * az - s * ay;
+	matrix[2][1] = k * ay * az + s * ax;
+	matrix[2][2] = c + k * az * az;
+}

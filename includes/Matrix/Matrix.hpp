@@ -32,14 +32,15 @@ class Matrix {
 
 		Matrix operator*(const Matrix& m);
 	// utils
-		t_m3	submatrix(int row, int column);
-		float	determinant();
-		float	cofactor4(int row, int column);
-		float	cofactor3(t_m3 m, int row, int column);
-		t_m2	submatrix_f3(t_m3 matrix, int row, int column);
-		float	determinant_2b2(t_m2 m);
-		float	minor_f3(t_m3 m, int row, int column);
+		t_m3			submatrix(int row, int column);
+		float			determinant();
+		float			cofactor4(int row, int column);
+		float			cofactor3(t_m3 m, int row, int column);
+		t_m2			submatrix_f3(t_m3 matrix, int row, int column);
+		float			determinant_2b2(t_m2 m);
+		float			minor_f3(t_m3 m, int row, int column);
 		static Matrix	view_transform(const Tuple &,const Tuple &,const Tuple &);
+		void			orientation(float x, float y, float z);
 
 	// setters and getters
 		t_m4	getMatrix() const {return matrix;}

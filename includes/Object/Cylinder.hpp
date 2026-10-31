@@ -8,6 +8,7 @@ class Cylinder : public AObject
     private:
         float height = 1.0f;
 		float		diameter;
+        t_f4        orientation;
     public:
         Cylinder();
         ObjectId type() const override {return ObjectId::CYLINDER;}

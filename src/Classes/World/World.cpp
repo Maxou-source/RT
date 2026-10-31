@@ -45,6 +45,11 @@ GpuScene World::buildGpuScene()
 	return s;
 }
 
+GpuScene World::changeCameraForGpuScene(GpuScene s)
+{
+	cam.packIntoGpuScene(s);
+}
+
 const char* World::objectName(ObjectId id)
 {
 	static const char* names[] = {"None", "Sphere", "Cylinder"};
@@ -87,6 +92,28 @@ void World::printIntersection()
 	{
 		std::cout << "intersected at " << (*it).getT() << std::endl;
 	}
+}
+
+float World::sceneScale() const
+{
+	if (objects.empty())
+		return 1.0f;
+
+	t_f4 mn = objects[0]->getPosition();
+	t_f4 mx = mn;
+	for (const auto& o : objects)
+	{
+		t_f4 p = o->getPosition();
+		mn = {std::min(mn.x, p.x), std::min(mn.y, p.y), std::min(mn.z, p.z), 1};
+		mx = {std::max(mx.x, p.x), std::max(mx.y, p.y), std::max(mx.z, p.z), 1};
+	}
+	t_f4 c = cam.getPosition();                       // include the camera
+	mn = {std::min(mn.x, c.x), std::min(mn.y, c.y), std::min(mn.z, c.z), 1};
+	mx = {std::max(mx.x, c.x), std::max(mx.y, c.y), std::max(mx.z, c.z), 1};
+
+	t_f4 d = mx - mn;
+	float size = sqrtf(d.x * d.x + d.y * d.y + d.z * d.z);
+	return size > 1e-4f ? size : 1.0f;                // degenerate scene: fall back to 1
 }
 
 /*================ SETTERS AND GETTERS =========================*/

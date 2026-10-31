@@ -11,6 +11,7 @@ class OpenGLObject
 		bool SetVertexShader();
 		bool SetFragmentShader(const std::string& rootFile);
 		void UploadScene(const GpuScene& scene);
+		void UploadCamera(const GpuScene& scene);
 		bool Whatever();
 
 		// Setters and getters

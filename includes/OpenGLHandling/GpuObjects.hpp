@@ -15,7 +15,8 @@ struct GpuObject
 	t_m4		inv_transform;
 	GpuMaterial	mat;
 	int			type;
-	int			_pad0 = 0, _pad1 = 0, _pad2 = 0;
+	float		param;
+	int			_pad1 = 0, _pad2 = 0;
 };
 
 struct GpuLight

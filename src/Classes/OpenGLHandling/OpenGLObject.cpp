@@ -104,6 +104,7 @@ bool OpenGLObject::SetFragmentShader(const std::string& rootFile)
 	if (!loader.load(rootFile, {
 			{"MAX_OBJECTS",  std::to_string(MAX_OBJECTS)},
 			{"MAX_LIGHTS",   std::to_string(MAX_LIGHTS)},
+			{"EPSILON",   std::to_string(EPSILON)},
 			{"OBJ_SPHERE",   std::to_string((int)ObjectId::SPHERE)},
 			{"OBJ_CYLINDER", std::to_string((int)ObjectId::CYLINDER)},
 		}, source))
@@ -188,6 +189,12 @@ void OpenGLObject::UploadScene(const GpuScene& scene)
 		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GpuScene), &scene);  // <- TRANSFER on updates
 	}
+}
+
+void OpenGLObject::UploadCamera(const GpuScene& scene)
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+	glBufferSubData(GL_UNIFORM_BUFFER, offsetof(GpuScene, cam), sizeof(GpuCamera), &scene.cam);
 }
 /*============= SETTERS && GETTERS ===========*/
 

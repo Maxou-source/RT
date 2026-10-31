@@ -1,3 +1,13 @@
 {
-	"cmake.sourceDirectory": "/home/maximilien/Documents/42/RT2/Cpp/glfw"
+	"cmake.sourceDirectory": "/home/maximilien/Documents/42/RT2/Cpp/glfw",
+	"files.associations": {
+		"array": "c",
+		"compare": "c",
+		"random": "c",
+		"fstream": "c",
+		"sstream": "c",
+		"tuple": "c",
+		"variant": "c",
+		"system_error": "c"
+	}
 }

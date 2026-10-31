@@ -1,9 +1,11 @@
 
 out vec4 FragColor;
 const float INF     = 1e30;
+//!include "utils.glsl"
 //!include "common/objects.glsl"
 //!include "common/scene.glsl"
 //!include "intersections/sphere.glsl"
+//!include "intersections/cylinder.glsl"
 //!include "lights/lighting.glsl"
 
 vec4 normal_at(Obj o, vec4 world_point)
@@ -11,6 +13,29 @@ vec4 normal_at(Obj o, vec4 world_point)
 	vec4 local_point  = world_point * o.inv_transform;        // same convention as your intersect_sp
 	vec4 local_normal = vec4(local_point.xyz, 0.0);           // unit sphere at origin
 	vec4 n            = o.inv_transform * local_normal;
+	return vec4(normalize(n.xyz), 0.0);
+}
+
+vec4 normal_at_cy(Obj o, vec4 world_point)
+{
+	vec4 lp = world_point * o.inv_transform;
+	vec4 local_normal;
+
+	if (o.type == OBJ_CYLINDER)
+	{
+		float half_h = o.param / 2.0;
+		float dist   = lp.x * lp.x + lp.z * lp.z;
+		if (dist < 1.0 - 0.001 && lp.y >= half_h - 0.001)
+			local_normal = vec4(0.0,  1.0, 0.0, 0.0);   // top cap
+		else if (dist < 1.0 - 0.001 && lp.y <= -half_h + 0.001)
+			local_normal = vec4(0.0, -1.0, 0.0, 0.0);   // bottom cap
+		else
+			local_normal = vec4(lp.x, 0.0, lp.z, 0.0);  // side
+	}
+	else
+		local_normal = vec4(lp.xyz, 0.0);               // sphere
+
+	vec4 n = o.inv_transform * local_normal;           // transpose(inverse) in your convention
 	return vec4(normalize(n.xyz), 0.0);
 }
 
@@ -44,6 +69,10 @@ Intersection intersect_world(Ray r)
 		float t = INF;
 		if (objs[i].type == OBJ_SPHERE) {
 			t = intersect_sp(r, objs[i]);
+		}
+		else if (objs[i].type == OBJ_CYLINDER) {
+			// t = intersect_cy(r, );
+			t = intersect_cy(r, objs[i]);
 		}
 		
 		if (t < best.t)
@@ -96,7 +125,12 @@ void main()
 	vec4 point = r.origin + interMilan.t * r.direction;
 	vec4 eyev = -r.direction;
 
-	vec4 normalv = normal_at(objs[interMilan.object_id],point);
+	vec4 normalv;
+	if (objs[interMilan.object_id].type == OBJ_CYLINDER)
+		normalv = normal_at_cy(objs[interMilan.object_id],point);
+	else
+		normalv = normal_at(objs[interMilan.object_id],point);
+
 	if (dot(normalv, eyev) < 0.0) {
 		normalv = -normalv;
 	}
@@ -107,5 +141,4 @@ void main()
 		bool shadowed = is_shadowed(point, lights[i]);
 		FragColor += lighting(objs[interMilan.object_id].mat, lights[i] ,point, eyev, normalv, shadowed);
 	}
-	
 }

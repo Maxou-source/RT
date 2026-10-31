@@ -35,6 +35,7 @@ class Camera : public IParsable {
 		Camera(unsigned int shaderProgram, const Tuple&, const Tuple&, float );
 		Camera(const Tuple& pov, const Tuple& orient, float f);
 		void print() const;
+		void move(float forward, float right, float up);
 
 	// Methods
 		void	rayForPixel(int px, int py, Ray *r);
@@ -43,6 +44,8 @@ class Camera : public IParsable {
 
 		// bool	buildMatrix() override;
 
+	// getters and setters
+		t_f4 getPosition(void) const {return position;}
 };
 
 #endif
