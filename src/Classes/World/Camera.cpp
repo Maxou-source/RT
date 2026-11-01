@@ -108,7 +108,6 @@ Camera::Camera(const Tuple& pov, const Tuple& orient, float f) {
 bool Camera::preBuild() {
 	half_view = (fov * PI) / 180.0;
 	float aspect_ratio = (float)WIN_WIDTH / (float)WIN_HEIGHT;
-	std::cout << "aspect _ratio "  << aspect_ratio << std::endl;
 	if (aspect_ratio >= 1)
 	{
 		half_width = half_view;

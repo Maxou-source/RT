@@ -98,6 +98,7 @@ SRC_MATRIX			=	$(addprefix $(MATRIX_DIR), \
 SRC_OBJECTS			= $(addprefix $(OBJECTS_DIR), \
 						AObject.cpp \
 						Sphere.cpp \
+						Cube.cpp \
 						Cylinder.cpp \
 						Light.cpp \
 						)

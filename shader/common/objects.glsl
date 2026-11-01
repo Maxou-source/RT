@@ -1,4 +1,6 @@
 
+const float INF     = 1e30;
+
 struct camera {
 	mat4	inv_transform;
 	float	half_width;

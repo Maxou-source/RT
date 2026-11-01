@@ -8,6 +8,8 @@
 # include <iostream>
 # include <vector>
 # include <array>
+# include <stdlib.h>
+# include <string.h>
 
 #define WIN_HEIGHT 800
 #define WIN_WIDTH 1000
@@ -27,6 +29,7 @@ typedef enum {
 	NONE,
 	SPHERE,
 	CYLINDER,
+    CUBE,
 	CAMERA,
     LIGHT
 } ObjectId;

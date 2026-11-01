@@ -1,6 +1,7 @@
 #include "World.hpp"
 #include "Sphere.hpp"
 #include "Cylinder.hpp"
+#include "Cube.hpp"
 #include "Ray.hpp"
 # include <memory>
 
@@ -20,6 +21,7 @@ AObject* World::AddObject(ObjectId id)
 	{
 		case ObjectId::SPHERE:		objects.push_back(std::make_unique<Sphere>()); break;
 		case ObjectId::CYLINDER:	objects.push_back(std::make_unique<Cylinder>()); break;
+		case ObjectId::CUBE:		objects.push_back(std::make_unique<Cube>()); break;
 		default: return nullptr;
 	}
 	return (objects.back().get());
@@ -45,14 +47,9 @@ GpuScene World::buildGpuScene()
 	return s;
 }
 
-GpuScene World::changeCameraForGpuScene(GpuScene s)
-{
-	cam.packIntoGpuScene(s);
-}
-
 const char* World::objectName(ObjectId id)
 {
-	static const char* names[] = {"None", "Sphere", "Cylinder"};
+	static const char* names[] = {"None", "Sphere", "Cylinder", "Cube"};
 	return names[static_cast<int>(id)];
 }
 

@@ -28,7 +28,7 @@ bool Parse::checkFileRights(const char *fileName, std::ifstream *fileStream)
 
 ObjectId findObjectId(std::string& s)
 {
-	const std::array<std::string, 5> strings_id = {"None","Sphere", "Cylinder", "Camera", "Light"};
+	const std::array<std::string, 6> strings_id = {"None","Sphere", "Cylinder", "Cube", "Camera", "Light"};
 	
 	for (size_t i = 1; i < strings_id.size(); i++) {
 		if (s.find(strings_id[i]) != std::string::npos)
@@ -75,6 +75,7 @@ bool Parse::parseBlock(IterVectorString& it, IterVectorString end, IParsable& ta
 		}
 		seenKeys.insert(key);
 	}
+	std::cout << "celui la" << std::endl;
 	return false;
 }
 
@@ -109,7 +110,7 @@ bool	Parse::getBase()
 			AObject* obj = w->AddObject(objId);
 			bool blockResult = obj && parseBlock(it, lines.end(), *obj);
 			if (!blockResult){
-				std::cerr << "Something wrong with file" << std::endl;
+				std::cerr << "Something wrong with fileeeeeeee" << std::endl;
 				return false;
 			}
 			obj->preBuild();

@@ -1,0 +1,54 @@
+Camera {
+    position: [0,0,-3]
+    orientation: [0,0,1]
+    fov: 90
+}
+
+Sphere {
+    color: [0.8, 0.8, 0.8]
+    position: [0,0,0]
+    specular: 0.2
+    diameter: 20
+    pattern: false
+}
+
+Sphere {
+    color: [1, 0, 0]
+    position: [-2,0,3]
+    diameter: 2
+    specular: 0.9
+    pattern: false
+}
+
+Cylinder {
+    color: [0, 0, 1]
+    position: [2,0,3]
+    orientation: [0,1,0.5]
+    diameter: 1.5
+    height: 3
+    specular: 0.5
+    pattern: false
+}
+
+Light {
+    position: [0,4,0]
+    color: [1,1,1]
+    ambient: 0.1
+    diffuse: 0.9
+    specular: 0.9
+}
+
+Light {
+    position: [-30,30,-30]
+    color: [1,1,1]
+    ambient: 0.1
+    diffuse: 0.9
+    specular: 0.9
+}
+
+Cube {
+	position : [0,0,0]
+	color : [0,1,0]
+	orientation: [0,1,0]
+	size : 2.0
+}

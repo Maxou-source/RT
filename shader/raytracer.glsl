@@ -1,6 +1,5 @@
 
 out vec4 FragColor;
-const float INF     = 1e30;
 //!include "utils.glsl"
 //!include "common/objects.glsl"
 //!include "common/scene.glsl"

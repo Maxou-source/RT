@@ -39,7 +39,6 @@ class World {
 
 		static const char*		objectName(ObjectId id);
 		GpuScene				buildGpuScene();
-		GpuScene				changeCameraForGpuScene(GpuScene s);
 		float sceneScale() const;
 
 

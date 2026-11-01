@@ -145,13 +145,13 @@ bool OpenGLObject::Whatever()
 
 
 	glBindVertexArray(VAO);
-	// 2. copy our vertices array in a vertex buffer for OpenGL to use
+
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	// 3. copy our index array in a element buffer for OpenGL to use
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-	// 4. then set the vertex attributes pointers
+
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0); 
 
@@ -159,15 +159,19 @@ bool OpenGLObject::Whatever()
 	const int width = WIN_WIDTH, height = WIN_HEIGHT;
 	const int numPixels = width * height;
 
-	
+	// directive to gpu use the layout binding at index 0
 	glGenBuffers(1, &debugSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, debugSSBO);
 	const int slotsPerPixel = 12;
+	// "allocate" the memory at this address
 	glBufferData(GL_SHADER_STORAGE_BUFFER,
 				(size_t)numPixels * slotsPerPixel * sizeof(float) * 4,
 				nullptr, GL_DYNAMIC_READ);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, debugSSBO); // binding = 0, matches shader
+	
+	// bind it with the allocated size I guess
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, debugSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	
 	return true;
 }
 
@@ -175,19 +179,18 @@ void OpenGLObject::UploadScene(const GpuScene& scene)
 {
 	if (!ubo)
 	{
-		glGenBuffers(1, &ubo);                                   // create a GPU buffer
+		glGenBuffers(1, &ubo);
 		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(GpuScene),        // <- TRANSFER HERE:
-		             &scene, GL_DYNAMIC_DRAW);                   //    copies sizeof(GpuScene) bytes
-		                                                         //    from &scene into GPU memory
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(GpuScene),
+		             &scene, GL_DYNAMIC_DRAW);
 		GLuint idx = glGetUniformBlockIndex(shaderProgram, "Scene");
-		glUniformBlockBinding(shaderProgram, idx, 0);            // shader block "Scene" -> slot 0
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo);             // buffer -> slot 0
+		glUniformBlockBinding(shaderProgram, idx, 0);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo);
 	}
 	else
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GpuScene), &scene);  // <- TRANSFER on updates
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GpuScene), &scene);
 	}
 }
 
@@ -206,7 +209,7 @@ const char* OpenGLObject::getInfoLog() const {
 void OpenGLObject::setInfoLog(const char* log) {
     if (log != nullptr) {
         strncpy(infoLog, log, sizeof(infoLog) - 1);
-        infoLog[sizeof(infoLog) - 1] = '\0'; // Ensure null termination
+        infoLog[sizeof(infoLog) - 1] = '\0';
     }
 }
 

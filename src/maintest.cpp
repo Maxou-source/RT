@@ -85,6 +85,33 @@ void printMat4(const float* m, const char* name)
     }
 }
 
+bool runGpuTest()
+{
+	OpenGLObject	oglo;
+
+	std::cout << "running tests" << std::endl;
+	oglo.SetVertexShader();
+	oglo.SetFragmentShader("shader/tests/cube_tests.glsl");
+	oglo.Whatever();
+
+	// 1. actually run the shader: draw the fullscreen quad once
+	glUseProgram(oglo.getShaderProgram());
+	glBindVertexArray(oglo.getVAO());
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+
+	// 2. make the shader's SSBO writes visible
+	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, oglo.getDebugSSBO());
+
+	std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 12);
+	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	int idx = 0;
+	std::cout << "debugout 0 " << debugOut[0] << std::endl;
+	return false;
+}
 
 
 int main(int ac, char **av)
@@ -93,6 +120,8 @@ int main(int ac, char **av)
 	Parse	par;
 	World	*w;
 
+	if (ac == 2 && !strcmp(av[1], "--test"))
+		return runGpuTest();
 	if (ac != 2 || par.parseFileAndName(av[1]))
 	{
 		std::cerr << "KO:: Wrong number of arguments" << std::endl;
@@ -111,8 +140,8 @@ int main(int ac, char **av)
 	// printGpuScene(gpuS);
 
 	std::cout << "scene scale is " << w->sceneScale() << std::endl;
-	float baseSpeed  = w->sceneScale() * 0.25f;   // cross a quarter of the scene per second
-	float speedMul   = 1.0f;                         // runtime multiplier
+	float baseSpeed  = w->sceneScale() * 0.25f;
+	float speedMul   = 1.0f;
 	OpenGLObject OpenGLObj;
 
 	OpenGLObj.SetVertexShader();
@@ -135,19 +164,20 @@ int main(int ac, char **av)
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		
+		glfwSwapInterval(1);
+
 		glfwSwapBuffers(OpenGLObj.getWindow());
+		fpsCounter.update(); 
 		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 		
 		glBindBuffer(GL_SHADER_STORAGE_BUFFER, OpenGLObj.getDebugSSBO());
-		std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 12);
-		glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
 
 		double now = glfwGetTime();
 		float  dt  = float(now - last);
 		last = now;
 
-		float step = baseSpeed * speedMul * dt;
+		float step = baseSpeed * speedMul * dt;	
 		float fwd = 0, rgt = 0, upw = 0;
 		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_W) == GLFW_PRESS) fwd += step;
 		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_S) == GLFW_PRESS) fwd -= step;
@@ -158,6 +188,7 @@ int main(int ac, char **av)
 
 		if (fwd || rgt || upw)
 		{
+			std::cout << "step " << step << std::endl;
 			w->getCamera().move(fwd, rgt, upw);
 			w->getCamera().packIntoGpuScene(gpuS);
 			OpenGLObj.UploadCamera(gpuS);   // only when something changed
@@ -165,6 +196,9 @@ int main(int ac, char **av)
 
 		if (one == true)
 		{
+			std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 12);
+			glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
+			glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 			int px = 0, py = 0;
 			while (py < WIN_HEIGHT)
 			{
@@ -200,10 +234,11 @@ int main(int ac, char **av)
 	glfwTerminate();
 }
 
-// okay next
 /*
-	-implement cylinder
-	-check inside stuff is it okay
-	-cube, plane, cone
-	- movement
+ okay next:
+	- implement cylinder (check)
+	- check inside stuff is it okay (check)
+	- cube, plane, cone
+	- movement (check)
+	- move back tyo compute shaders
 */

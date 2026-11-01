@@ -1,0 +1,30 @@
+Sphere {
+    color: [0, 1, 1]
+    position: [1,2,0]
+    specular: .23
+    diameter: 1
+    pattern: true
+}
+
+Sphere {
+    color: [1, 1, 1]
+    position: [-2,0,0]
+    specular: .23
+    diameter: 2
+    pattern: true
+}
+
+
+Camera {
+    position: [0,0,-10]
+    orientation: [0,0,1]
+    fov: 90
+}
+
+Light {
+    position: [-10, 10, -10]
+    color: [1,1,1]
+    ambient : 0.1
+    specular : 1.0
+    diffuse: 0.1
+}

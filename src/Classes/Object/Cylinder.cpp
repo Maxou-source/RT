@@ -27,7 +27,6 @@ bool Cylinder::setProperty(const std::string& key, const std::string& val)
 		try { diameter = std::stof(val); } catch (...) { return false; }
 		return true;
 	}
-	if (key == "orientation") return parseVec(val, orientation, 0.f);
 	else if (key == "orientation") return parseVec(val, orientation, 0.f);
 	return AObject::setProperty(key, val);
 }
