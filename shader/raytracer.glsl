@@ -6,6 +6,7 @@ out vec4 FragColor;
 //!include "intersections/sphere.glsl"
 //!include "intersections/cylinder.glsl"
 //!include "intersections/cube.glsl"
+//!include "intersections/plane.glsl"
 //!include "lights/lighting.glsl"
 
 vec4 normal_at(Obj o, vec4 world_point)
@@ -57,6 +58,13 @@ vec4 normal_at_cu(Obj o, vec4 world_point)
 	return vec4(normalize(n.xyz), 0.0);
 }
 
+vec4 normal_at_pl(Obj o, vec4 p)
+{
+	vec4 world_point = o.inv_transform * vec4(0,1,0,0);
+	world_point.w = 0;
+	return (normalize(world_point));
+}
+
 Ray	rayForPixel(int px, int py, int index) {
 	float	world_x;
 	float	world_y;
@@ -91,6 +99,8 @@ Intersection intersect_world(Ray r)
 			t = intersect_cy(r, objs[i]);
 		} else if (objs[i].type == OBJ_CUBE) {
 			t = intersect_cu(r, objs[i]);
+		} else if (objs[i].type == OBJ_PLANE) {
+			t = intersect_pl(r, objs[i]);
 		}
 		
 		if (t < best.t)
@@ -148,6 +158,8 @@ void main()
 		normalv = normal_at_cy(objs[interMilan.object_id], point);
 	else if (objs[interMilan.object_id].type == OBJ_CUBE)
 		normalv = normal_at_cu(objs[interMilan.object_id], point);
+	else if (objs[interMilan.object_id].type == OBJ_PLANE)
+		normalv = normal_at_pl(objs[interMilan.object_id], point);
 	else
 		normalv = normal_at(objs[interMilan.object_id],point);
 
