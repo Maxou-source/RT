@@ -7,6 +7,7 @@ out vec4 FragColor;
 //!include "intersections/cylinder.glsl"
 //!include "intersections/cube.glsl"
 //!include "intersections/plane.glsl"
+//!include "intersections/cone.glsl"
 //!include "lights/lighting.glsl"
 
 vec4 normal_at(Obj o, vec4 world_point)
@@ -22,19 +23,40 @@ vec4 normal_at_cy(Obj o, vec4 world_point)
 	vec4 lp = world_point * o.inv_transform;
 	vec4 local_normal;
 
-	if (o.type == OBJ_CYLINDER)
-	{
-		float half_h = o.param / 2.0;
-		float dist   = lp.x * lp.x + lp.z * lp.z;
-		if (dist < 1.0 - 0.001 && lp.y >= half_h - 0.001)
-			local_normal = vec4(0.0,  1.0, 0.0, 0.0);   // top cap
-		else if (dist < 1.0 - 0.001 && lp.y <= -half_h + 0.001)
-			local_normal = vec4(0.0, -1.0, 0.0, 0.0);   // bottom cap
-		else
-			local_normal = vec4(lp.x, 0.0, lp.z, 0.0);  // side
-	}
+	float half_h = o.param / 2.0;
+	float dist   = lp.x * lp.x + lp.z * lp.z;
+	if (dist < 1.0 - 0.001 && lp.y >= half_h - 0.001)
+		local_normal = vec4(0.0,  1.0, 0.0, 0.0);   // top cap
+	else if (dist < 1.0 - 0.001 && lp.y <= -half_h + 0.001)
+		local_normal = vec4(0.0, -1.0, 0.0, 0.0);   // bottom cap
 	else
-		local_normal = vec4(lp.xyz, 0.0);
+	{
+
+		local_normal = vec4(lp.x, 0.0, lp.z, 0.0);  // side
+	}
+
+	vec4 n = o.inv_transform * local_normal;           // transpose(inverse) in your convention
+	return vec4(normalize(n.xyz), 0.0);
+}
+
+vec4 normal_at_co(Obj o, vec4 world_point)
+{
+	vec4 lp = world_point * o.inv_transform;
+	vec4 local_normal;
+
+	float half_h = o.param / 2.0;
+	float dist   = lp.x * lp.x + lp.z * lp.z;
+	if (dist < 1.0 - 0.001 && lp.y >= half_h - 0.001)
+		local_normal = vec4(0.0,  1.0, 0.0, 0.0);   // top cap
+	else if (dist < 1.0 - 0.001 && lp.y <= -half_h + 0.001)
+		local_normal = vec4(0.0, -1.0, 0.0, 0.0);   // bottom cap
+	else
+	{
+		float y = sqrt((lp.x * lp.x) + (lp.z * lp.z));
+		if (lp.y > 0.0)
+			y = -y;
+		local_normal = vec4(lp.x, y, lp.z, 0.0);  // side
+	}
 
 	vec4 n = o.inv_transform * local_normal;           // transpose(inverse) in your convention
 	return vec4(normalize(n.xyz), 0.0);
@@ -101,6 +123,8 @@ Intersection intersect_world(Ray r)
 			t = intersect_cu(r, objs[i]);
 		} else if (objs[i].type == OBJ_PLANE) {
 			t = intersect_pl(r, objs[i]);
+		} else if (objs[i].type == OBJ_CONE) {
+			t = intersect_co(r, objs[i]);
 		}
 		
 		if (t < best.t)
@@ -160,6 +184,8 @@ void main()
 		normalv = normal_at_cu(objs[interMilan.object_id], point);
 	else if (objs[interMilan.object_id].type == OBJ_PLANE)
 		normalv = normal_at_pl(objs[interMilan.object_id], point);
+	else if (objs[interMilan.object_id].type == OBJ_CONE)
+		normalv = normal_at_co(objs[interMilan.object_id], point);
 	else
 		normalv = normal_at(objs[interMilan.object_id],point);
 

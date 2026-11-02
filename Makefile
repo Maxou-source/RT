@@ -100,6 +100,7 @@ SRC_OBJECTS			= $(addprefix $(OBJECTS_DIR), \
 						Sphere.cpp \
 						Cube.cpp \
 						Plane.cpp \
+						Cone.cpp \
 						Cylinder.cpp \
 						Light.cpp \
 						)

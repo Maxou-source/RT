@@ -3,6 +3,7 @@ bool cap_ok(Ray l, float t)
 {
 	float x = l.origin.x + t * l.direction.x;
 	float z = l.origin.z + t * l.direction.z;
+	
 	return (x * x + z * z) <= 1.0;
 }
 

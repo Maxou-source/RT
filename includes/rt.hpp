@@ -31,6 +31,7 @@ typedef enum {
 	CYLINDER,
     CUBE,
     PLANE,
+    CONE,
 	CAMERA,
     LIGHT
 } ObjectId;
