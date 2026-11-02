@@ -1,20 +1,16 @@
 
-Cylinder {
-    orientation: [0,1,-1]
-    height: 2
-    color: [1,0,0]
-    position: [0,0,0]
-    specular: .23
-    diameter: 2
-    pattern: true
-}
-
 Camera {
     position: [0,0,-10]
     orientation: [0,0,1]
     fov: 90
 }
 
+Cube {
+    position: [0,0,0]
+    orientation: [0.5,0.75,0]
+    color: [1,0,0]
+    size: 2
+}
 
 Light {
     position: [10, 10, -10]
@@ -30,4 +26,8 @@ Light {
     ambient : 0.1
     specular : 1.0
     diffuse: 0.1
+}
+
+Plane {
+    position: []
 }

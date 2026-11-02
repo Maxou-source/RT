@@ -238,7 +238,7 @@ int main(int ac, char **av)
  okay next:
 	- implement cylinder (check)
 	- check inside stuff is it okay (check)
-	- cube, plane, cone
+	- cube (check), plane, cone 
 	- movement (check)
 	- move back tyo compute shaders
 */

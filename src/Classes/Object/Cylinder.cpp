@@ -62,6 +62,5 @@ bool Cylinder::packIntoGpuScene(GpuScene& s) const {
 	GpuObject& g = s.objs[s.object_count - 1];
 	g.param = height;
 	return true;
-	return true;
 }
 

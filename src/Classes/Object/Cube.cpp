@@ -18,7 +18,11 @@ const char * Cube::typeString() const {
 }
 
 bool Cube::packIntoGpuScene(GpuScene& s) const {
-	
+	if (!AObject::packIntoGpuScene(s))
+		return false;
+
+	GpuObject& g = s.objs[s.object_count - 1];
+	g.param = size;
 	return true;
 }
 

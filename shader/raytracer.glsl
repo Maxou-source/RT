@@ -5,6 +5,7 @@ out vec4 FragColor;
 //!include "common/scene.glsl"
 //!include "intersections/sphere.glsl"
 //!include "intersections/cylinder.glsl"
+//!include "intersections/cube.glsl"
 //!include "lights/lighting.glsl"
 
 vec4 normal_at(Obj o, vec4 world_point)
@@ -32,9 +33,27 @@ vec4 normal_at_cy(Obj o, vec4 world_point)
 			local_normal = vec4(lp.x, 0.0, lp.z, 0.0);  // side
 	}
 	else
-		local_normal = vec4(lp.xyz, 0.0);               // sphere
+		local_normal = vec4(lp.xyz, 0.0);
 
 	vec4 n = o.inv_transform * local_normal;           // transpose(inverse) in your convention
+	return vec4(normalize(n.xyz), 0.0);
+}
+
+vec4 normal_at_cu(Obj o, vec4 world_point)
+{
+	vec4 p = world_point * o.inv_transform;
+	vec3 a = abs(p.xyz);
+	float maxC = max(a.x, max(a.y, a.z));
+
+	vec4 local_normal;
+	if (maxC == a.x)
+		local_normal = vec4(sign(p.x), 0.0, 0.0, 0.0);
+	else if (maxC == a.y)
+		local_normal = vec4(0.0, sign(p.y), 0.0, 0.0);
+	else
+		local_normal = vec4(0.0, 0.0, sign(p.z), 0.0);
+
+	vec4 n = o.inv_transform * local_normal;
 	return vec4(normalize(n.xyz), 0.0);
 }
 
@@ -68,10 +87,10 @@ Intersection intersect_world(Ray r)
 		float t = INF;
 		if (objs[i].type == OBJ_SPHERE) {
 			t = intersect_sp(r, objs[i]);
-		}
-		else if (objs[i].type == OBJ_CYLINDER) {
-			// t = intersect_cy(r, );
+		} else if (objs[i].type == OBJ_CYLINDER) {
 			t = intersect_cy(r, objs[i]);
+		} else if (objs[i].type == OBJ_CUBE) {
+			t = intersect_cu(r, objs[i]);
 		}
 		
 		if (t < best.t)
@@ -126,15 +145,18 @@ void main()
 
 	vec4 normalv;
 	if (objs[interMilan.object_id].type == OBJ_CYLINDER)
-		normalv = normal_at_cy(objs[interMilan.object_id],point);
+		normalv = normal_at_cy(objs[interMilan.object_id], point);
+	else if (objs[interMilan.object_id].type == OBJ_CUBE)
+		normalv = normal_at_cu(objs[interMilan.object_id], point);
 	else
 		normalv = normal_at(objs[interMilan.object_id],point);
+
 
 	if (dot(normalv, eyev) < 0.0) {
 		normalv = -normalv;
 	}
 	point = point + normalv* 0.00001 * 100.0;
-	FragColor = vec4(0.0, 0, 0.0, 1);
+	FragColor = vec4(0.0, 0.0, 0.0, 1);
 	for (int i = 0; i < light_count; i++)
 	{
 		bool shadowed = is_shadowed(point, lights[i]);

@@ -1,27 +1,24 @@
 
-// xtmin, xtmax ← check_axis(ray.origin.x, ray.direction.x)
-// ytmin, ytmax ← check_axis(ray.origin.y, ray.direction.y)
-// ztmin, ztmax ← check_axis(ray.origin.z, ray.direction.z)
-
-/*
-function check_axis(origin, direction)
-tmin_numerator = (-1 - origin)
-tmax_numerator = (1 - origin)
-if abs(direction) >= EPSILON
-tmin ← tmin_numerator / direction
-tmax ← tmax_numerator / direction
-else
-tmin ← tmin_numerator * INFINITY
-tmax ← tmax_numerator * INFINITY
-end if
-if tmin > tmax then swap(tmin, tmax)
-return tmin, t*/
-
-float check_axis(vec4 origin, vec4 direction)
+vec2 check_axis(float origin, float direction)
 {
-	vec4 tmin = (-1 - origin);
-	vec4 tmax = (1 - origin);
-	return tmin.x;
+	float tmin, tmax;
+	float tmin_numerator = (-1.0 - origin);
+	float tmax_numerator = (1.0 - origin);
+
+	if (abs(direction) >= EPSILON) {
+		tmin = tmin_numerator / direction;
+		tmax = tmax_numerator / direction;
+	} else {
+		tmin = tmin_numerator * INF;
+		tmax = tmax_numerator * INF;
+	}
+
+	if (tmin > tmax) {
+		float tmp = tmin;
+		tmin = tmax;
+		tmax = tmp;
+	}
+	return vec2(tmin, tmax);
 }
 
 float intersect_cu(Ray r, Obj o)
@@ -30,5 +27,13 @@ float intersect_cu(Ray r, Obj o)
 	newR.origin    = r.origin    * o.inv_transform;
 	newR.direction = r.direction * o.inv_transform;
 
-	return INF;
+	vec2 x = check_axis(newR.origin.x, newR.direction.x);
+	vec2 y = check_axis(newR.origin.y, newR.direction.y);
+	vec2 z = check_axis(newR.origin.z, newR.direction.z);
+
+	float tmin = max(max(x[0], y[0]), z[0]);
+	float tmax = min(min(x[1],y[1]), z[1]);
+
+	if (tmin > tmax || tmax < EPSILON) {return INF;}
+	return tmin;
 }

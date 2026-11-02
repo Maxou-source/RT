@@ -107,6 +107,7 @@ bool OpenGLObject::SetFragmentShader(const std::string& rootFile)
 			{"EPSILON",   std::to_string(EPSILON)},
 			{"OBJ_SPHERE",   std::to_string((int)ObjectId::SPHERE)},
 			{"OBJ_CYLINDER", std::to_string((int)ObjectId::CYLINDER)},
+			{"OBJ_CUBE", std::to_string((int)ObjectId::CUBE)},
 		}, source))
 		return false;
 
