@@ -9,7 +9,7 @@ void Plane::printSpecific(std::ostream& os) const {
 }
 
 std::vector<std::string> Plane::requiredKeys() const {
-	return ParseUtils::concat(AObject::requiredKeys(), {"color", "orientation"});
+	return ParseUtils::concat(AObject::requiredKeys(), {"orientation"});
 }
 
 const char * Plane::typeString() const {

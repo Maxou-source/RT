@@ -53,7 +53,7 @@ GpuScene World::buildGpuScene()
 
 const char* World::objectName(ObjectId id)
 {
-	static const char* names[] = {"None", "Sphere", "Cylinder", "Cube"};
+	static const char* names[] = {"None", "Sphere", "Cylinder", "Cube", "Cone"};
 	return names[static_cast<int>(id)];
 }
 
@@ -69,15 +69,8 @@ void World::printWorld() const
 
 		std::cout << "object " << i++ << colorprint::green
 		          << " [" << objectName(obj->type()) << "]\n" << colorprint::reset
-		          << "  position:   (" << pos.x << ", " << pos.y << ", " << pos.z << ")\n"
-		          << "  color:      (" << m.color.r << ", " << m.color.g << ", " << m.color.b << ")\n"
-		          << "  ambient:    " << m.ambient << "\n"
-		          << "  diffuse:    " << m.diffuse << "\n"
-		          << "  specular:   " << m.specular << "\n"
-		          << "  shininess:  " << m.shininess << "\n"
-		          << "  reflective: " << m.reflective << "\n"
-		          << "  pattern:    " << (m.pattern ? "true" : "false") << "\n"
-		          << "  texture:    " << (m.texture.empty() ? "none" : m.texture) << "\n";
+		          << "  position:   (" << pos.x << ", " << pos.y << ", " << pos.z << ")\n";
+		obj->getMaterial().print(std::cout);
 		obj->printSpecific(std::cout);   // shape-specific properties
 	}
 	size_t j = 0;

@@ -40,43 +40,74 @@ ObjectId findObjectId(std::string& s)
 
 bool Parse::parseBlock(IterVectorString& it, IterVectorString end, IParsable& target)
 {
-	std::set<std::string> seenKeys; 
+	std::set<std::string> seenKeys;
 	++it;
-	for (; it != end; ++it)
+	while (it != end)
 	{
-		std::string line = trim(*it);
-		if (line.empty()) continue;
-		if (line[0] == '}') {
+		std::string line = ParseUtils::trim(*it);
+		if (line.empty()) { ++it; continue; }
+
+		if (line[0] == '}')
+		{
 			++it;
-			for (std::string& k : target.requiredKeys())
-			{
+			bool ok = true;
+			for (const std::string& k : target.requiredKeys())
 				if (!seenKeys.count(k))
 				{
-					std::cerr << "KO:: missing mandatory property \"" << k << "\" for " << target.typeString() << std::endl;
-					return false;
+					std::cerr << "KO:: missing mandatory property \"" << k
+					          << "\" for " << target.typeString() << std::endl;
+					ok = false;                 // keep going: report every missing key
 				}
+			return ok && target.preBuild();     // your finalize equivalent
+		}
+
+		if (line.back() == '{')
+		{
+			std::string name = ParseUtils::trim(line.substr(0, line.size() - 1));
+			if (!name.empty() && name.back() == ':')
+				name.pop_back();
+			name = ParseUtils::trim(name);
+
+			IParsable* sub = target.getSubBlock(name);
+			if (!sub)
+			{
+				std::cerr << "KO:: unknown sub-block '" << name << "'" << std::endl;
+				return false;
 			}
-			return true;
+			if (seenKeys.count(name))
+			{
+				std::cerr << "KO:: duplicate sub-block '" << name << "'" << std::endl;
+				return false;
+			}
+			if (!parseBlock(it, end, *sub))     // leaves `it` after the sub-block's '}'
+				return false;
+			seenKeys.insert(name);
+			continue;                           // no ++it: already on the next line
 		}
 
 		size_t colon = line.find(':');
-		if (colon == std::string::npos) return false;
-		std::string key = trim(line.substr(0, colon));
-		std::string val = trim(line.substr(colon + 1));
+		if (colon == std::string::npos)
+		{
+			std::cerr << "KO:: expected 'key: value': " << line << std::endl;
+			return false;
+		}
+		std::string key = ParseUtils::trim(line.substr(0, colon));
+		std::string val = ParseUtils::trim(line.substr(colon + 1));
 
 		if (seenKeys.count(key))
 		{
-			std::cerr << "KO:: duplicate properties detected " << std::endl;
+			std::cerr << "KO:: duplicate property '" << key << "'" << std::endl;
 			return false;
 		}
 		if (!target.setProperty(key, val))
 		{
-			std::cout << "KO :: unknown or invalid property '" << key << "'" << std::endl;
+			std::cerr << "KO:: unknown or invalid property '" << key << "'" << std::endl;
 			return false;
 		}
 		seenKeys.insert(key);
+		++it;
 	}
-	std::cout << "celui la" << std::endl;
+	std::cerr << "KO:: missing '}'" << std::endl;
 	return false;
 }
 

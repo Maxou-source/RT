@@ -10,7 +10,7 @@ void Cube::printSpecific(std::ostream& os) const
 }
 
 std::vector<std::string> Cube::requiredKeys() const {
-	return ParseUtils::concat(AObject::requiredKeys(), {"color", "orientation", "size"});
+	return ParseUtils::concat(AObject::requiredKeys(), {"orientation", "size"});
 }
 
 const char * Cube::typeString() const {

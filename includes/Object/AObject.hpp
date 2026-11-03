@@ -11,46 +11,45 @@
 # include "rt.hpp"
 # include "ParseUtils.hpp"
 # include "IParsable.hpp"
+# include "Material.hpp"
 
 class Ray;
 
 using namespace ParseUtils;
 
-struct Material
-{
-	t_clr       color     = {1.f, 1.f, 1.f};
-	float       ambient   = 0.1f;
-	float       diffuse   = 0.9f;
-	float       specular  = 0.9f;
-	float       shininess = 200.f;
-	float       reflective = 0.f;
-	bool        pattern   = false;
-	std::string texture;               // empty = none
+// struct Material : public IParsable
+// {
+// 	t_clr       color     = {1.f, 1.f, 1.f};
+// 	float       ambient   = 0.1f;
+// 	float       diffuse   = 0.9f;
+// 	float       specular  = 0.9f;
+// 	float       shininess = 200.f;
+// 	float       reflective = 0.f;
+// 	bool        pattern   = false;
+// 	std::string texture;               // empty = none
 
-	bool setProperty(const std::string& key, const std::string& val)
-	{
-		try {
-			if (key == "color")           return parseColor(val, color);
-			else if (key == "ambient")         ambient = std::stof(val);
-			else if (key == "diffuse")    diffuse = std::stof(val);
-			else if (key == "specular")   specular = std::stof(val);
-			else if (key == "shininess")  shininess = std::stof(val);
-			else if (key == "reflective") reflective = std::stof(val);
-			else if (key == "pattern")    pattern = (val == "true");
-			else if (key == "texture")    texture = val;
-			else return false;           // not a material key
-		} catch (const std::exception&) { return false; }
-		return true;
-	}
-};
+// 	bool setProperty(const std::string& key, const std::string& val)
+// 	{
+// 		try {
+// 			if (key == "color")           return parseColor(val, color);
+// 			else if (key == "ambient")         ambient = std::stof(val);
+// 			else if (key == "diffuse")    diffuse = std::stof(val);
+// 			else if (key == "specular")   specular = std::stof(val);
+// 			else if (key == "shininess")  shininess = std::stof(val);
+// 			else if (key == "reflective") reflective = std::stof(val);
+// 			else if (key == "pattern")    pattern = (val == "true");
+// 			else if (key == "texture")    texture = val;
+// 			else return false;           // not a material key
+// 		} catch (const std::exception&) { return false; }
+// 		return true;
+// 	}
+// };
 
 class AObject : public IParsable
 {
 	protected:
 		t_f4		position;
-		float		specular;
 		Material	material;
-		bool		pattern;
 
 		Matrix		m;
 		Matrix		i_m;
@@ -66,6 +65,7 @@ class AObject : public IParsable
 		std::vector<std::string> requiredKeys() const override;
 		void	applyTransformations();
 		bool packIntoGpuScene(GpuScene& s) const override;
+		IParsable* getSubBlock(const std::string& name) override;
 
 	// setters and getters
 		bool	setProperty(const std::string& key, const std::string& val) override;
@@ -73,14 +73,10 @@ class AObject : public IParsable
 		// bool	buildMatrix() override {return true;}
 		
 		void	setPosition(t_f4);
-		void	setSpecular(const float s);
 		void	setMaterial(const Material&);
-		void	setPattern(const bool b);
 		
 		t_f4			getPosition() const;
-		float			getSpecular() const;
 		const Material&	getMaterial() const;
-		bool			getPattern() const;
 };
 
 #endif

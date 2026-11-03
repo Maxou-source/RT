@@ -6,7 +6,7 @@ Cylinder::Cylinder()
 }
 
 std::vector<std::string> Cylinder::requiredKeys() const {
-	return ParseUtils::concat(AObject::requiredKeys(), {"color","orientation", "diameter", "height"});
+	return ParseUtils::concat(AObject::requiredKeys(), {"orientation", "diameter", "height"});
 }
 
 void Cylinder::printSpecific(std::ostream& os) const
