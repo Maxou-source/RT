@@ -1,7 +1,7 @@
 #ifndef LIGHT_HPP
 # define LIGHT_HPP
 
-# include "AObject.hpp"
+# include "IParsable.hpp"
 
 class Light: public IParsable {
 	private:

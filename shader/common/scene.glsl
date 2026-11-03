@@ -4,6 +4,7 @@ layout(std140) uniform Scene {
     int    object_count;
     int    light_count;
     int    _pad0, _pad1;
+    AmbientLight ambientLgt;
     Light  lights[MAX_LIGHTS];
     Obj    objs[MAX_OBJECTS];
 };

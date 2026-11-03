@@ -12,6 +12,7 @@ using namespace ParseUtils;
 
 class Camera : public IParsable {
 	private:
+		bool init = false;
 		t_f4  position = {0, 0, 0, 1};
 		t_f4  orientation = {0, 0, 1, 0};
 		float fov = 60.f;
@@ -23,6 +24,9 @@ class Camera : public IParsable {
 		
 		Matrix	transform;
 		Matrix	inv_transform;
+
+		float yaw;
+		float pitch;
 	public:
 		
 		bool setProperty(const std::string& key, const std::string& val) override;
@@ -30,6 +34,7 @@ class Camera : public IParsable {
 		const char * typeString() const override;
 		bool preBuild() override;
 		bool packIntoGpuScene(GpuScene& s) const override;
+		void rotate(float dYaw, float dPitch);
 	// Constructors and Destructors 
 		Camera();
 		Camera(unsigned int shaderProgram, const Tuple&, const Tuple&, float );

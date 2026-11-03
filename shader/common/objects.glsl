@@ -21,6 +21,10 @@ struct Light {
     float specular;  float _pad2;
 };
 
+struct AmbientLight {
+	vec4 a;
+};
+
 struct Sphere {
 	vec4	center;
 	float	radius;

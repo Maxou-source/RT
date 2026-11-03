@@ -10,7 +10,7 @@ void Cone::printSpecific(std::ostream& os) const
 }
 
 std::vector<std::string> Cone::requiredKeys() const {
-	return ParseUtils::concat(AObject::requiredKeys(), {"color", "orientation", "size"});
+	return ParseUtils::concat(AObject::requiredKeys(), {"color", "orientation", "size", "diameter"});
 }
 
 const char * Cone::typeString() const {

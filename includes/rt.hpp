@@ -36,15 +36,6 @@ typedef enum {
     LIGHT
 } ObjectId;
 
-
-#ifdef NDEBUG
-    const bool enableValidationLayers = false;
-#else
-    const bool enableValidationLayers = true;
-#endif
-
-# define EPSILON 0.00001
-
 typedef float	t_f4 __attribute__((ext_vector_type(4)));
 
 # define EPSILON 0.00001

@@ -31,7 +31,7 @@ struct Material
 	{
 		try {
 			if (key == "color")           return parseColor(val, color);
-			if (key == "ambient")         ambient = std::stof(val);
+			else if (key == "ambient")         ambient = std::stof(val);
 			else if (key == "diffuse")    diffuse = std::stof(val);
 			else if (key == "specular")   specular = std::stof(val);
 			else if (key == "shininess")  shininess = std::stof(val);

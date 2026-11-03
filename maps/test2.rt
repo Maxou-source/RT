@@ -6,17 +6,18 @@ Camera {
 }
 
 Cone {
-    position: [0,0,0]
-    orientation: [0,1,0]
+    position: [0,2.5,0]
+    orientation: [0.5,0.75,0]
     color: [1,0,0]
     size: 2
     diameter: 2
+    ambient: 1
 }
 
-Light {
-    position: [-10, 10, -10]
-    color: [1,1,1]
-    ambient : 0.1
-    specular : 1.0
-    diffuse: 0.1
+
+Plane {
+    position: [0, 0, 0]
+    orientation: [0,1,0]
+    color: [1,0,1]
+    ambient: 1
 }

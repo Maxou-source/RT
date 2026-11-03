@@ -177,7 +177,7 @@ int main(int ac, char **av)
 		float  dt  = float(now - last);
 		last = now;
 
-		float step = baseSpeed * speedMul * dt;	
+		float step = baseSpeed * speedMul * dt;
 		float fwd = 0, rgt = 0, upw = 0;
 		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_W) == GLFW_PRESS) fwd += step;
 		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_S) == GLFW_PRESS) fwd -= step;
@@ -186,10 +186,22 @@ int main(int ac, char **av)
 		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_E) == GLFW_PRESS) upw += step;
 		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_Q) == GLFW_PRESS) upw -= step;
 
+		float turnSpeed = 1.5f;                            // radians per second
+		float dYaw = 0, dPitch = 0;
+
+		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_LEFT)  == GLFW_PRESS) dYaw   -= turnSpeed * dt;
+		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_RIGHT) == GLFW_PRESS) dYaw   += turnSpeed * dt;
+		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_UP)    == GLFW_PRESS) dPitch += turnSpeed * dt;
+		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_DOWN)  == GLFW_PRESS) dPitch -= turnSpeed * dt;
 		if (fwd || rgt || upw)
 		{
-			std::cout << "step " << step << std::endl;
 			w->getCamera().move(fwd, rgt, upw);
+			w->getCamera().packIntoGpuScene(gpuS);
+			OpenGLObj.UploadCamera(gpuS);   // only when something changed
+		}
+		if (dYaw || dPitch)
+		{
+			w->getCamera().rotate(dYaw, dPitch);
 			w->getCamera().packIntoGpuScene(gpuS);
 			OpenGLObj.UploadCamera(gpuS);   // only when something changed
 		}
@@ -238,7 +250,18 @@ int main(int ac, char **av)
  okay next:
 	- implement cylinder (check)
 	- check inside stuff is it okay (check)
-	- cube (check), plane, cone 
+	- cube (check), plane (check), cone (check)
 	- movement (check)
-	- move back tyo compute shaders
+	- move back to compute shaders
+
+color (albedo)	material	the surface’s own color
+ambient (reflectivity)	material	how much fill light this surface reflects
+diffuse	material	how matte it is
+specular, shininess	material	how shiny it is
+
+color (emitted)	light	what the source emits
+position	light	where it is
+intensity	light	how strong it is
+
+global ambient color/level	scene	one knob for “how dark are the shadows”
 */

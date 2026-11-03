@@ -79,6 +79,23 @@ void Camera::print() const
 	          << "  fov:         " << fov << std::endl;
 }
 
+void Camera::rotate(float dYaw, float dPitch)
+{
+	yaw   += dYaw;
+	pitch += dPitch;
+
+	const float limit = 1.55f;                     // about 89 degrees
+	pitch = std::max(-limit, std::min(limit, pitch));
+
+	orientation.x = cosf(pitch) * sinf(yaw);
+	orientation.y = sinf(pitch);
+	orientation.z = cosf(pitch) * cosf(yaw);
+	orientation.w = 0.f;
+
+	preBuild();
+}
+
+
 Camera::Camera(const Tuple& pov, const Tuple& orient, float f) {
 	half_view = (f * PI) / 180.0;
 	float aspect_ratio = WIN_WIDTH / WIN_HEIGHT;
@@ -121,7 +138,14 @@ bool Camera::preBuild() {
 	pixel_size = (half_width * 2) / (float)WIN_WIDTH;
 	transform = Matrix::view_transform(position,
 		Tuple::normalize(orientation), Tuple(0, 1, 0, 0));
-	inv_transform = transform.invertedMatrix().transpose();
+		inv_transform = transform.invertedMatrix().transpose();
+	if (init == false)
+	{
+		std::cout << "first" << std::endl;
+		yaw   = atan2f(orientation.x, orientation.z);
+		pitch = asinf(std::clamp(orientation.y, -1.f, 1.f));   
+		init = true;
+	}
 	return true;
 }
 

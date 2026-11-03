@@ -57,6 +57,7 @@ const char* World::objectName(ObjectId id)
 	return names[static_cast<int>(id)];
 }
 
+
 void World::printWorld() const
 {
 	cam.print();
