@@ -11,8 +11,6 @@ out vec4 FragColor;
 //!include "lights/lighting.glsl"
 //!include "lights/normals.glsl"
 
-
-
 Ray	rayForPixel(int px, int py, int index) {
 	float	world_x;
 	float	world_y;

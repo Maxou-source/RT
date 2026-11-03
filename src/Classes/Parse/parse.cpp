@@ -28,8 +28,8 @@ bool Parse::checkFileRights(const char *fileName, std::ifstream *fileStream)
 
 ObjectId findObjectId(std::string& s)
 {
-	const std::array<std::string, 8> strings_id = {"None","Sphere", "Cylinder", "Cube", "Plane",
-		"Cone", "Camera", "Light"};
+	const std::array<std::string, 9	> strings_id = {"None","Sphere", "Cylinder", "Cube", "Plane",
+		"Cone", "Camera", "AmbientLight", "Light"};
 	
 	for (size_t i = 1; i < strings_id.size(); i++) {
 		if (s.find(strings_id[i]) != std::string::npos)
@@ -124,6 +124,8 @@ bool	Parse::getBase()
 		objId = findObjectId(*it);
 		if (objId == ObjectId::CAMERA)
 		{
+			if (!w->markCamera())
+				return false;
 			Camera& objCamera = w->getCamera();
 			bool blockResult = parseBlock(it, lines.end(), objCamera);
 			if (!blockResult) {
@@ -134,6 +136,14 @@ bool	Parse::getBase()
 		}
 		else if (objId == ObjectId::LIGHT) {
 			Light& objLight = w->AddLight();
+			if (!parseBlock(it, lines.end(), objLight)) {
+				return false;
+			}
+		}
+		else if (objId == ObjectId::AMBIENT_LIGHT) {
+			if (!w->markAmbient())
+				return false;
+			AmbientLight& objLight = w->getAmbientLight();
 			if (!parseBlock(it, lines.end(), objLight)) {
 				return false;
 			}

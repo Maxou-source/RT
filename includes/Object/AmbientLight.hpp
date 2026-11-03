@@ -4,8 +4,8 @@
 
 class AmbientLight: public IParsable {
 	private:
-		float	intensity;
-		t_clr	color;
+		float	intensity = 0.2;
+		t_clr	color {1.0,1.0,1.0};
 	public:
 		AmbientLight();
 		bool						packIntoGpuScene(GpuScene& s) const override;

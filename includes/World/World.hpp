@@ -11,6 +11,7 @@
 # include "rt.hpp"
 # include "GpuObjects.hpp"
 # include "Light.hpp"
+# include "AmbientLight.hpp"
 
 class AObject;
 class Ray;
@@ -19,8 +20,12 @@ class World {
 	private:
 		std::set<Intersection>					intersects;
 		std::vector<std::unique_ptr<AObject>>	objects;
-		std::vector<Light>		lights;
+		std::vector<Light>						lights;
+		AmbientLight							amb;
 		Camera									cam;
+
+		bool									CameraDefined = false;
+		bool									AmbientDefined = false;
 	public:
 	// Constructors and Destructors
 		World();
@@ -37,13 +42,19 @@ class World {
 		void					setCamera(Camera &c);
 		Camera&					getCamera();
 
+		void setAmbientLight(AmbientLight &c);
+		AmbientLight& getAmbientLight();
+
 		static const char*		objectName(ObjectId id);
 		GpuScene				buildGpuScene();
 		float sceneScale() const;
 
+		bool cameraDefined() {return CameraDefined;}
+		bool ambientDefined() {return AmbientDefined;}
 
-
-	// to gpu
+		bool markCamera()  {if (CameraDefined)  return false; CameraDefined  = true; return true;}
+		
+		bool markAmbient() {if (AmbientDefined) return false; AmbientDefined = true; return true;}
 };
 
 #endif

@@ -33,6 +33,7 @@ typedef enum {
     PLANE,
     CONE,
 	CAMERA,
+    AMBIENT_LIGHT,
     LIGHT
 } ObjectId;
 

@@ -37,11 +37,11 @@ Light& World::AddLight()
 	return lights.back();
 }
 
-
 GpuScene World::buildGpuScene()	
 {
 	GpuScene s{};
 	cam.packIntoGpuScene(s);
+	amb.packIntoGpuScene(s);
 	for (const auto& o : objects)
 		if (!o->packIntoGpuScene(s))
 			std::cerr << "KO:: too many objects (max " << MAX_OBJECTS << ")" << std::endl;
@@ -53,7 +53,7 @@ GpuScene World::buildGpuScene()
 
 const char* World::objectName(ObjectId id)
 {
-	static const char* names[] = {"None", "Sphere", "Cylinder", "Cube", "Cone"};
+	static const char* names[] = {"None", "Sphere", "Cylinder", "Cube", "Cone", "AmbientLight"};
 	return names[static_cast<int>(id)];
 }
 
@@ -115,3 +115,6 @@ float World::sceneScale() const
 
 void World::setCamera(Camera &c) {cam = c;}
 Camera& World::getCamera() {return cam;}
+
+void World::setAmbientLight(AmbientLight &c) {amb = c;}
+AmbientLight& World::getAmbientLight() {return amb;}
