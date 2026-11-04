@@ -11,7 +11,7 @@ vec4 lighting(Material mat, Light lgt, vec4 point, vec4 eyev, vec4 normalv, bool
 	if (light_dot_normal < 0.0)
 		return vec4(0.0);
 
-	vec4 diffuset = eff_color * 0.9 * light_dot_normal;
+	vec4 diffuset = eff_color * mat.diffuse * light_dot_normal;
 	vec4 reflectv = reflect(-lightv, normalv);
 	float reflect_dot_eye = dot(reflectv, eyev);
 
@@ -21,7 +21,7 @@ vec4 lighting(Material mat, Light lgt, vec4 point, vec4 eyev, vec4 normalv, bool
 		return diffuset + new_specular;
 	}
 	
-	float factor = pow(reflect_dot_eye, 200.0);
+	float factor = pow(reflect_dot_eye, mat.shininess);
 	vec4 specularv = lgt.color * lgt.specular * factor;
 	return diffuset + specularv;
 }

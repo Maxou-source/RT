@@ -12,9 +12,6 @@ bool Material::setProperty(const std::string& key, const std::string& val) {
 		else if (key == "diffuse")    diffuse = std::stof(val);
 		else if (key == "specular")   specular = std::stof(val);
 		else if (key == "shininess")  shininess = std::stof(val);
-		else if (key == "reflective") reflective = std::stof(val);
-		else if (key == "pattern")    pattern = (val == "true");
-		else if (key == "texture")    texture = val;
 		else return false;           // not a material key
 	} catch (const std::exception&) { return false; }
 	return true;
@@ -44,10 +41,15 @@ void Material::packInto(GpuMaterial& g) const
 	g.diffuse    = diffuse;
 	g.specular   = specular;
 	g.shininess  = shininess;
-	g.reflective = reflective;
-	g.pattern    = pattern ? 1 : 0;
 	g.texture    = -1;
 }
+
+IParsable* Material::getSubBlock(const std::string& name) {
+	if (name == "Pattern")
+		return &pat;
+	return nullptr;
+}
+
 
 void Material::print(std::ostream& os, const char* indent) const
 {
@@ -56,8 +58,11 @@ void Material::print(std::ostream& os, const char* indent) const
 	   << indent << "  ambient:    " << ambient    << "\n"
 	   << indent << "  diffuse:    " << diffuse    << "\n"
 	   << indent << "  specular:   " << specular   << "\n"
-	   << indent << "  shininess:  " << shininess  << "\n"
-	   << indent << "  reflective: " << reflective << "\n"
-	   << indent << "  pattern:    " << (pattern ? "true" : "false") << "\n"
-	   << indent << "  texture:    " << (texture.empty() ? "none" : texture) << "\n";
+	   << indent << "  shininess:  " << shininess  << "\n";
+	if (pat.getType() == NO_PATTERN)
+		return ;
+	else if (pat.getType() == CHECKER)
+		os << indent << "Checker \n";
+	else
+		os << indent << "Stripe \n"; 
 }
