@@ -1,17 +1,27 @@
 
 vec4 stripe_at(Pattern pat, vec4 point, vec4 color)
 {
-	float scaled_x = point.x / pat.param;
-	if (mod(floor(scaled_x), 2.0) == 0.0)
+	// float scaled_x = point.x / pat.param;
+	if (mod(floor(point.x), 2.0) == 0.0)
 		return (pat.color);
 	else
 		return (color);
+}
+// color(p, ca , cb ) = ca + (cb − ca ) ∗ (px − floor(px ))
+vec4 gradient_at(Pattern pat, vec4 point, vec4 colorA)
+{
+	float f = clamp(point.x, 0.0, 1.0);  
+	return mix(colorA, pat.color, f);
 }
 
 vec4 applyPattern(Obj obj, vec4 point)
 {
 	Material mater = obj.mat;
-	vec4 world_point = obj.inv_transform * point;
+	vec4 world_point = point *  obj.inv_transform;
+	vec4 pattern_point = world_point * mater.pat.i_m;
+
 	if (mater.pat.patType == STRIPE)
-		return stripe_at(mater.pat, world_point, mater.color);
+		return stripe_at(mater.pat, pattern_point, mater.color);
+	else if (mater.pat.patType == GRADIENT)
+		return gradient_at(mater.pat, pattern_point, mater.color);
 }

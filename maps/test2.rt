@@ -23,9 +23,10 @@ Cone {
         color: [1,0,0]
         ambient: 0.9
         Pattern {
-            type: stripe
+            type: gradient
             second_color: [1,1,1]
             parameter: 0.5
+            orientation: [0,1,0]
         }
     }
 }
@@ -34,12 +35,13 @@ Sphere {
     position: [-5, 2, 0.0]
     diameter: 1.0
     Material {
-        color: [1.0, 0.2, 1.0]
+        color: [1.0, 0, 0]
         ambient: 0.9
         Pattern {
-            type: stripe
-            second_color: [1,1,1]
-            parameter: 0.2
+            type: gradient
+            second_color: [0,0,1]
+            orientation: [1,1,0]
+            parameter: 1.5
         }
     }
 }
@@ -52,8 +54,9 @@ Plane {
         ambient: 0.9
         Pattern {
             second_color: [0,1,0]
-            type: stripe
-            parameter: 1.0
+            type: gradient
+            parameter: 1000
+            orientation: [1,1,1]
         }
     }
 }

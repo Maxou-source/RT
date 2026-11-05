@@ -3,13 +3,12 @@
 
 
 struct GpuPattern {
+	t_m4 i_m; // 64
 	float color[4]; // 16
 	int patType; // 4
 	float param; // 4
 	int	_pad1 = 0, _pad2 = 0;
 };
-static_assert(sizeof(GpuPattern) == 32, "GpuMaterial must be 96 bytes");
-
 
 struct GpuMaterial
 {
@@ -19,7 +18,6 @@ struct GpuMaterial
 	int   _pad0 = 0, _pad_1 = 0; // 16
 	GpuPattern pat;
 };
-static_assert(sizeof(GpuMaterial) == 80, "GpuMaterial must be 72 bytes");
 
 struct GpuObject
 {

@@ -126,6 +126,6 @@ void main()
 	for (int i = 0; i < light_count; i++)
 	{
 		bool shadowed = is_shadowed(point, lights[i]);
-		FragColor += lighting(objs[interMilan.object_id].mat, lights[i] ,point, eyev, normalv, shadowed);
+		FragColor += lighting(m, lights[i] ,point, eyev, normalv, shadowed);
 	}
 }

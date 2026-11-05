@@ -114,6 +114,7 @@ bool OpenGLObject::SetFragmentShader(const std::string& rootFile)
 			{"NO_PATTERN",   std::to_string((int)PatternType::NO_PATTERN)},
 			{"STRIPE",   std::to_string((int)PatternType::STRIPE)},
 			{"CHECKER",   std::to_string((int)PatternType::CHECKER)},
+			{"GRADIENT",   std::to_string((int)PatternType::GRADIENT)},
 		}, source))
 		return false;
 

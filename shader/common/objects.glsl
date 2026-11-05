@@ -34,11 +34,11 @@ struct Sphere {
 
 struct Pattern
 {
+	mat4 i_m;
 	vec4 color;
 	int patType;
 	float param;
 };
-// worth 32 bytes in GLSL for an obscur reason for alignement reasons I guess
 
 struct Material {
     vec4  color; // 16
