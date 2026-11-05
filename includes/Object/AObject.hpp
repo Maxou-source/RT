@@ -17,34 +17,6 @@ class Ray;
 
 using namespace ParseUtils;
 
-// struct Material : public IParsable
-// {
-// 	t_clr       color     = {1.f, 1.f, 1.f};
-// 	float       ambient   = 0.1f;
-// 	float       diffuse   = 0.9f;
-// 	float       specular  = 0.9f;
-// 	float       shininess = 200.f;
-// 	float       reflective = 0.f;
-// 	bool        pattern   = false;
-// 	std::string texture;               // empty = none
-
-// 	bool setProperty(const std::string& key, const std::string& val)
-// 	{
-// 		try {
-// 			if (key == "color")           return parseColor(val, color);
-// 			else if (key == "ambient")         ambient = std::stof(val);
-// 			else if (key == "diffuse")    diffuse = std::stof(val);
-// 			else if (key == "specular")   specular = std::stof(val);
-// 			else if (key == "shininess")  shininess = std::stof(val);
-// 			else if (key == "reflective") reflective = std::stof(val);
-// 			else if (key == "pattern")    pattern = (val == "true");
-// 			else if (key == "texture")    texture = val;
-// 			else return false;           // not a material key
-// 		} catch (const std::exception&) { return false; }
-// 		return true;
-// 	}
-// };
-
 class AObject : public IParsable
 {
 	protected:

@@ -41,7 +41,7 @@ void Material::packInto(GpuMaterial& g) const
 	g.diffuse    = diffuse;
 	g.specular   = specular;
 	g.shininess  = shininess;
-	g.texture    = -1;
+	pat.packInto(g);
 }
 
 IParsable* Material::getSubBlock(const std::string& name) {
@@ -65,4 +65,5 @@ void Material::print(std::ostream& os, const char* indent) const
 		os << indent << "Checker \n";
 	else
 		os << indent << "Stripe \n"; 
+	os << "param pat " << pat.getParam() << "\n";
 }

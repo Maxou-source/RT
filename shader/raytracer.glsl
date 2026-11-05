@@ -10,6 +10,7 @@ out vec4 FragColor;
 //!include "intersections/cone.glsl"
 //!include "lights/lighting.glsl"
 //!include "lights/normals.glsl"
+//!include "lights/pattern.glsl"
 
 Ray	rayForPixel(int px, int py, int index) {
 	float	world_x;
@@ -78,7 +79,7 @@ void main()
 
 	if (px == 200 && py == 200)
 	{
-		debugData[index] = vec4(light_count, cam.half_height, 0.f, cam.pixel_size);
+		debugData[index] = vec4(objs[1].mat.pat.param, cam.half_height, 0.f, cam.pixel_size);
 		debugData[index + 1] = objs[0].inv_transform[0];
 		debugData[index + 2] = objs[0].inv_transform[1];
 		debugData[index + 3] = objs[0].inv_transform[2];
@@ -117,6 +118,8 @@ void main()
 	if (dot(normalv, eyev) < 0.0) {
 		normalv = -normalv;
 	}
+	if (m.pat.patType != NO_PATTERN)
+		m.color = applyPattern(objs[interMilan.object_id], point);
 	point = point + normalv * EPSILON * 100.0;
 	vec4 amb = (ambientLgt.a * ambientLgt.a.w) * m.ambient;   // m.ambient defaults to 1.0
 	FragColor = m.color * amb;

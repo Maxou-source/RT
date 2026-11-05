@@ -1,7 +1,8 @@
 #pragma once
 
-#include "IParsable.hpp"
-#include <unordered_map>
+# include "rt.hpp"
+# include "IParsable.hpp"
+# include <unordered_map>
 
 enum PatternType {
 	NO_PATTERN,
@@ -12,11 +13,12 @@ enum PatternType {
 	PERLIN
 };
 
-class Pattern: public IParsable {
+class Pattern: public IParsable 
+{
 	private:
-		PatternType type = NO_PATTERN;
-		float param;
-		t_clr clr;
+		PatternType	type = NO_PATTERN;
+		t_clr		clr;
+		float		param;
 	public :
 		Pattern();
 		bool setProperty(const std::string& key, const std::string& val) override;
@@ -28,6 +30,7 @@ class Pattern: public IParsable {
 
 		bool parsePatternType(const std::string& vec);
 
-		// getters and setters 	
+		// getters and setters 
 		PatternType getType() const;
+		float getParam() const;
 };

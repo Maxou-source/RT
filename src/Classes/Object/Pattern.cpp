@@ -30,12 +30,18 @@ bool Pattern::packIntoGpuScene(GpuScene&) const {
 }
 
 void Pattern::packInto(GpuMaterial& g) const {
+	std::cout << "packing pattern" << std::endl;
+	g.pat.patType = type;
+	g.pat.color[0] = clr.r;
+	g.pat.color[1] = clr.g;
+	g.pat.color[2] = clr.b;
+	g.pat.param = param;
 	return ;
 }
 
 bool Pattern::parsePatternType(const std::string& value) {
 	std::unordered_map<std::string, PatternType> map = {
-		{"Checker", PatternType::CHECKER}, {"Stripe", PatternType::STRIPE}, 
+		{"checker", PatternType::CHECKER}, {"stripe", PatternType::STRIPE}, 
 	};
 	auto it = map.find(value);
 	if (it == map.end())
@@ -48,4 +54,8 @@ bool Pattern::parsePatternType(const std::string& value) {
 
 PatternType Pattern::getType() const {
 	return type;
+}
+
+float Pattern::getParam() const {
+	return param;
 }

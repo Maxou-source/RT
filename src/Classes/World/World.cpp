@@ -68,7 +68,7 @@ void World::printWorld() const
 		t_f4 pos = obj->getPosition();
 
 		std::cout << "object " << i++ << colorprint::green
-		          << " [" << objectName(obj->type()) << "]\n" << colorprint::reset
+		          << " [" << obj->typeString() << "]\n" << colorprint::reset
 		          << "  position:   (" << pos.x << ", " << pos.y << ", " << pos.z << ")\n";
 		obj->getMaterial().print(std::cout);
 		obj->printSpecific(std::cout);   // shape-specific properties

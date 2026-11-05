@@ -16,16 +16,30 @@ Light {
 
 Cone {
     position: [0,2.5,0]
-    orientation: [0.5,0.75,0]
+    orientation: [0,1,0]
     size: 2
     diameter: 2
     Material {
         color: [1,0,0]
         ambient: 0.9
         Pattern {
-            type: Checker
-            second_color: [1,0,0]
+            type: stripe
+            second_color: [1,1,1]
             parameter: 0.5
+        }
+    }
+}
+
+Sphere {
+    position: [-5, 2, 0.0]
+    diameter: 1.0
+    Material {
+        color: [1.0, 0.2, 1.0]
+        ambient: 0.9
+        Pattern {
+            type: stripe
+            second_color: [1,1,1]
+            parameter: 0.2
         }
     }
 }
@@ -36,5 +50,10 @@ Plane {
     Material {
         color: [1,0,1]
         ambient: 0.9
+        Pattern {
+            second_color: [0,1,0]
+            type: stripe
+            parameter: 1.0
+        }
     }
 }

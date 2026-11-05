@@ -1,28 +1,53 @@
 #pragma once
 #include "Matrix.hpp"
 
+
+struct GpuPattern {
+	float color[4]; // 16
+	int patType; // 4
+	float param; // 4
+	int	_pad1 = 0, _pad2 = 0;
+};
+static_assert(sizeof(GpuPattern) == 32, "GpuMaterial must be 96 bytes");
+
+
 struct GpuMaterial
 {
-	float color[4];  float ambient;
-	float diffuse;   float specular;
-	float shininess; float reflective;
-	int   pattern;   int   texture;
-	int   _pad0 = 0	;
+	float color[4]; // 16
+	float ambient; float diffuse; float specular; float shininess; // 16
+	float reflective; float pattern;
+	int   _pad0 = 0, _pad_1 = 0; // 16
+	GpuPattern pat;
 };
+static_assert(sizeof(GpuMaterial) == 80, "GpuMaterial must be 72 bytes");
 
 struct GpuObject
 {
-	t_m4			inv_transform;
-	GpuMaterial		mat;
-	int				type;
-	float			param;
-	int				_pad1 = 0, _pad2 = 0;
+	t_m4			inv_transform; // 64
+	GpuMaterial		mat; // 72 -> 12 + 72 -> 84
+	int				type; // 4 -> 88
+	float			param; // 4 -> 92
+	int				_pad1 = 0, _pad2 = 0; // 100
 };
+/*
+struct GpuMaterial
+{
+	float color[4]; // 16
+	float ambient; float diffuse; float specular; float shininess; // 16
+	
+	float reflective; float transparency;
+	int   _pad0 = 0, _pad_1 = 0;
+	// 32 + 4 + 8
+
+};
+
+
+*/
 
 struct GpuLight
 {
-	float position[3];  float _pad0 = 0;    // slot 0
-	float color[3];     float _pad1 = 0;    // slot 1
+	float position[4];    // slot 0
+	float color[4];   // slot 1
 	float ambient;      float diffuse;      // slot 2
 	float specular;     float _pad2 = 0;
 };

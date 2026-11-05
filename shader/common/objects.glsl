@@ -32,12 +32,20 @@ struct Sphere {
 	mat4 i_matrix;
 };
 
+struct Pattern
+{
+	vec4 color;
+	int patType;
+	float param;
+};
+// worth 32 bytes in GLSL for an obscur reason for alignement reasons I guess
+
 struct Material {
-    vec4  color;                          // slot 0: rgb + w (alpha / HDR intensity)
-    float ambient;    float diffuse;      // slot 1
-    float specular;   float shininess;
-    float reflective; int   pattern;      // slot 2
-    int   texture;    int   _pad0;
+    vec4  color; // 16
+    float ambient; float diffuse; float specular; float shininess; // 16
+    float reflective; float transparency;
+    int _pad0, _pad1; // 4 * 4 -> 16 again
+	Pattern pat; // 24
 };
 
 struct Obj {

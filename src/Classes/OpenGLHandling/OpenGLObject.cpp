@@ -1,4 +1,5 @@
 #include "OpenGLObject.hpp"
+#include "Pattern.hpp"
 #include "ShaderLoader.hpp"
 #include <string.h>
 #include <iostream>
@@ -110,6 +111,9 @@ bool OpenGLObject::SetFragmentShader(const std::string& rootFile)
 			{"OBJ_CUBE", std::to_string((int)ObjectId::CUBE)},
 			{"OBJ_PLANE", std::to_string((int)ObjectId::PLANE)},
 			{"OBJ_CONE", std::to_string((int)ObjectId::CONE)},
+			{"NO_PATTERN",   std::to_string((int)PatternType::NO_PATTERN)},
+			{"STRIPE",   std::to_string((int)PatternType::STRIPE)},
+			{"CHECKER",   std::to_string((int)PatternType::CHECKER)},
 		}, source))
 		return false;
 
