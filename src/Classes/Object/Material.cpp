@@ -23,7 +23,7 @@ bool Material::preBuild() {
 }
 
 std::vector<std::string> Material::requiredKeys() const {
-	return {"color"};
+	return {"color", "reflection"};
 }
 
 const char *Material::typeString() const {return "Material";}

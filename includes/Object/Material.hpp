@@ -14,7 +14,7 @@ class Material : public IParsable
 		float		specular  = 0.9f;
 		float		shininess = 200.f;
 
-		float reflective;
+		float reflective = 1.0;
 		Pattern			pat;
 	public:
 		Material();

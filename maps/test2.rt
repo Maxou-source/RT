@@ -31,6 +31,7 @@ Cylinder {
         Material {
         color: [1,0,0]
         ambient: 0.9
+        reflection: 0
         Pattern {
             type: checker
             second_color: [1,1,1]
@@ -46,6 +47,7 @@ Cylinder {
     diameter: 2
     height: 2
         Material {
+        reflection: 0
         color: [1,0,0]
         ambient: 0.9
         Pattern {
@@ -62,6 +64,7 @@ Sphere {
     diameter: 1.0
     Material {
         color: [1.0, 0, 0]
+        reflection: 0
         ambient: 0.9
         Pattern {
             type: stripe
@@ -76,13 +79,8 @@ Plane {
     position: [0, 0, 0]
     orientation: [0,1,0]
     Material {
-        color: [1,1,1]
+        color: [0,0,1]
+        reflection: 1.0
         ambient: 0.9
-        Pattern {
-            second_color: [0,0,0]
-            type: checker
-            parameter: 1.0
-            orientation: [0,1,0]
-        }
     }
 }
