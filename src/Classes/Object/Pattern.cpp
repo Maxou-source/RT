@@ -55,7 +55,7 @@ void Pattern::packInto(GpuMaterial& g) const {
 bool Pattern::parsePatternType(const std::string& value) {
 	std::unordered_map<std::string, PatternType> map = {
 		{"checker", PatternType::CHECKER}, {"stripe", PatternType::STRIPE},
-		{"gradient", PatternType::GRADIENT}, 
+		{"gradient", PatternType::GRADIENT}, {"perlin", PatternType::PERLIN}, 
 	};
 	auto it = map.find(value);
 	if (it == map.end())

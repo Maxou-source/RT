@@ -31,35 +31,54 @@ Light {
 Sphere {
 	position: [10,0,0]
 	diameter: 2
-	color: [1,1,1]
+	Material {
+		color: [1,1,1]
+
+	}
 }
 
 Sphere {
 	position: [-4,0,-10]
 	diameter: 2
-	color: [1,1,1]
+	Material {
+		color: [1,1,1]
+	}
 }
 
 Sphere {
 	position: [4,0,-10]
 	diameter: 2
-	color: [1,1,1]
+	Material {
+		color: [1,1,1]
+	}
 }
 
 Sphere {
 	position: [0,0,0]
 	diameter: 2
-	color: [1,1,1]
+	Material {
+		color: [1,1,1]
+	}
 }
 
 Plane {
 	position: [0,-2,0]
 	orientation: [0,1,0]
-	color: [0.58823529411,0.58823529411,0.58823529411]
+	Material {
+		color: [0.58823529411,0.58823529411,0.58823529411]
+	    Pattern {
+            type: checker
+            second_color: [1,1,1]
+            parameter: 5
+            orientation: [1,0,0]
+        }
+	}
 }
 
 Plane {
 	position: [-60,-60,100]
 	orientation: [0,0,1]
-	color: [0.58823529411,0.2,0.4]
+	Material {
+		color: [0.58823529411,0.2,0.4]
+	}
 }

@@ -14,19 +14,45 @@ Light {
     specular: 0.9
 }
 
-Cone {
+Light {
+    position: [8,12,-12]
+    color: [1,1,1]
+    ambient: 0.1
+    diffuse: 0.9
+    specular: 0.9
+}
+
+
+Cylinder {
     position: [0,2.5,0]
     orientation: [0,1,0]
-    size: 2
     diameter: 2
-    Material {
+    height: 2
+        Material {
         color: [1,0,0]
         ambient: 0.9
         Pattern {
-            type: gradient
+            type: checker
             second_color: [1,1,1]
-            parameter: 0.5
-            orientation: [0,1,0]
+            parameter: 0.25
+            orientation: [1,0,0]
+        }
+    }
+}
+
+Cylinder {
+    position: [0,5,0]
+    orientation: [0.5,1,0]
+    diameter: 2
+    height: 2
+        Material {
+        color: [1,0,0]
+        ambient: 0.9
+        Pattern {
+            type: checker
+            second_color: [1,1,1]
+            parameter: 0.25
+            orientation: [1,0,0]
         }
     }
 }
@@ -38,10 +64,10 @@ Sphere {
         color: [1.0, 0, 0]
         ambient: 0.9
         Pattern {
-            type: gradient
+            type: stripe
             second_color: [0,0,1]
-            orientation: [1,1,0]
-            parameter: 1.5
+            orientation: [0,1,0]
+            parameter: 0.2
         }
     }
 }
@@ -50,13 +76,13 @@ Plane {
     position: [0, 0, 0]
     orientation: [0,1,0]
     Material {
-        color: [1,0,1]
+        color: [1,1,1]
         ambient: 0.9
         Pattern {
-            second_color: [0,1,0]
-            type: gradient
-            parameter: 1000
-            orientation: [1,1,1]
+            second_color: [0,0,0]
+            type: checker
+            parameter: 1.0
+            orientation: [0,1,0]
         }
     }
 }

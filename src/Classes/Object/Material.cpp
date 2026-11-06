@@ -12,6 +12,7 @@ bool Material::setProperty(const std::string& key, const std::string& val) {
 		else if (key == "diffuse")    diffuse = std::stof(val);
 		else if (key == "specular")   specular = std::stof(val);
 		else if (key == "shininess")  shininess = std::stof(val);
+		else if (key == "reflection")  reflective = std::stof(val);
 		else return false;           // not a material key
 	} catch (const std::exception&) { return false; }
 	return true;
@@ -41,6 +42,7 @@ void Material::packInto(GpuMaterial& g) const
 	g.diffuse    = diffuse;
 	g.specular   = specular;
 	g.shininess  = shininess;
+	g.reflective  = reflective;
 	pat.packInto(g);
 }
 
