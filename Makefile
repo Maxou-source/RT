@@ -106,6 +106,7 @@ SRC_OBJECTS			= $(addprefix $(OBJECTS_DIR), \
 						Material.cpp \
 						AmbientLight.cpp \
 						Pattern.cpp \
+						Texture.cpp \
 						)
 
 SRC_TUPLE			= $(addprefix $(TUPLE_DIR), \

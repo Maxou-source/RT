@@ -49,6 +49,8 @@ void Material::packInto(GpuMaterial& g) const
 IParsable* Material::getSubBlock(const std::string& name) {
 	if (name == "Pattern")
 		return &pat;
+	if (name == "Texture")
+		return &text;
 	return nullptr;
 }
 

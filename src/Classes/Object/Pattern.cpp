@@ -15,8 +15,6 @@ bool Pattern::setProperty(const std::string& key, const std::string& val) {
 }
 
 bool Pattern::preBuild()  {
-	// if (type == GRADIENT)
-	// 	return true;
 	Matrix scale_Matrix;
 	scale_Matrix.scale(param, param, param);
 	scale_Matrix.display();

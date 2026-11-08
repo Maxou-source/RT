@@ -3,6 +3,7 @@
 # include "rt.hpp"
 # include "IParsable.hpp"
 # include "Pattern.hpp"
+# include "Texture.hpp"
 
 
 class Material : public IParsable
@@ -16,6 +17,7 @@ class Material : public IParsable
 
 		float reflective = 1.0;
 		Pattern			pat;
+		Texture			text;
 	public:
 		Material();
 		bool setProperty(const std::string& key, const std::string& val) override;

@@ -33,6 +33,7 @@ Sphere {
 	diameter: 2
 	Material {
 		color: [1,1,1]
+		reflection: 0.0
 
 	}
 }
@@ -41,6 +42,7 @@ Sphere {
 	position: [-4,0,-10]
 	diameter: 2
 	Material {
+		reflection: 0.0
 		color: [1,1,1]
 	}
 }
@@ -49,6 +51,7 @@ Sphere {
 	position: [4,0,-10]
 	diameter: 2
 	Material {
+		reflection: 0.0
 		color: [1,1,1]
 	}
 }
@@ -57,6 +60,7 @@ Sphere {
 	position: [0,0,0]
 	diameter: 2
 	Material {
+		reflection: 0.0
 		color: [1,1,1]
 	}
 }
@@ -66,12 +70,7 @@ Plane {
 	orientation: [0,1,0]
 	Material {
 		color: [0.58823529411,0.58823529411,0.58823529411]
-	    Pattern {
-            type: checker
-            second_color: [1,1,1]
-            parameter: 5
-            orientation: [1,0,0]
-        }
+		reflection: 1.0
 	}
 }
 
@@ -79,6 +78,7 @@ Plane {
 	position: [-60,-60,100]
 	orientation: [0,0,1]
 	Material {
+		reflection: 0.0
 		color: [0.58823529411,0.2,0.4]
 	}
 }
