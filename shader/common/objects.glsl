@@ -43,8 +43,10 @@ struct Pattern
 struct Material {
     vec4  color; // 16
     float ambient; float diffuse; float specular; float shininess; // 16
-    float reflective; float transparency;
-    int _pad0, _pad1; // 4 * 4 -> 16 again
+    float reflection;
+	float transparency;
+	float refractive_index;
+    int _pad1; // 4 * 4 -> 16 again
 	Pattern pat; // 24
 };
 
@@ -75,6 +77,9 @@ struct Computation {
 	vec4	point;
 	vec4	eyev;
 	vec4	normalv;
+	vec4	under_point;
+	float	n1;
+	float	n2;
 };
 
 layout(std430, binding = 0) buffer DebugBuffer {

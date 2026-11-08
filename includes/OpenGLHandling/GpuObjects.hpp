@@ -12,10 +12,12 @@ struct GpuPattern {
 
 struct GpuMaterial
 {
-	float color[4]; // 16
-	float ambient; float diffuse; float specular; float shininess; // 16
-	float reflective; float pattern;
-	int   _pad0 = 0, _pad_1 = 0; // 16
+	float	color[4]; // 16
+	float	ambient; float diffuse; float specular; float shininess; // 16
+	float	reflection; 
+	float	transparency = 0;
+	float	refractive_index = 0; // 16
+	int _pad0 = 0;
 	GpuPattern pat;
 };
 

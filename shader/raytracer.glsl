@@ -34,23 +34,29 @@ Ray	rayForPixel(int px, int py, int index) {
 	return r;
 }
 
+float intersect_obj(Ray r, Obj o)
+{
+	if (o.type == OBJ_SPHERE) {
+		return(intersect_sp(r, o));
+	} else if (o.type == OBJ_CYLINDER) {
+		return(intersect_cy(r, o));
+	} else if (o.type == OBJ_CUBE) {
+		return(intersect_cu(r, o));
+	} else if (o.type == OBJ_PLANE) {
+		return(intersect_pl(r, o));
+	} else if (o.type == OBJ_CONE) {
+		return(intersect_co(r, o));
+	}
+	return INF;
+}
+
 Intersection intersect_world(Ray r)
 {
 	Intersection best = Intersection(INF, -1);
 	for (int i = 0; i < object_count; i++)
 	{
-		float t = INF;
-		if (objs[i].type == OBJ_SPHERE) {
-			t = intersect_sp(r, objs[i]);
-		} else if (objs[i].type == OBJ_CYLINDER) {
-			t = intersect_cy(r, objs[i]);
-		} else if (objs[i].type == OBJ_CUBE) {
-			t = intersect_cu(r, objs[i]);
-		} else if (objs[i].type == OBJ_PLANE) {
-			t = intersect_pl(r, objs[i]);
-		} else if (objs[i].type == OBJ_CONE) {
-			t = intersect_co(r, objs[i]);
-		}
+		float t;
+		t = intersect_obj(r, objs[i]);
 		
 		if (t < best.t)
 			best = Intersection(t, i);
@@ -58,55 +64,69 @@ Intersection intersect_world(Ray r)
 	return best;
 }
 
-
-// vec4 shade_hit()
-// {
-
-// }
-
-// Intersection computations(Ray r) {
-// 	Intersection interMilan = intersect_world(r);
-// 	if (interMilan.object_id < 0)
-// 	{
-// 		// FragColor = vec4(0.0, 0, 0.0, 1);
-// 		return interMilan;
-// 	}
-
-// 	interMilan.point = r.origin + interMilan.t * r.direction;
-// 	interMilan.eyev = -r.direction;
-
-// 	vec4 normalv;
-// 	if (objs[interMilan.object_id].type == OBJ_CYLINDER)
-// 		normalv = normal_at_cy(objs[interMilan.object_id], interMilan.point);
-// 	else if (objs[interMilan.object_id].type == OBJ_CUBE)
-// 		normalv = normal_at_cu(objs[interMilan.object_id], interMilan.point);
-// 	else if (objs[interMilan.object_id].type == OBJ_PLANE)
-// 		normalv = normal_at_pl(objs[interMilan.object_id], interMilan.point);
-// 	else if (objs[interMilan.object_id].type == OBJ_CONE)
-// 		normalv = normal_at_co(objs[interMilan.object_id], interMilan.point);
-// 	else
-// 		normalv = normal_at(objs[interMilan.object_id],interMilan.point);
-
-// 	if (dot(normalv, interMilan.eyev) < 0.0) {
-// 		normalv = -normalv;
-// 	}
-// 	interMilan.point = interMilan.point + normalv * EPSILON * 100.0;
-// 	interMilan.normalv = normalv;
-// 	return interMilan;
-// }
-
-
-bool is_shadowed(vec4 point, Light lgt)
+Computation computations(Ray r, Intersection i, Obj o);
+float shadow_factor(vec4 point, Light lgt)
 {
 	vec4  v        = lgt.position - point;
-	float distance = length(v.xyz);
+	float distance = length(v);
 
-	Ray shadowRay;
-	shadowRay.origin    = point;
-	shadowRay.direction = vec4(normalize(v.xyz), 0.0);
+	Ray sr;
+	sr.origin    = point;
+	sr.direction = vec4(normalize(v));
 
-	Intersection h = intersect_world(shadowRay);
-	return (h.object_id >= 0 && h.t < distance);
+	float factor = 1.0;
+
+	for (int i = 0; i < object_count; i++)
+	{
+		float t = intersect_obj(sr, objs[i]);
+		if (t >= distance || t <= 0.0001)
+			continue;
+
+		if (objs[i].mat.transparency == 0.0)
+			return 0.0;
+		Intersection it = Intersection(t, i);
+		Computation comps = computations(sr, it, objs[i]);
+
+		float cos_theta = clamp(dot(normalize(sr.direction.xyz), normalize(comps.normalv.xyz)), -1.0, 1.0);
+		float sin_theta = sqrt(1.0 - cos_theta * cos_theta);
+
+        float eta = 1.0 / objs[i].mat.refractive_index; // Air (1.0) to Object IOR
+        float sin_theta_t = eta * sin_theta;
+
+        // If total internal reflection happens inside our approximation loop
+        if (sin_theta_t > 1.0) {
+            factor *= 0.0; // Block light
+            continue;
+        }
+
+		float cos_theta_t = sqrt(1.0 - sin_theta_t * sin_theta_t);
+		// schlick
+        float r0 = ((1.0 - objs[i].mat.refractive_index) / (1.0 + objs[i].mat.refractive_index));
+        r0 = r0 * r0;
+        float fresnel = r0 + (1.0 - r0) * pow(1.0 - abs(cos_theta), 5.0);
+
+		float dispersion = pow(sin_theta, 2.0) * (1.0 - eta);
+        
+        // Combine transmission loss (fresnel) and directional scattering (dispersion)
+        float transmission = (1.0 - fresnel) * (1.0 - dispersion);
+
+        factor *= clamp(transmission, 0.0, 1.0) * objs[i].mat.transparency;
+	}
+	return factor;
+}
+
+bool refract_dir(Computation c, out vec4 dir)
+{
+	float ratio  = c.n1 / c.n2;
+	float cos_i  = dot(c.eyev.xyz, c.normalv.xyz);     // normal already flipped toward the eye
+	float sin2_t = ratio * ratio * (1.0 - cos_i * cos_i);
+
+	if (sin2_t > 1.0)
+		return false;                                  // total internal reflection
+
+	float cos_t = sqrt(1.0 - sin2_t);
+	dir = vec4(c.normalv.xyz * (ratio * cos_i - cos_t) - c.eyev.xyz * ratio, 0.0);
+	return true;
 }
 
 Computation computations(Ray r, Intersection i, Obj o)
@@ -135,15 +155,22 @@ Computation computations(Ray r, Intersection i, Obj o)
 	}
 
 	// this is the over_point replaces the current point to avoid inconsistency
-	point = point + normalv * EPSILON * 100;
-	return Computation(o, o.mat, point, eyev, normalv);
+	vec4 over_point = point + normalv * EPSILON * 100;
+	vec4 under_point = point - normalv * EPSILON * 100.0;
+
+	float n1,n2 = 1.0;
+	if (o.mat.transparency > 0.0) {
+		if (dot(normalv, eyev) < 0.0) {n1 = o.mat.refractive_index; n2 = 1.0;}
+		else {n1 = 1.0; n2 = o.mat.refractive_index;}
+	}
+	return Computation(o, o.mat, over_point, eyev, normalv, under_point, n1, n2);
 }
 
 vec4 color_at(Ray r);
 
 vec4 refelec_color(Computation comps)
 {
-	if (comps.obj.mat.reflective == 0)
+	if (comps.obj.mat.reflection == 0)
 		return vec4(0);
 	Ray refRay;
 
@@ -167,7 +194,7 @@ vec4 shade_hit(Computation cmp)
 	// main lighting
 	for (int i = 0; i < light_count; i++)
 	{
-		bool shadowed = is_shadowed(cmp.point, lights[i]);
+		float shadowed = shadow_factor(cmp.point, lights[i]);
 		res += lighting(cmp.mat, lights[i] ,cmp.point, cmp.eyev, cmp.normalv, shadowed);
 	}
 
@@ -189,20 +216,32 @@ vec4 color_at(Ray r)
 	vec3  result = vec3(0.0);
 	float weight = 1.0;
 
-	for (int b = 0; b < 1000; b++)
+	for (int b = 0; b < 100; b++)
 	{
 		Intersection it = intersect_world(r);
 		if (it.t == INF)
 			break;
 
 		Computation c = computations(r, it, objs[it.object_id]);
-		result += weight * shade_hit(c).rgb;
+		vec3 local = shade_hit(c).rgb;
 
-		weight *= c.mat.reflective;
+		vec4 dir;
+		if (c.mat.transparency > 0.0 && refract_dir(c, dir))
+		{
+			result += weight * (1.0 - c.mat.transparency) * local;
+			weight *= c.mat.transparency;
+			r.origin    = c.under_point;
+			r.direction = dir;
+		}
+		else
+		{
+			result += weight * local;
+			weight *= c.mat.reflection;
+			r.origin    = c.point;                     // over point
+			r.direction = vec4(reflect(-c.eyev.xyz, c.normalv.xyz), 0.0);
+		}
 		if (weight < 0.01)
 			break;
-
-		r = reflected_ray(c);
 	}
 	return vec4(result, 1.0);
 }

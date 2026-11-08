@@ -14,8 +14,10 @@ class Material : public IParsable
 		float		diffuse   = 0.9f;
 		float		specular  = 0.9f;
 		float		shininess = 200.f;
-
-		float reflective = 1.0;
+		
+		float		reflection = 0.0;
+		float transparency = 0;
+		float refractive_index = 0.0;
 		Pattern			pat;
 		Texture			text;
 	public:
