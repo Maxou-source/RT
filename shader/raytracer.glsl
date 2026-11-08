@@ -36,7 +36,7 @@ Ray	rayForPixel(int px, int py, int index) {
 
 Intersection intersect_world(Ray r)
 {
-	Intersection best = Intersection(INF, -1, vec4(0), vec4(0), vec4(0));
+	Intersection best = Intersection(INF, -1);
 	for (int i = 0; i < object_count; i++)
 	{
 		float t = INF;
@@ -53,7 +53,7 @@ Intersection intersect_world(Ray r)
 		}
 		
 		if (t < best.t)
-			best = Intersection(t, i, vec4(0), vec4(0), vec4(0));
+			best = Intersection(t, i);
 	}
 	return best;
 }
@@ -64,36 +64,38 @@ Intersection intersect_world(Ray r)
 
 // }
 
-Intersection computations(Ray r) {
-	Intersection interMilan = intersect_world(r);
-	if (interMilan.object_id < 0)
-	{
-		// FragColor = vec4(0.0, 0, 0.0, 1);
-		return interMilan;
-	}
+// Intersection computations(Ray r) {
+// 	Intersection interMilan = intersect_world(r);
+// 	if (interMilan.object_id < 0)
+// 	{
+// 		// FragColor = vec4(0.0, 0, 0.0, 1);
+// 		return interMilan;
+// 	}
 
-	interMilan.point = r.origin + interMilan.t * r.direction;
-	interMilan.eyev = -r.direction;
+// 	interMilan.point = r.origin + interMilan.t * r.direction;
+// 	interMilan.eyev = -r.direction;
 
-	vec4 normalv;
-	if (objs[interMilan.object_id].type == OBJ_CYLINDER)
-		normalv = normal_at_cy(objs[interMilan.object_id], interMilan.point);
-	else if (objs[interMilan.object_id].type == OBJ_CUBE)
-		normalv = normal_at_cu(objs[interMilan.object_id], interMilan.point);
-	else if (objs[interMilan.object_id].type == OBJ_PLANE)
-		normalv = normal_at_pl(objs[interMilan.object_id], interMilan.point);
-	else if (objs[interMilan.object_id].type == OBJ_CONE)
-		normalv = normal_at_co(objs[interMilan.object_id], interMilan.point);
-	else
-		normalv = normal_at(objs[interMilan.object_id],interMilan.point);
+// 	vec4 normalv;
+// 	if (objs[interMilan.object_id].type == OBJ_CYLINDER)
+// 		normalv = normal_at_cy(objs[interMilan.object_id], interMilan.point);
+// 	else if (objs[interMilan.object_id].type == OBJ_CUBE)
+// 		normalv = normal_at_cu(objs[interMilan.object_id], interMilan.point);
+// 	else if (objs[interMilan.object_id].type == OBJ_PLANE)
+// 		normalv = normal_at_pl(objs[interMilan.object_id], interMilan.point);
+// 	else if (objs[interMilan.object_id].type == OBJ_CONE)
+// 		normalv = normal_at_co(objs[interMilan.object_id], interMilan.point);
+// 	else
+// 		normalv = normal_at(objs[interMilan.object_id],interMilan.point);
 
-	if (dot(normalv, interMilan.eyev) < 0.0) {
-		normalv = -normalv;
-	}
-	interMilan.point = interMilan.point + normalv * EPSILON * 100.0;
-	interMilan.normalv = normalv;
-	return interMilan;
-}
+// 	if (dot(normalv, interMilan.eyev) < 0.0) {
+// 		normalv = -normalv;
+// 	}
+// 	interMilan.point = interMilan.point + normalv * EPSILON * 100.0;
+// 	interMilan.normalv = normalv;
+// 	return interMilan;
+// }
+
+
 bool is_shadowed(vec4 point, Light lgt)
 {
 	vec4  v        = lgt.position - point;
@@ -101,45 +103,108 @@ bool is_shadowed(vec4 point, Light lgt)
 
 	Ray shadowRay;
 	shadowRay.origin    = point;
-	shadowRay.direction = vec4(normalize(v.xyz), 0.0);   // w = 0: it's a direction
+	shadowRay.direction = vec4(normalize(v.xyz), 0.0);
 
 	Intersection h = intersect_world(shadowRay);
 	return (h.object_id >= 0 && h.t < distance);
 }
 
-
-vec4 refelec_color(Obj o, Intersection inter)
+Computation computations(Ray r, Intersection i, Obj o)
 {
-	if (o.mat.reflective == 0)
-		return vec4(0);
-	
 
-	Ray refRay;
-	vec4 res;
+	// assign the raw point value
+	vec4 point = r.origin + i.t * r.direction;
+	// assign the eye vector
+	vec4 eyev = -r.direction;
 
-	refRay.origin = inter.point;
-	refRay.direction = vec4(reflect(-inter.eyev.xyz, inter.normalv.xyz), 0.0);
+	vec4 normalv;
+	// assign the normal
+	if (objs[i.object_id].type == OBJ_CYLINDER)
+		normalv = normal_at_cy(objs[i.object_id], point);
+	else if (objs[i.object_id].type == OBJ_CUBE)
+		normalv = normal_at_cu(objs[i.object_id], point);
+	else if (objs[i.object_id].type == OBJ_PLANE)
+		normalv = normal_at_pl(objs[i.object_id], point);
+	else if (objs[i.object_id].type == OBJ_CONE)
+		normalv = normal_at_co(objs[i.object_id], point);
+	else
+		normalv = normal_at(objs[i.object_id],point);
 
-	Intersection interMilan = computations(refRay);
-	if (interMilan.object_id < 0)
-	{
-		return vec4(0, 0, 0.0, 1);
-		
+	if (dot(normalv, eyev) < 0.0) {
+		normalv = -normalv;
 	}
 
+	// this is the over_point replaces the current point to avoid inconsistency
+	point = point + normalv * EPSILON * 100;
+	return Computation(o, o.mat, point, eyev, normalv);
+}
 
-	Material m = objs[interMilan.object_id].mat;
-	if (m.pat.patType != NO_PATTERN)
-		m.color = applyPattern(objs[interMilan.object_id], interMilan.point);
-	vec4 amb = (ambientLgt.a * ambientLgt.a.w) * m.ambient;
-	res = m.color * amb;
+vec4 color_at(Ray r);
+
+vec4 refelec_color(Computation comps)
+{
+	if (comps.obj.mat.reflective == 0)
+		return vec4(0);
+	Ray refRay;
+
+	refRay.origin = comps.point;
+	refRay.direction = vec4(reflect(-comps.eyev.xyz, comps.normalv.xyz), 0.0);
+
+	return color_at(refRay);
+}
+
+vec4 shade_hit(Computation cmp)
+{
+	vec4 res;
+	// PATTERN
+	if (cmp.mat.pat.patType != NO_PATTERN)
+		cmp.mat.color = applyPattern(cmp.obj, cmp.point);
+
+	// ambient 
+	vec4 amb = (ambientLgt.a * ambientLgt.a.w) * cmp.mat.ambient;
+	res = cmp.mat.color * amb;
+
+	// main lighting
 	for (int i = 0; i < light_count; i++)
 	{
-		bool shadowed = is_shadowed(interMilan.point, lights[i]);
-		res += lighting(m, lights[i] ,interMilan.point, interMilan.eyev, interMilan.normalv, shadowed);
+		bool shadowed = is_shadowed(cmp.point, lights[i]);
+		res += lighting(cmp.mat, lights[i] ,cmp.point, cmp.eyev, cmp.normalv, shadowed);
 	}
-	// res += refelec_color(objs[interMilan.object_id], interMilan);
-	return res * o.mat.reflective;
+
+	// reflect
+	// res += refelec_color(cmp);
+	return vec4(res.r, res.g, res.b, 1.0);
+}
+
+Ray reflected_ray(Computation c)
+{
+	Ray r;
+	r.origin    = c.point;                                  // already an over point
+	r.direction = vec4(reflect(-c.eyev.xyz, c.normalv.xyz), 0.0);
+	return r;
+}
+
+vec4 color_at(Ray r)
+{
+	vec3  result = vec3(0.0);
+	float weight = 1.0;
+
+	for (int b = 0; b < 1000; b++)
+	{
+		Intersection it = intersect_world(r);
+		if (it.t == INF)
+			break;
+
+		Computation c = computations(r, it, objs[it.object_id]);
+		result += weight * shade_hit(c).rgb;
+
+		weight *= c.mat.reflective;
+		if (weight < 0.01)
+			break;
+
+		r = reflected_ray(c);
+	}
+	return vec4(result, 1.0);
 }
 
 void main()
@@ -163,27 +228,7 @@ void main()
 	}
 	Ray r = rayForPixel(px, py, index);
 
-	Intersection interMilan = computations(r);
-	if (interMilan.object_id < 0)
-	{
-		FragColor = vec4(0.0, 0, 0.0, 1);
-		return ;
-	}
-
-
-	Material m = objs[interMilan.object_id].mat;
-	if (m.pat.patType != NO_PATTERN)
-		m.color = applyPattern(objs[interMilan.object_id], interMilan.point);
-	vec4 amb = (ambientLgt.a * ambientLgt.a.w) * m.ambient;
-	FragColor = m.color * amb;
-	for (int i = 0; i < light_count; i++)
-	{
-		bool shadowed = is_shadowed(interMilan.point, lights[i]);
-		FragColor += lighting(m, lights[i] ,interMilan.point, interMilan.eyev, interMilan.normalv, shadowed);
-
-	}
-	FragColor += refelec_color(objs[interMilan.object_id], interMilan);
-	FragColor = vec4(FragColor.r, FragColor.g, FragColor.b, 1.0);
+	FragColor = color_at(r);
 	if (px == 200 && py == 200)
 	{
 		debugData[index] = vec4(FragColor);

@@ -67,10 +67,14 @@ struct PointLight {
 struct Intersection {
 	float	t;
 	int		object_id;
+};
+
+struct Computation {
+	Obj		obj;
+	Material mat;
 	vec4	point;
 	vec4	eyev;
 	vec4	normalv;
-
 };
 
 layout(std430, binding = 0) buffer DebugBuffer {
