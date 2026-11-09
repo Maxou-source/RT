@@ -22,13 +22,13 @@ bool Cone::packIntoGpuScene(GpuScene& s) const {
 		return false;
 
 	GpuObject& g = s.objs[s.object_count - 1];
-	g.param = size;
+	g.param = diameter;
 	return true;
 }
 
 bool Cone::preBuild() {
 	Matrix scale_Matrix;
-	scale_Matrix.scale(diameter, diameter, diameter);
+	scale_Matrix.scale(size, size, size);
 	scale_Matrix.display();
 
 	Matrix translation_matrix;

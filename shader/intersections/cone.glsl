@@ -1,9 +1,9 @@
 
-bool cap_ok_cone(Ray l, float t)
+bool cap_ok_cone(Ray l, float t, float half_h)
 {
 	float x = l.origin.x + t * l.direction.x;
 	float z = l.origin.z + t * l.direction.z;
-	return (x * x + z * z) <= 1.0;
+	return (x * x + z * z) <= half_h*half_h;
 }
 
 float intersect_co(Ray r, Obj o)
@@ -34,17 +34,18 @@ float intersect_co(Ray r, Obj o)
 		}
 	} else if (abs(b) > EPSILON)
 	{
-		float t = -c / 2 * b;
-		best = min(best, t);
+		float t = -c / b;
+		if (t > EPSILON && abs(newR.origin.y + t * newR.direction.y) < half_h)
+			best = min(best, t);
 	}
 
 	if (abs(newR.direction.y) > EPSILON)
 	{
 		float tb = (-half_h - newR.origin.y) / newR.direction.y;
 		float tt = ( half_h - newR.origin.y) / newR.direction.y;
-		if (tb > EPSILON && cap_ok_cone(newR, tb))
+		if (tb > EPSILON && cap_ok_cone(newR, tb, half_h))
 			best = min(best, tb);
-		if (tt > EPSILON && cap_ok_cone(newR, tt))
+		if (tt > EPSILON && cap_ok_cone(newR, tt, half_h))
 			best = min(best, tt);
 	}
 	return best;

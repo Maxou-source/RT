@@ -9,8 +9,8 @@ vec2 check_axis(float origin, float direction)
 		tmin = tmin_numerator / direction;
 		tmax = tmax_numerator / direction;
 	} else {
-		tmin = tmin_numerator * INF;
-		tmax = tmax_numerator * INF;
+		tmin = (tmin_numerator >= 0.0) ? INF : -INF;
+		tmax = (tmax_numerator >= 0.0) ? INF : -INF;
 	}
 
 	if (tmin > tmax) {
@@ -35,5 +35,5 @@ float intersect_cu(Ray r, Obj o)
 	float tmax = min(min(x[1],y[1]), z[1]);
 
 	if (tmin > tmax || tmax < EPSILON) {return INF;}
-	return tmin;
+	return (tmin > EPSILON) ? tmin : tmax;
 }

@@ -7,14 +7,6 @@ Camera {
 
 
 Light {
-    position: [-8,12,-12]
-    color: [1,1,1]
-    ambient: 0.1
-    diffuse: 0.9
-    specular: 0.9
-}
-
-Light {
     position: [8,12,-12]
     color: [1,1,1]
     ambient: 0.1
@@ -48,6 +40,8 @@ Cylinder {
         Material {
         color: [1,0,0]
         ambient: 0.9
+        transparency: 1.5
+        refractive_index: 1.33
         Pattern {
             type: checker
             second_color: [1,1,1]
@@ -57,13 +51,25 @@ Cylinder {
     }
 }
 
+Cube {
+    position: [5,2.1,0]
+    orientation: [0,1,0]
+    size: 2
+    Material {
+        color: [1,0,0]
+        ambient: 0.9
+        transparency: 1
+        refractive_index: 1.33
+    }
+}
+
 Sphere {
     position: [-5, 2, 0.0]
     diameter: 1.0
     Material {
         color: [1.0, 0, 0]
         ambient: 0.9
-        transparency: 0.5
+        transparency: 1.5
         refractive_index: 1.33
         Pattern {
             type: gradient

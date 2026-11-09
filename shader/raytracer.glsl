@@ -150,7 +150,8 @@ Computation computations(Ray r, Intersection i, Obj o)
 	else
 		normalv = normal_at(objs[i.object_id],point);
 
-	if (dot(normalv, eyev) < 0.0) {
+	bool inside = dot(normalv, eyev) < 0.0;
+	if (inside) {
 		normalv = -normalv;
 	}
 
@@ -158,9 +159,9 @@ Computation computations(Ray r, Intersection i, Obj o)
 	vec4 over_point = point + normalv * EPSILON * 100;
 	vec4 under_point = point - normalv * EPSILON * 100.0;
 
-	float n1,n2 = 1.0;
+	float n1,n2 = 1.0;	
 	if (o.mat.transparency > 0.0) {
-		if (dot(normalv, eyev) < 0.0) {n1 = o.mat.refractive_index; n2 = 1.0;}
+		if (inside) {n1 = o.mat.refractive_index; n2 = 1.0;}
 		else {n1 = 1.0; n2 = o.mat.refractive_index;}
 	}
 	return Computation(o, o.mat, over_point, eyev, normalv, under_point, n1, n2);
@@ -213,10 +214,10 @@ Ray reflected_ray(Computation c)
 
 vec4 color_at(Ray r)
 {
-	vec3  result = vec3(0.0);
+	vec3 result = vec3(0.0);
 	float weight = 1.0;
 
-	for (int b = 0; b < 100; b++)
+	for (int b = 0; b < 3; b++)
 	{
 		Intersection it = intersect_world(r);
 		if (it.t == INF)
