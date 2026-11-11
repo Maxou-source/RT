@@ -8,3 +8,6 @@ layout(std140) uniform Scene {
     Light  lights[MAX_LIGHTS];
     Obj    objs[MAX_OBJECTS];
 };
+
+in vec2 TexCoords;
+uniform sampler2DArray textures;

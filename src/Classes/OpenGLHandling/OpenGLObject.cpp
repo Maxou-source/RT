@@ -227,126 +227,130 @@ bool OpenGLObject::Whatever()
 	return true;
 }
 
+bool CheckGLError(const char* operation)
+{
+    GLenum err;
+    bool success = true;
+
+    while ((err = glGetError()) != GL_NO_ERROR)
+    {
+        std::cerr << "OpenGL error during "
+                  << operation << ": 0x"
+                  << std::hex << err << std::dec
+                  << " (" << gluErrorString(err) << ")"
+                  << std::endl;
+
+        success = false;
+    }
+
+    return success;
+}
+
 bool OpenGLObject::UploadTextures(const std::vector<Image>& imgs)
 {
-	GLenum err = glGetError();
-	if (err != GL_NO_ERROR)
-	{
-		std::cout << "devut" << std::endl;
-		std::cerr << "KO:: GL error 0x" << std::dec << err << std::dec
-		          << " while actructive	 uploading textures" << std::endl;
-		const GLubyte* errorString = gluErrorString(err);
-    	printf("OpenGL Error: %s\n", errorString);
-		return false;
-	}
-	if (imgs.empty())
-		return true;                           // no textures in the scene: nothing to do
+    if (imgs.empty())
+        return true;
 
-	// GLint maxLayers = 0;
-	// glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxLayers);
-	// 	if (err != GL_NO_ERROR)
-	// {
-	// 	std::cerr << "KO:: GL error 0x" << std::dec << err << std::dec
-	// 	          << " while actiddddve	 uploading textures" << std::endl;
-	// 	const GLubyte* errorString = gluErrorString(err);
-    // 	printf("OpenGL Error: %s\n", errorString);
-	// 	return false;
-	// }
-	// if ((GLint)imgs.size() > maxLayers)
-	// {
-	// 	std::cerr << "KO:: too many textures (" << imgs.size()
-	// 	          << ", max " << maxLayers << ")" << std::endl;
-	// 	return false;
-	// }
+    GLint maxLayers = 0;
+    glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxLayers);
 
-	if (texArray)
-		glDeleteTextures(1, &texArray);        // re-upload on reload
+    if (imgs.size() > (size_t)maxLayers)
+    {
+        std::cerr << "Too many texture layers!" << std::endl;
+        return false;
+    }
 
-	glGenTextures(1, &texArray);
-	if (err != GL_NO_ERROR)
-	{
-		std::cerr << "KO:: GL error 0x" << std::dec << err << std::dec
-		          << " while actructive	 uploading textures" << std::endl;
-		const GLubyte* errorString = gluErrorString(err);
-    	printf("OpenGL Error: %s\n", errorString);
-		return false;
-	}
-	glBindTexture(GL_TEXTURE_2D_ARRAY, texArray);
+    // All images must have identical dimensions
+    int width = imgs[0].w;
+    int height = imgs[0].h;
 
-	// int texsize = img.;
-	int levels = 1 + (int)std::floor(std::log2(TEX_SIZE));
-	glTexStorage3D(GL_TEXTURE_2D_ARRAY, 4, GL_SRGB8_ALPHA8,
-	               TEX_SIZE, TEX_SIZE, (GLsizei)imgs.size());
+    if (width <= 0 || height <= 0)
+        return false;
 
-	for (size_t i = 0; i < imgs.size(); i++)
-		glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, (GLint)i,
-		                TEX_SIZE, TEX_SIZE, 1,
-		                GL_RGBA, GL_UNSIGNED_BYTE, imgs[i].px.data());
+    for (const auto& img : imgs)
+    {
+        if (img.w != width || img.h != height)
+        {
+            std::cerr << "Inconsistent texture dimensions!" << std::endl;
+            return false;
+        }
 
-	glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	
-	std::cout << "shaderProga" << shaderProgram << std::endl;
-	glUseProgram(shaderProgram);
-	GLint success;
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (err != GL_NO_ERROR)
-	{
-		std::cerr << "KO:: GL error 0x" << std::dec << err << std::dec
-		          << " whiledddd active	 uploading textures" << std::endl;
-		const GLubyte* errorString = gluErrorString(err);
-    	printf("OpenGL Error: %s\n", errorString);
-		return false;
-	}
-	if (!success) {
-		// 2. Allocate space for the error message
-		GLint logLength = 0;
-		glGetProgramiv(shaderProgram, GL_INFO_LOG_LENGTH, &logLength);
-		
-		if (logLength > 0) {
-			std::vector<GLchar> infoLog(logLength);
-			glGetProgramInfoLog(shaderProgram, logLength, nullptr, infoLog.data());
-			
-			// 3. Print the explicit compiler/linker error
-			std::cerr << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" 
-					<< infoLog.data() << "\n" << std::endl;
-		}
-	} else {
-		std::cout << "Shader program linked successfully!" << std::endl;
-	}
-	glActiveTexture(GL_TEXTURE0);
-	if (err != GL_NO_ERROR)
-	{
-		std::cerr << "KO:: GL error 0x" << std::dec << err << std::dec
-		          << " while active	 uploading textures" << std::endl;
-		const GLubyte* errorString = gluErrorString(err);
-    	printf("OpenGL Error: %s\n", errorString);
-		return false;
-	}
-	glBindTexture(GL_TEXTURE_2D_ARRAY, texArray);
-	if (err != GL_NO_ERROR)
-	{
-		std::cerr << "KO:: GL error 0x" << std::dec << err << std::dec
-		          << " while binding uploading textures" << std::endl;
-		const GLubyte* errorString = gluErrorString(err);
-    	printf("OpenGL Error: %s\n", errorString);
-		return false;
-	}
-	glUniform1i(glGetUniformLocation(shaderProgram, "textures"), 0);
+        if (img.px.size() != (size_t)width * height * 4)
+        {
+            std::cerr << "Invalid RGBA pixel buffer!" << std::endl;
+            return false;
+        }
+    }
 
-	err = glGetError();
-	if (err != GL_NO_ERROR)
-	{
-		std::cerr << "KO:: GL error 0x" << std::dec << err << std::dec
-		          << " while uploading textures" << std::endl;
-		const GLubyte* errorString = gluErrorString(err);
-    	printf("OpenGL Error: %s\n", errorString);
-		return false;
-	}
-	return true;
+    // Calculate mipmap levels
+    int levels = 1 + (int)std::floor(
+        std::log2(std::max(width, height))
+    );
+
+    if (texArray)
+        glDeleteTextures(1, &texArray);
+
+    glGenTextures(1, &texArray);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, texArray);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    glTexStorage3D(
+        GL_TEXTURE_2D_ARRAY,
+        levels,
+        GL_SRGB8_ALPHA8,
+        width,
+        height,
+        (GLsizei)imgs.size()
+    );
+
+    for (size_t i = 0; i < imgs.size(); i++)
+    {
+        glTexSubImage3D(
+            GL_TEXTURE_2D_ARRAY,
+            0,
+            0, 0, (GLint)i,
+            width, height, 1,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            imgs[i].px.data()
+        );
+    }
+
+    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+
+    glTexParameteri(GL_TEXTURE_2D_ARRAY,
+                    GL_TEXTURE_MIN_FILTER,
+                    GL_LINEAR_MIPMAP_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D_ARRAY,
+                    GL_TEXTURE_MAG_FILTER,
+                    GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D_ARRAY,
+                    GL_TEXTURE_WRAP_S,
+                    GL_REPEAT);
+
+    glTexParameteri(GL_TEXTURE_2D_ARRAY,
+                    GL_TEXTURE_WRAP_T,
+                    GL_CLAMP_TO_EDGE);
+
+    glUseProgram(shaderProgram);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, texArray);
+
+    GLint loc = glGetUniformLocation(shaderProgram, "textures");
+
+    if (loc == -1)
+    {
+        std::cerr << "Texture uniform not found!" << std::endl;
+        return false;
+    }
+
+    glUniform1i(loc, 0);
+
+    return CheckGLError("UploadTextures");
 }
 
 void OpenGLObject::UploadScene(const GpuScene& scene)

@@ -11,9 +11,9 @@ out vec4 FragColor;
 //!include "lights/lighting.glsl"
 //!include "lights/normals.glsl"
 //!include "lights/pattern.glsl"
+//!include "lights/texture.glsl"
 
-in vec2 TexCoords;
-uniform sampler2DArray textures;
+
 
 Ray	rayForPixel(int px, int py, int index) {
 	float	world_x;
@@ -191,6 +191,9 @@ vec4 shade_hit(Computation cmp)
 	if (cmp.mat.pat.patType != NO_PATTERN)
 		cmp.mat.color = applyPattern(cmp.obj, cmp.point);
 
+	if (cmp.mat.text.layer >= 0)
+		cmp.mat.color = applyTexture(cmp.obj, cmp.under_point);
+
 	// ambient 
 	vec4 amb = (ambientLgt.a * ambientLgt.a.w) * cmp.mat.ambient;
 	res = cmp.mat.color * amb;
@@ -262,7 +265,7 @@ void main()
 	FragColor = color_at(r) + fakeSample;
 	if (px == 200 && py == 200)
 	{
-		debugData[index] = vec4(FragColor);
+		debugData[index] = vec4(objs[0].mat.text.layer, objs[1].mat.text.layer, 0.0, 0.0);
 		debugData[index + 1] = objs[0].inv_transform[0];
 		debugData[index + 2] = objs[0].inv_transform[1];
 		debugData[index + 3] = objs[0].inv_transform[2];

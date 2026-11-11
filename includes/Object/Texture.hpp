@@ -21,7 +21,6 @@ class Texture: public IParsable {
 		bool preBuild() override;
 		std::vector<std::string> requiredKeys() const override;
 		const char *typeString() const override;
-		int		registerTexture(const std::string& path);
 		bool	packIntoGpuScene(GpuScene&) const override;
 		void	packInto(GpuMaterial& g) const;
 		std::string& file() {return texture_file;}

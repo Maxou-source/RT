@@ -127,9 +127,10 @@ int World::registerTexture(const std::string& path)
 	img.w = w;
 	img.h = h;
 
-	unsigned char * ptr = img.px.data();
-	ptr = src;
-
+	img.px.resize(w * h * 4);
+	memcpy(img.px.data(), src, w * h * 4);
+	
+	// assert(img.px.size() == TEX_SIZE * TEX_SIZE * 4);
 	textures.push_back(std::move(img));
 	int layer = (int)textures.size() - 1;
 	textureIndex[path] = layer;

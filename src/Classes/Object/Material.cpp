@@ -48,6 +48,7 @@ void Material::packInto(GpuMaterial& g) const
 	g.refractive_index  = refractive_index;
 	g.reflection  = reflection;
 	pat.packInto(g);
+	text.packInto(g);
 }
 
 IParsable* Material::getSubBlock(const std::string& name) {
