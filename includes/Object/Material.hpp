@@ -21,6 +21,7 @@ class Material : public IParsable
 		Pattern			pat;
 		Texture			text;
 	public:
+		bool			hasTexture = false;
 		Material();
 		bool setProperty(const std::string& key, const std::string& val) override;
 		bool preBuild() override;
@@ -31,4 +32,7 @@ class Material : public IParsable
 		IParsable* getSubBlock(const std::string& name) override;
 		void print(std::ostream& os, const char* indent = "  ") const;
 
+		// getterssss
+		Pattern& getPattern() ;
+		Texture& getTexture() ;
 };

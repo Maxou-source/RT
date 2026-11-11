@@ -14,20 +14,17 @@ Light {
     specular: 0.9
 }
 
-Cone {
+Cube {
     position: [5,2.1,0]
     orientation: [0,0,1]
-    diameter: 2
-    size: 1
+    size: 2
     Material {
-        color: [1,0,0]
+        color: [1,1,1]
         ambient: 0.9
         transparency: 1
         refractive_index: 1.33
     }
 }
-
-
 
 Plane {
     position: [0, 0, 0]
@@ -38,7 +35,7 @@ Plane {
 		reflection: 0.0
         Pattern {
             type: stripe
-            second_color: [1,0,0]
+            second_color: [1,0,1]
             orientation: [0,1,0]
             parameter: 10
         }

@@ -54,7 +54,10 @@ IParsable* Material::getSubBlock(const std::string& name) {
 	if (name == "Pattern")
 		return &pat;
 	if (name == "Texture")
+	{
+		hasTexture = true;
 		return &text;
+	}
 	return nullptr;
 }
 
@@ -74,4 +77,13 @@ void Material::print(std::ostream& os, const char* indent) const
 	else
 		os << indent << "Stripe \n"; 
 	os << "param pat " << pat.getParam() << "\n";
+}
+
+// GETTERSSSSSSSS
+
+Pattern& Material::getPattern() {
+	return pat;
+}
+Texture& Material::getTexture() {
+	return text;
 }

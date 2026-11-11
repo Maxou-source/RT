@@ -17,6 +17,8 @@
 #define MAX_OBJECTS 1000
 #define MAX_LIGHTS 100
 
+#define TEX_SIZE 512
+
 namespace colorprint {
     constexpr const char* reset  = "\033[0m";
     constexpr const char* red    = "\033[31m";

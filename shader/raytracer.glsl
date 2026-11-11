@@ -12,6 +12,9 @@ out vec4 FragColor;
 //!include "lights/normals.glsl"
 //!include "lights/pattern.glsl"
 
+in vec2 TexCoords;
+uniform sampler2DArray textures;
+
 Ray	rayForPixel(int px, int py, int index) {
 	float	world_x;
 	float	world_y;
@@ -118,11 +121,11 @@ float shadow_factor(vec4 point, Light lgt)
 bool refract_dir(Computation c, out vec4 dir)
 {
 	float ratio  = c.n1 / c.n2;
-	float cos_i  = dot(c.eyev.xyz, c.normalv.xyz);     // normal already flipped toward the eye
+	float cos_i  = dot(c.eyev.xyz, c.normalv.xyz);
 	float sin2_t = ratio * ratio * (1.0 - cos_i * cos_i);
 
 	if (sin2_t > 1.0)
-		return false;                                  // total internal reflection
+		return false;
 
 	float cos_t = sqrt(1.0 - sin2_t);
 	dir = vec4(c.normalv.xyz * (ratio * cos_i - cos_t) - c.eyev.xyz * ratio, 0.0);
@@ -217,14 +220,15 @@ vec4 color_at(Ray r)
 	vec3 result = vec3(0.0);
 	float weight = 1.0;
 
-	for (int b = 0; b < 3; b++)
+	for (int b = 0; b < 10; b++)
 	{
 		Intersection it = intersect_world(r);
 		if (it.t == INF)
 			break;
 
 		Computation c = computations(r, it, objs[it.object_id]);
-		vec3 local = shade_hit(c).rgb;
+		vec3 local;
+		local = shade_hit(c).rgb;
 
 		vec4 dir;
 		if (c.mat.transparency > 0.0 && refract_dir(c, dir))
@@ -252,23 +256,10 @@ void main()
 	int px = int(gl_FragCoord.x);
 	int py = int(gl_FragCoord.y);
 	int index = py * 1000 + px;
-
-	if (px == 200 && py == 200)
-	{
-		debugData[index] = vec4(objs[1].mat.pat.param, cam.half_height, 0.f, cam.pixel_size);
-		debugData[index + 1] = objs[0].inv_transform[0];
-		debugData[index + 2] = objs[0].inv_transform[1];
-		debugData[index + 3] = objs[0].inv_transform[2];
-		debugData[index + 4] = objs[0].inv_transform[3];
-
-		debugData[index + 5] = objs[1].inv_transform[0];
-		debugData[index + 6] = objs[1].inv_transform[1];
-		debugData[index + 7] = objs[1].inv_transform[2];
-		debugData[index + 8] = objs[1].inv_transform[3];
-	}
+	vec4 fakeSample = texture(textures, vec3(0.0)) * 0.0;
 	Ray r = rayForPixel(px, py, index);
 
-	FragColor = color_at(r);
+	FragColor = color_at(r) + fakeSample;
 	if (px == 200 && py == 200)
 	{
 		debugData[index] = vec4(FragColor);

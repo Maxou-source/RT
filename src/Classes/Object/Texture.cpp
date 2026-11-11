@@ -6,11 +6,13 @@ Texture::Texture() {
 
 bool Texture::setProperty(const std::string& key, const std::string& val) {
 	try {
-		if (key == "texture_file") {}
-		else if (key == "parameter") { param = std::stof(val);}
+		if (key == "texture_file") {
+			return (ParseUtils::parseTextureFile(val, texture_file));
+		}
+		else if (key == "scale") { param = std::stof(val); return true;}
 		else if (key == "orientation") {return ParseUtils::parseVec(val, orientation, 1.0);}
 	} catch (const std::exception&) {return false;}
-	return true;
+	return false;
 }
 
 bool Texture::preBuild()  {
@@ -27,7 +29,7 @@ bool Texture::preBuild()  {
 }
 
 std::vector<std::string> Texture::requiredKeys() const {
-	return {"texture_file", "orientation"};
+	return {"texture_file", "orientation", "scale"};
 }
 
 const char *Texture::typeString() const {
@@ -39,9 +41,8 @@ bool Texture::packIntoGpuScene(GpuScene&) const {
 }
 
 void Texture::packInto(GpuMaterial& g) const {
-	std::cout << "packing pattern" << std::endl;
-	g.pat.param = param;
-	g.pat.i_m = i_m.getMatrix();
+	g.texture.i_m   = i_m.getMatrix();
+	g.texture.layer = layer;
+	g.texture.scale = param;
 	return ;
 }
-

@@ -55,9 +55,26 @@ namespace ParseUtils
 	bool parseDirection(const std::string& v, t_f4& out) { return parseVec(v, out, 0.f); }
 
 	std::vector<std::string> concat(std::vector<std::string> a,
-                                       const std::vector<std::string>& b)
+									   const std::vector<std::string>& b)
 	{
 		a.insert(a.end(), b.begin(), b.end());
 		return a;
 	}
+
+	bool	parseTextureFile(const std::string& val, std::string &texture_file) {
+	std::ifstream file;
+	file.open(val.c_str());
+	if (!file.is_open())
+		return false;
+	texture_file = val;
+	// constexpr auto read_size = std::size_t(4096);
+
+	// auto buf = std::string(read_size, '\0');
+    // while (file.read(& buf[0], read_size)) {
+    //     texture_file.append(buf, 0, file.gcount());
+    // }
+	// texture_file.append(buf, 0, file.gcount());
+	return true;
+	}
+
 }

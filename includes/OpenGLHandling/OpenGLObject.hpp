@@ -3,6 +3,11 @@
 #include <glad/glad.h>   // must be included BEFORE glfw3.h
 #include <GLFW/glfw3.h>
 #include "GpuObjects.hpp"
+#include "Texture.hpp"
+
+// #define STB_IMAGE_IMPLEMENTATION
+// #include "stb_image.h"
+
 
 class OpenGLObject
 {
@@ -12,6 +17,7 @@ class OpenGLObject
 		bool SetFragmentShader(const std::string& rootFile);
 		void UploadScene(const GpuScene& scene);
 		void UploadCamera(const GpuScene& scene);
+		bool UploadTextures(const std::vector<Image>& imgs);
 		bool Whatever();
 
 		// Setters and getters
@@ -47,6 +53,7 @@ class OpenGLObject
 		GLuint getUbo(void) const;
 	
 		private:
+		GLuint texArray = 0;
 		char infoLog[512];
 		unsigned int vertexShader;
 		unsigned int fragmentShader;

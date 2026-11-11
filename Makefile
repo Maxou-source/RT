@@ -22,7 +22,7 @@ FLAGS				=	$(DBFLAGS) $(CFLAGS) $(INCLUDES_FLAGED) $(CDFLAGS)
 
 PKG_CONFIG = pkg-config
 CFLAGS				=	-gdwarf-4  $(shell $(PKG_CONFIG) --cflags xcb) -fenable-matrix
-LDFLAGS = $(shell $(PKG_CONFIG) --libs xcb) -lglfw -lGL -ldl -g -O0 -lpthread -lglfw -lvulkan -ldl -lpthread -lX11 -D NDEBUG=1 -DGLFW_INCLUDE_VULKAN
+LDFLAGS =  -lglfw -lGL  -lGLU  -ldl -g -O0 -lpthread -lglfw -lvulkan -ldl -lpthread -lX11 -D NDEBUG=1 -DGLFW_INCLUDE_VULKAN
 
 DBFLAGS				=	-g3
 
@@ -44,7 +44,6 @@ PARSE_DIR			=	Parse/
 TUPLE_DIR			=	Tuple/
 METHOD_DIR			=	Methods/
 OPENGL_HANDLING		=	OpenGLHandling/
-XCB_DIR				=	XCB/
 WORLD_DIR			=	World/
 MATRIX_DIR			=	Matrix/
 GLAD_DIR			=	glad/
@@ -59,7 +58,6 @@ INCLUDES			=	$(INCLUDE_DIR) \
 							$(OBJECTS_DIR) \
 							$(PARSE_DIR) \
 							$(TUPLE_DIR) \
-							$(XCB_DIR) \
 							$(MATRIX_DIR) \
 							$(WORLD_DIR) \
 							$(OPENGL_HANDLING) \
@@ -78,7 +76,6 @@ SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
 						$(SRC_PARSING) \
 						$(SRC_OBJECTS) \
 						$(SRC_TUPLE) \
-						$(SRC_XCB) \
 						$(SRC_MATRIX) \
 						$(SRC_WORLD) \
 						$(SRC_OPENGLHANDLING) \
@@ -114,10 +111,6 @@ SRC_TUPLE			= $(addprefix $(TUPLE_DIR), \
 						Ray.cpp \
 						)
 
-SRC_XCB				= $(addprefix $(XCB_DIR), \
-						XCB.cpp \
-						Image.cpp \
-						)
 SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
 						parse.cpp \
 						Parseutils.cpp \

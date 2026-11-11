@@ -64,4 +64,4 @@ void	AObject::setPosition(t_f4 p) {position = p;}
 void	AObject::setMaterial(const Material& m) {material = m;}
 
 t_f4	AObject::getPosition() const {return position;}
-const Material&	AObject::getMaterial() const {return material;}
+Material&	AObject::getMaterial()  {return material;}

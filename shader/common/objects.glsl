@@ -40,6 +40,14 @@ struct Pattern
 	float param;
 };
 
+struct Texture
+{
+	mat4  i_m;          // 64
+	int   layer;        // -1 = no texture
+	float scale;
+	int   _pad0, _pad1;
+};
+
 struct Material {
     vec4  color; // 16
     float ambient; float diffuse; float specular; float shininess; // 16
@@ -48,6 +56,7 @@ struct Material {
 	float refractive_index;
     int _pad1; // 4 * 4 -> 16 again
 	Pattern pat; // 24
+	Texture text;
 };
 
 struct Obj {

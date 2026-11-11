@@ -5,6 +5,7 @@
 # include <vector>
 # include <iostream>
 # include <memory>
+# include <map>
 
 # include "Intersection.hpp"
 # include "Camera.hpp"
@@ -12,6 +13,9 @@
 # include "GpuObjects.hpp"
 # include "Light.hpp"
 # include "AmbientLight.hpp"
+# include "Texture.hpp"
+# include "stb_image.h"
+
 
 class AObject;
 class Ray;
@@ -23,6 +27,8 @@ class World {
 		std::vector<Light>						lights;
 		AmbientLight							amb;
 		Camera									cam;
+		std::map<std::string, int>				textureIndex;
+		std::vector<Image>						textures;
 
 		bool									CameraDefined = false;
 		bool									AmbientDefined = false;
@@ -34,10 +40,9 @@ class World {
 		void					SetUpMatrixWorld();
 		AObject*				AddObject(ObjectId id);
 		Light&					AddLight();
-		void					add_sphere(float size, float x, float y, float z);
-		std::set<Intersection>	intersectWorld(Ray *r);
 		void					printWorld() const;
 		void					printIntersection();
+		int						registerTexture(const std::string& path);
 
 		void					setCamera(Camera &c);
 		Camera&					getCamera();
@@ -55,6 +60,10 @@ class World {
 		bool markCamera()  {if (CameraDefined)  return false; CameraDefined  = true; return true;}
 		
 		bool markAmbient() {if (AmbientDefined) return false; AmbientDefined = true; return true;}
+
+		// texture manipulation
+	bool                       resolveTextures();
+	const std::vector<Image>&  getTextures() const {return textures;}
 };
 
 #endif

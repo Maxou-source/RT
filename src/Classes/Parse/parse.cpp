@@ -169,7 +169,6 @@ bool	Parse::getBase()
 
 std::vector<std::string>	Parse::parseContent(std::ifstream *fileStream)
 {
-	(void) fileStream;
 	std::string					line;
 	std::vector<std::string>	vectorFile;
 

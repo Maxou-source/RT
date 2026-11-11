@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <xcb/xcb.h>
-#include "XCB.hpp"
 #include "Light.hpp"
 #include "World.hpp"
 #include "Intersection.hpp"
@@ -26,6 +25,8 @@
 // GpuScenePrinter.hpp / .cpp
 #include <iostream>
 #include <iomanip>
+
+
 
 class FPSCounter {
 public:
@@ -135,19 +136,22 @@ int main(int ac, char **av)
 
 	w = par.GetMyWorld();
 	w->printWorld();
-
+	if (!w->resolveTextures())                     // load files, assign layers
+		return 1;
 	GpuScene gpuS = w->buildGpuScene();
 	// printGpuScene(gpuS);
-
+	
 	std::cout << "scene scale is " << w->sceneScale() << std::endl;
 	float baseSpeed  = w->sceneScale() * 0.25f;
 	float speedMul   = 1.0f;
 	OpenGLObject OpenGLObj;
-
+	
 	OpenGLObj.SetVertexShader();
 	OpenGLObj.SetFragmentShader("shader/raytracer.glsl");
 	OpenGLObj.Whatever();
 	OpenGLObj.UploadScene(gpuS);
+	if (!OpenGLObj.UploadTextures(w->getTextures()))      // GPU array + sampler uniform
+		return 1;
 	
 	debugMessages(OpenGLObj);
 	

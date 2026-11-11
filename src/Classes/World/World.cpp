@@ -7,6 +7,11 @@
 #include "Ray.hpp"
 # include <memory>
 
+#define STB_IMAGE_IMPLEMENTATION               // in exactly one .cpp
+#include "stb_image.h"
+// #define STB_IMAGE_RESIZE_IMPLEMENTATION        // same rule
+// #include "stb_image_resize.h"
+
 /*===== Construcors an Destructors =======*/
 
 World::World() {
@@ -87,6 +92,64 @@ void World::printIntersection()
 	{
 		std::cout << "intersected at " << (*it).getT() << std::endl;
 	}
+}
+
+bool loadImage(const std::string& path, Image& out)
+{
+	int channels;
+	unsigned char* d = stbi_load(path.c_str(), &out.w, &out.h, &channels, 4);  // force RGBA
+	if (!d)
+	{
+		std::cerr << "KO:: cannot load " << path << std::endl;
+		return false;
+	}
+	out.px.assign(d, d + (size_t)out.w * out.h * 4);
+	stbi_image_free(d);
+	return true;
+}
+
+int World::registerTexture(const std::string& path)
+{
+	auto it = textureIndex.find(path);
+	if (it != textureIndex.end())
+		return it->second;                     // already loaded: share the layer
+
+	int w, h, channels;
+	std::cout << "path" << path << std::endl;
+	unsigned char* src = stbi_load(path.c_str(), &w, &h, &channels, 4);   // force RGBA
+	if (!src)
+	{
+		std::cerr << "KO:: cannot load texture " << path << std::endl;
+		return -1;
+	}
+
+	Image img;
+	img.w = w;
+	img.h = h;
+
+	unsigned char * ptr = img.px.data();
+	ptr = src;
+
+	textures.push_back(std::move(img));
+	int layer = (int)textures.size() - 1;
+	textureIndex[path] = layer;
+	return layer;
+}
+
+bool World::resolveTextures()
+{
+	for (const auto& obj : objects)
+	{
+		Material& m = obj->getMaterial();      // non-const accessor
+		if (m.hasTexture == false)
+			continue;
+		std::cout << "objtype or something " << obj->typeString() << std::endl;
+		int layer = registerTexture(m.getTexture().file());
+		if (layer < 0)
+			return false;
+		m.getTexture().setLayer(layer);
+	}
+	return true;
 }
 
 float World::sceneScale() const

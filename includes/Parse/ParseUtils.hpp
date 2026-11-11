@@ -14,5 +14,6 @@ namespace ParseUtils
 	bool parseDirection(const std::string& v, t_f4& out);
 	std::vector<std::string> concat(std::vector<std::string> a,
 										const std::vector<std::string>& b);
+	bool	parseTextureFile(const std::string& v, std::string &texture_file);
 	
 }

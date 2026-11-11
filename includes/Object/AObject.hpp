@@ -48,7 +48,7 @@ class AObject : public IParsable
 		void	setMaterial(const Material&);
 		
 		t_f4			getPosition() const;
-		const Material&	getMaterial() const;
+		Material&	getMaterial() ;
 };
 
 #endif

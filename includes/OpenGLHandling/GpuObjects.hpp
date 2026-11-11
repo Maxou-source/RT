@@ -10,6 +10,14 @@ struct GpuPattern {
 	int	_pad1 = 0, _pad2 = 0;
 };
 
+struct GpuTexture
+{
+	t_m4  i_m;          // 64
+	int   layer;        // -1 = no texture
+	float scale;
+	int   _pad0 = 0, _pad1 = 0;
+};
+
 struct GpuMaterial
 {
 	float	color[4]; // 16
@@ -19,6 +27,7 @@ struct GpuMaterial
 	float	refractive_index = 0; // 16
 	int _pad0 = 0;
 	GpuPattern pat;
+	GpuTexture texture;
 };
 
 struct GpuObject
@@ -29,20 +38,6 @@ struct GpuObject
 	float			param; // 4 -> 92
 	int				_pad1 = 0, _pad2 = 0; // 100
 };
-/*
-struct GpuMaterial
-{
-	float color[4]; // 16
-	float ambient; float diffuse; float specular; float shininess; // 16
-	
-	float reflective; float transparency;
-	int   _pad0 = 0, _pad_1 = 0;
-	// 32 + 4 + 8
-
-};
-
-
-*/
 
 struct GpuLight
 {
