@@ -54,7 +54,7 @@ struct Material {
     float reflection;
 	float transparency;
 	float refractive_index;
-    int _pad1; // 4 * 4 -> 16 again
+    float wobble; // 4 * 4 -> 16 again
 	Pattern pat; // 24
 	Texture text;
 };

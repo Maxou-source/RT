@@ -25,7 +25,7 @@ struct GpuMaterial
 	float	reflection; 
 	float	transparency = 0;
 	float	refractive_index = 0; // 16
-	int _pad0 = 0;
+	float	wobble = 0;
 	GpuPattern pat;
 	GpuTexture texture;
 };

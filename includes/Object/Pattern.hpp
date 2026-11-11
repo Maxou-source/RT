@@ -18,9 +18,9 @@ class Pattern: public IParsable
 	private:
 		PatternType	type = NO_PATTERN;
 		Matrix		i_m;
-		t_clr		clr;
+		t_clr		clr {1,1,1};
 		float		param;
-		t_f4		orientation;
+		t_f4		orientation = {0,1,0};
 	public:
 		Pattern();
 		bool setProperty(const std::string& key, const std::string& val) override;

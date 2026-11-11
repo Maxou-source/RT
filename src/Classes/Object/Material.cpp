@@ -15,6 +15,7 @@ bool Material::setProperty(const std::string& key, const std::string& val) {
 		else if (key == "transparency")  transparency = std::stof(val);
 		else if (key == "refractive_index")  refractive_index = std::stof(val);
 		else if (key == "reflection")  reflection = std::stof(val);
+		else if (key == "wobble")  wobble = std::stof(val);
 		else return false;           // not a material key
 	} catch (const std::exception&) { return false; }
 	return true;
@@ -47,6 +48,7 @@ void Material::packInto(GpuMaterial& g) const
 	g.transparency  = transparency;
 	g.refractive_index  = refractive_index;
 	g.reflection  = reflection;
+	g.wobble  = wobble;
 	pat.packInto(g);
 	text.packInto(g);
 }

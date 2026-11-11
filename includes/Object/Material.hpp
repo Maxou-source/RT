@@ -18,6 +18,8 @@ class Material : public IParsable
 		float		reflection = 0.0;
 		float transparency = 0;
 		float refractive_index = 0.0;
+
+		float			wobble = 0;
 		Pattern			pat;
 		Texture			text;
 	public:

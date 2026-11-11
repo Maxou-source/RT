@@ -80,11 +80,22 @@ vec4 perlin_at(Pattern pat, vec4 p, vec4 colorA)
 	return mix(pat.color, colorA, n);
 }
 
+vec4 wobble_at(float w, vec4 p)
+{
+	vec4 q = p;
+	q.x += w * sin(p.y * 6.0);
+	q.y += w * sin(p.z * 6.0);
+	q.z += w * sin(p.x * 6.0);
+	return q;
+}
+
 vec4 applyPattern(Obj obj, vec4 point)
 {
 	Material mater = obj.mat;
 	vec4 world_point = point *  obj.inv_transform;
 	vec4 pattern_point = world_point * mater.pat.i_m;
+	// if (obj.mat.wobble != 0.0)
+	// 	pattern_point = wobble_at(obj.mat.wobble, pattern_point);
 
 	if (mater.pat.patType == STRIPE)
 		return stripe_at(mater.pat, pattern_point, mater.color);

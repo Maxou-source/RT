@@ -268,4 +268,5 @@ position	light	where it is
 intensity	light	how strong it is
 
 global ambient color/level	scene	one knob for “how dark are the shadows”
+
 */

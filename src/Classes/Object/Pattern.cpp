@@ -28,7 +28,7 @@ bool Pattern::preBuild()  {
 }
 
 std::vector<std::string> Pattern::requiredKeys() const {
-	return {"type", "parameter", "second_color", "orientation"};
+	return {"type", "parameter"};
 }
 
 const char *Pattern::typeString() const {

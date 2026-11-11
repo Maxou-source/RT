@@ -134,38 +134,36 @@ bool refract_dir(Computation c, out vec4 dir)
 
 Computation computations(Ray r, Intersection i, Obj o)
 {
-
-	// assign the raw point value
 	vec4 point = r.origin + i.t * r.direction;
-	// assign the eye vector
-	vec4 eyev = -r.direction;
+	vec4 eyev  = -r.direction;
 
 	vec4 normalv;
-	// assign the normal
-	if (objs[i.object_id].type == OBJ_CYLINDER)
-		normalv = normal_at_cy(objs[i.object_id], point);
-	else if (objs[i.object_id].type == OBJ_CUBE)
-		normalv = normal_at_cu(objs[i.object_id], point);
-	else if (objs[i.object_id].type == OBJ_PLANE)
-		normalv = normal_at_pl(objs[i.object_id], point);
-	else if (objs[i.object_id].type == OBJ_CONE)
-		normalv = normal_at_co(objs[i.object_id], point);
-	else
-		normalv = normal_at(objs[i.object_id],point);
+	if      (o.type == OBJ_CYLINDER) normalv = normal_at_cy(o, point);
+	else if (o.type == OBJ_CUBE)     normalv = normal_at_cu(o, point);
+	else if (o.type == OBJ_PLANE)    normalv = normal_at_pl(o, point);
+	else if (o.type == OBJ_CONE)     normalv = normal_at_co(o, point);
+	else                             normalv = normal_at(o, point);
 
 	bool inside = dot(normalv, eyev) < 0.0;
-	if (inside) {
-		normalv = -normalv;
-	}
+	if (inside)
+		normalv = -normalv;                           // geometric normal, facing the eye
 
-	// this is the over_point replaces the current point to avoid inconsistency
-	vec4 over_point = point + normalv * EPSILON * 100;
+	vec4 over_point  = point + normalv * EPSILON * 100.0;   // after the flip
 	vec4 under_point = point - normalv * EPSILON * 100.0;
 
-	float n1,n2 = 1.0;	
-	if (o.mat.transparency > 0.0) {
-		if (inside) {n1 = o.mat.refractive_index; n2 = 1.0;}
-		else {n1 = 1.0; n2 = o.mat.refractive_index;}
+	if (o.mat.wobble != 0.0)                          // shading normal only
+	{
+		vec4 lp = point * o.inv_transform;            // exact point, object space
+		vec3 d = vec3(sin(lp.y * 80.0), sin(lp.z * 80.0), sin(lp.x * 80.0));
+		d -= normalv.xyz * dot(d, normalv.xyz);       // tangent part only
+		normalv = vec4(normalize(normalv.xyz + o.mat.wobble * d), 0.0);
+	}
+
+	float n1 = 1.0, n2 = 1.0;
+	if (o.mat.transparency > 0.0)
+	{
+		n1 = inside ? o.mat.refractive_index : 1.0;
+		n2 = inside ? 1.0 : o.mat.refractive_index;
 	}
 	return Computation(o, o.mat, over_point, eyev, normalv, under_point, n1, n2);
 }
@@ -184,9 +182,12 @@ vec4 refelec_color(Computation comps)
 	return color_at(refRay);
 }
 
+
 vec4 shade_hit(Computation cmp)
 {
 	vec4 res;
+
+
 	// PATTERN
 	if (cmp.mat.pat.patType != NO_PATTERN)
 		cmp.mat.color = applyPattern(cmp.obj, cmp.point);
@@ -201,7 +202,7 @@ vec4 shade_hit(Computation cmp)
 	// main lighting
 	for (int i = 0; i < light_count; i++)
 	{
-		float shadowed = shadow_factor(cmp.point, lights[i]);
+		float shadowed = 1.0;
 		res += lighting(cmp.mat, lights[i] ,cmp.point, cmp.eyev, cmp.normalv, shadowed);
 	}
 
