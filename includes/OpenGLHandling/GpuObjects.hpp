@@ -18,6 +18,13 @@ struct GpuTexture
 	int   _pad0 = 0, _pad1 = 0;
 };
 
+struct GpuWobble
+{
+	float amplitude;
+	float frequency;
+	float _pad0 = 0, _pad1 = 0;
+};
+
 struct GpuMaterial
 {
 	float	color[4]; // 16
@@ -25,9 +32,10 @@ struct GpuMaterial
 	float	reflection; 
 	float	transparency = 0;
 	float	refractive_index = 0; // 16
-	float	wobble = 0;
-	GpuPattern pat;
-	GpuTexture texture;
+	int	_pad0 = 0;
+	GpuPattern	pat;
+	GpuTexture	texture;
+	GpuWobble	wob;
 };
 
 struct GpuObject

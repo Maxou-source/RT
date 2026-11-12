@@ -35,7 +35,6 @@ Sphere {
     position: [0, 0, 0.0]
     diameter: 2.0
     Material {
-        wobble: 0.4
         color: [1, 0, 0]
         ambient: 0.9
     }
@@ -45,6 +44,10 @@ Sphere {
     position: [5, 2.0, 0.0]
     diameter: 2.0
     Material {
+        Wobble {
+            amplitude: 0.40
+            frequency: 40.0
+        }
         color: [1, 0, 0]
         ambient: 0.9
         Pattern {
@@ -60,9 +63,12 @@ Plane {
     position: [0, 0, 0]
     orientation: [0,1,0]
     Material {
-        wobble: 0.0
         color: [0,1,0]
         ambient: 0.9
+        Wobble {
+            amplitude: 0.5
+            frequency: 100.0
+        }
         Pattern {
             type: stripe
             second_color: [1,0,1]

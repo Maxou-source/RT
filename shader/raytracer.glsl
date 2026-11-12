@@ -132,6 +132,14 @@ bool refract_dir(Computation c, out vec4 dir)
 	return true;
 }
 
+vec4 wobble_at(Obj o, vec4 point, vec4 normalv)
+{
+	vec4 lp = point * o.inv_transform;            // exact point, object space
+	vec3 d = vec3(sin(lp.y * o.mat.wob.frequency), sin(lp.z * o.mat.wob.frequency), sin(lp.x * o.mat.wob.frequency));
+	d -= normalv.xyz * dot(d, normalv.xyz);       // tangent part only
+	return (vec4(normalize(normalv.xyz + o.mat.wob.amplitude * d), 0.0));
+}
+
 Computation computations(Ray r, Intersection i, Obj o)
 {
 	vec4 point = r.origin + i.t * r.direction;
@@ -151,13 +159,8 @@ Computation computations(Ray r, Intersection i, Obj o)
 	vec4 over_point  = point + normalv * EPSILON * 100.0;   // after the flip
 	vec4 under_point = point - normalv * EPSILON * 100.0;
 
-	if (o.mat.wobble != 0.0)                          // shading normal only
-	{
-		vec4 lp = point * o.inv_transform;            // exact point, object space
-		vec3 d = vec3(sin(lp.y * 80.0), sin(lp.z * 80.0), sin(lp.x * 80.0));
-		d -= normalv.xyz * dot(d, normalv.xyz);       // tangent part only
-		normalv = vec4(normalize(normalv.xyz + o.mat.wobble * d), 0.0);
-	}
+	if (o.mat.wob.amplitude != 0.0)
+		normalv = wobble_at(o, point, normalv);
 
 	float n1 = 1.0, n2 = 1.0;
 	if (o.mat.transparency > 0.0)

@@ -4,6 +4,7 @@
 # include "IParsable.hpp"
 # include "Pattern.hpp"
 # include "Texture.hpp"
+# include "Wobble.hpp"
 
 
 class Material : public IParsable
@@ -19,9 +20,9 @@ class Material : public IParsable
 		float transparency = 0;
 		float refractive_index = 0.0;
 
-		float			wobble = 0;
 		Pattern			pat;
 		Texture			text;
+		Wobble			wob;
 	public:
 		bool			hasTexture = false;
 		Material();

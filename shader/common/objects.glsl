@@ -48,15 +48,24 @@ struct Texture
 	int   _pad0, _pad1;
 };
 
+struct Wobble
+{
+	float amplitude;
+	float frequency;
+	float _pad0;
+	float _pad1;
+};
+
 struct Material {
     vec4  color; // 16
     float ambient; float diffuse; float specular; float shininess; // 16
     float reflection;
 	float transparency;
 	float refractive_index;
-    float wobble; // 4 * 4 -> 16 again
+    int pad; // 4 * 4 -> 16 again
 	Pattern pat; // 24
 	Texture text;
+	Wobble wob;
 };
 
 struct Obj {
