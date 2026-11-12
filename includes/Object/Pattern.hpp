@@ -18,7 +18,7 @@ class Pattern: public IParsable
 	private:
 		PatternType	type = NO_PATTERN;
 		Matrix		i_m;
-		t_clr		clr {1,1,1};
+		t_clr		clr = {1,1,1};
 		float		param;
 		t_f4		orientation = {0,1,0};
 	public:

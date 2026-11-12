@@ -80,13 +80,11 @@ vec4 perlin_at(Pattern pat, vec4 p, vec4 colorA)
 	return mix(pat.color, colorA, n);
 }
 
-vec4 wobble_at(float w, vec4 p)
+vec4 ring_at(Pattern pat, vec4 p, vec4 colorA)
 {
-	vec4 q = p;
-	q.x += w * sin(p.y * 6.0);
-	q.y += w * sin(p.z * 6.0);
-	q.z += w * sin(p.x * 6.0);
-	return q;
+	if (mod(floor(sqrt((p.x * p.x) + (p.z* p.z))), 2.0) == 0)
+		return colorA;
+	return pat.color;
 }
 
 vec4 applyPattern(Obj obj, vec4 point)
@@ -107,4 +105,6 @@ vec4 applyPattern(Obj obj, vec4 point)
 		return checker_at(mater.pat, pattern_point, mater.color);
 	else if (mater.pat.patType == PERLIN)
 		return perlin_at(mater.pat, pattern_point, mater.color);
+	else if (mater.pat.patType == RING)
+		return ring_at(mater.pat, pattern_point, mater.color);
 }

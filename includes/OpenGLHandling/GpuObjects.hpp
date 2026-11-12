@@ -3,17 +3,17 @@
 
 
 struct GpuPattern {
-	t_m4 i_m; // 64
-	float color[4]; // 16
-	int patType; // 4
-	float param; // 4
+	t_m4 i_m;
+	float color[4];
+	int patType;
+	float param;
 	int	_pad1 = 0, _pad2 = 0;
 };
 
 struct GpuTexture
 {
-	t_m4  i_m;          // 64
-	int   layer;        // -1 = no texture
+	t_m4  i_m;
+	int   layer;
 	float scale;
 	int   _pad0 = 0, _pad1 = 0;
 };

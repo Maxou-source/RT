@@ -65,12 +65,8 @@ Plane {
     Material {
         color: [0,1,0]
         ambient: 0.9
-        Wobble {
-            amplitude: 0.5
-            frequency: 100.0
-        }
         Pattern {
-            type: stripe
+            type: ring
             second_color: [1,0,1]
             orientation: [0,1,0]
             parameter: 10
