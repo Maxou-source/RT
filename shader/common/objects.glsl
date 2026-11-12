@@ -15,10 +15,12 @@ struct Ray {
 };
 
 struct Light {
-    vec4  position;
-    vec4  color;
-    float ambient;   float diffuse;    // slot 2 (16 bytes)
-    float specular;  float _pad2;
+	vec4  position;
+	vec4  color;
+	float ambient;
+	float diffuse;
+	float specular;
+	int type;
 };
 
 struct AmbientLight {
@@ -57,23 +59,23 @@ struct Wobble
 };
 
 struct Material {
-    vec4  color; // 16
-    float ambient; float diffuse; float specular; float shininess; // 16
+    vec4  color;
+    float ambient; float diffuse; float specular; float shininess;
     float reflection;
 	float transparency;
 	float refractive_index;
-    int pad; // 4 * 4 -> 16 again
-	Pattern pat; // 24
+    int pad;
+	Pattern pat;
 	Texture text;
 	Wobble wob;
 };
 
 struct Obj {
-    mat4     inv_transform;
-    Material mat;
-    int      type;        // OBJ_SPHERE, OBJ_CUBE, ...
-    float    param;       // the one shape-specific value (meaning depends on type)
-    int      _pad0, _pad1;
+	mat4     inv_transform;
+	Material mat;
+	int      type;        // OBJ_SPHERE, OBJ_CUBE, ...
+	float    param;       // the one shape-specific value (meaning depends on type)
+	int      param2, _pad1;
 };
 
 struct PointLight {

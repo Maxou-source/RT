@@ -12,7 +12,7 @@ Light::Light()
 	specular = 0.9;
 	shininess = 200.0;
 	color = {1.0f,1.0f,1.0f};
-	position = {-10, 10, -10, 0.0f};
+	source = {-10, 10, -10, 0.0f};
 }
 
 bool	Light::packIntoGpuScene(GpuScene& s) const {
@@ -25,25 +25,27 @@ bool	Light::packIntoGpuScene(GpuScene& s) const {
 	l.color[1] = color.g;
 	l.color[2] = color.b;
 
-	l.position[0] = position[0];
-	l.position[1] = position[1];
-	l.position[2] = position[2];
+	l.source[0] = source[0];
+	l.source[1] = source[1];
+	l.source[2] = source[2];
 
 	l.ambient = ambient;
 	l.specular = specular;
 	l.diffuse = diffuse;
+	l.type = type;
 	return true;
 }
 
 bool	Light::setProperty(const std::string& key, const std::string& val) {
-	if (key == "position")
-		return parsePosition(val, position);
+	if (key == "source")
+		return parsePosition(val, source);
 		try {
 			if (key == "color")           return ParseUtils::parseColor(val, color);
-			if (key == "ambient")         ambient = std::stof(val);
+			else if (key == "ambient")         ambient = std::stof(val);
 			else if (key == "diffuse")    diffuse = std::stof(val);
 			else if (key == "specular")   specular = std::stof(val);
 			else if (key == "shininess")  shininess = std::stof(val);
+			else if (key == "type")			return (parseLightType(val));
 			else return false;           // not a material key
 		} catch (const std::exception&) { return false; }
 		return true;
@@ -54,7 +56,7 @@ bool Light::preBuild() {
 }
 
 std::vector<std::string> Light::requiredKeys() const {
-	return {"position", "ambient", "diffuse", "color"};
+	return {"source", "ambient", "diffuse", "color", "type"};
 }
 
 const char * Light::typeString() const {
@@ -64,8 +66,18 @@ const char * Light::typeString() const {
 void Light::print(size_t index) const
 {
 	std::cout << "light " << index << colorprint::green << " [point]\n" << colorprint::reset
-	          << "  position:  (" << position.x << ", " << position.y << ", " << position.z << ")\n"
+	          << "  position:  (" << source.x << ", " << source.y << ", " << source.z << ")\n"
 	          << "  color:     (" << color.r << ", " << color.g << ", " << color.b << ")\n"
 	          << "  shininess: " << shininess << "\n";
 }
 
+bool Light::parseLightType(const std::string& value) {
+	std::unordered_map<std::string, LightType> map = {
+		{"directional", LightType::DIRECTIONAL}, {"positional", LightType::POSITIONAL},
+	};
+	auto it = map.find(value);
+	if (it == map.end())
+		return false;
+	type = it->second;
+	return true;
+}

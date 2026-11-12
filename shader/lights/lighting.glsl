@@ -4,7 +4,9 @@
 vec4 lighting(Material mat, Light lgt, vec4 point, vec4 eyev, vec4 normalv, float isShadowed)
 {
 	vec4  eff_color         = mat.color * lgt.color;
-	vec4  lightv            = normalize(lgt.position - point);
+	vec4  lightv           = (lgt.type == DIRECTIONAL)
+       ? normalize(-lgt.position)
+       : normalize(lgt.position - point);
 	float light_dot_normal  = dot(normalv, lightv);
 
 	// if (isShadowed == 0.0)

@@ -3,6 +3,11 @@
 
 # include "IParsable.hpp"
 
+enum LightType {
+	POSITIONAL,
+	DIRECTIONAL
+};
+
 class Light: public IParsable {
 	private:
 		float	ambient;
@@ -10,7 +15,9 @@ class Light: public IParsable {
 		float	specular;
 		float	shininess;
 		t_clr	color;
-		t_f4	position;
+		t_f4	source;
+
+		LightType	type;
 	public:
 		Light();
 		bool						packIntoGpuScene(GpuScene& s) const override;
@@ -19,6 +26,7 @@ class Light: public IParsable {
 		std::vector<std::string>	requiredKeys() const override;
 		const char *				typeString() const override;
 		void						print(size_t index) const;
+		bool						parseLightType(const std::string& vec);
 };
 
 #endif

@@ -44,15 +44,18 @@ struct GpuObject
 	GpuMaterial		mat; // 72 -> 12 + 72 -> 84
 	int				type; // 4 -> 88
 	float			param; // 4 -> 92
-	int				_pad1 = 0, _pad2 = 0; // 100
+	int				param2;
+	int				_pad2 = 0; // 100
 };
 
 struct GpuLight
 {
-	float position[4];    // slot 0
-	float color[4];   // slot 1
-	float ambient;      float diffuse;      // slot 2
-	float specular;     float _pad2 = 0;
+	float source[4];
+	float color[4];
+	float ambient;
+	float diffuse;
+	float specular;
+	int type;
 };
 
 struct GpuAmbientLight {

@@ -6,7 +6,33 @@ vec4 normal_at(Obj o, vec4 world_point)
 	vec4 n            = o.inv_transform * local_normal;
 	return vec4(normalize(n.xyz), 0.0);
 }
+vec4 normal_at_to(Obj torus, vec4 point)
+{
+    // Transform intersection point into object space
+    vec4 P = point * torus.inv_transform;
 
+    float A = torus.param;
+
+    // Find the closest point Q on the torus center circle
+    float length_xy = sqrt(P.x * P.x + P.y * P.y);
+
+    vec3 Q = vec3(
+        A * P.x / length_xy,
+        A * P.y / length_xy,
+        0.0
+    );
+
+    // Calculate normal vector (from Q to P)
+    vec3 N = P.xyz - Q;
+
+    // Normalize the normal
+    N = normalize(N);
+
+    // Transform normal back to world space
+    N = normalize(N * transpose(mat3(torus.inv_transform)));
+
+    return vec4(N, 0.0);
+}
 vec4 normal_at_cy(Obj o, vec4 world_point)
 {
 	vec4 lp = world_point * o.inv_transform;

@@ -23,5 +23,4 @@ float intersect_sp(Ray r, Obj sphere)
 	if (t2 > 0)
 		return t2;
 	return INF;
-
 }

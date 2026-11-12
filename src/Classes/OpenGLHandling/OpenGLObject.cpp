@@ -2,6 +2,7 @@
 #include "Pattern.hpp"
 #include "ShaderLoader.hpp"
 #include "Texture.hpp"
+#include "Light.hpp"
 #include <string.h>
 #include <iostream>
 #include <fstream>
@@ -133,6 +134,7 @@ bool OpenGLObject::SetFragmentShader(const std::string& rootFile)
 			{"OBJ_SPHERE",   std::to_string((int)ObjectId::SPHERE)},
 			{"OBJ_CYLINDER", std::to_string((int)ObjectId::CYLINDER)},
 			{"OBJ_CUBE", std::to_string((int)ObjectId::CUBE)},
+			{"OBJ_TORUS", std::to_string((int)ObjectId::TORUS)},
 			{"OBJ_PLANE", std::to_string((int)ObjectId::PLANE)},
 			{"OBJ_CONE", std::to_string((int)ObjectId::CONE)},
 			{"NO_PATTERN",   std::to_string((int)PatternType::NO_PATTERN)},
@@ -141,6 +143,8 @@ bool OpenGLObject::SetFragmentShader(const std::string& rootFile)
 			{"GRADIENT",   std::to_string((int)PatternType::GRADIENT)},
 			{"RING",   std::to_string((int)PatternType::RING)},
 			{"PERLIN",   std::to_string((int)PatternType::PERLIN)},
+			{"DIRECTIONAL",   std::to_string((int)LightType::DIRECTIONAL)},
+			{"POSITIONAL", std::to_string((int)LightType::POSITIONAL)}
 		}, source))
 		return false;
 
@@ -371,15 +375,6 @@ void OpenGLObject::UploadScene(const GpuScene& scene)
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GpuScene), &scene);
-	}
-	if (err != GL_NO_ERROR)
-	{
-		std::cout << "devut" << std::endl;
-		std::cerr << "KO:: GL error 0x" << std::dec << err << std::dec
-		          << " while actructive	 uploading textures" << std::endl;
-		const GLubyte* errorString = gluErrorString(err);
-    	printf("OpenGL Error: %s\n", errorString);
-		exit(1);
 	}
 }
 

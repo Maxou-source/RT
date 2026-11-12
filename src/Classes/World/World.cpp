@@ -3,6 +3,7 @@
 #include "Cylinder.hpp"
 #include "Cube.hpp"
 #include "Plane.hpp"
+#include "Torus.hpp"
 #include "Cone.hpp"
 #include "Ray.hpp"
 # include <memory>
@@ -31,6 +32,7 @@ AObject* World::AddObject(ObjectId id)
 		case ObjectId::CUBE:		objects.push_back(std::make_unique<Cube>()); break;
 		case ObjectId::PLANE:		objects.push_back(std::make_unique<Plane>()); break;
 		case ObjectId::CONE:		objects.push_back(std::make_unique<Cone>()); break;
+		case ObjectId::TORUS:		objects.push_back(std::make_unique<Torus>()); break;
 		default: return nullptr;
 	}
 	return (objects.back().get());

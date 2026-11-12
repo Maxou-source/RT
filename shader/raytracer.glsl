@@ -8,6 +8,7 @@ out vec4 FragColor;
 //!include "intersections/cube.glsl"
 //!include "intersections/plane.glsl"
 //!include "intersections/cone.glsl"
+//!include "intersections/torus.glsl"
 //!include "lights/lighting.glsl"
 //!include "lights/normals.glsl"
 //!include "lights/pattern.glsl"
@@ -49,6 +50,8 @@ float intersect_obj(Ray r, Obj o)
 		return(intersect_pl(r, o));
 	} else if (o.type == OBJ_CONE) {
 		return(intersect_co(r, o));
+	} else if (o.type == OBJ_TORUS) {
+		return intersect_to(r, o);
 	}
 	return INF;
 }
@@ -70,19 +73,32 @@ Intersection intersect_world(Ray r)
 Computation computations(Ray r, Intersection i, Obj o);
 float shadow_factor(vec4 point, Light lgt)
 {
-	vec4  v        = lgt.position - point;
-	float distance = length(v);
+	vec4  L;
+	float max_t;
+
+	if (lgt.type == DIRECTIONAL)
+	{
+		L     = normalize(-lgt.position);      // same direction everywhere
+		max_t = INF;                            // nothing is "beyond" the light
+	}
+	else
+	{
+		vec4 v = lgt.position - point;
+		L      = normalize(v);
+		max_t  = length(v);                     // only objects before the light count
+	}
+
 
 	Ray sr;
 	sr.origin    = point;
-	sr.direction = vec4(normalize(v));
+	sr.direction = vec4(normalize(L));
 
 	float factor = 1.0;
 
 	for (int i = 0; i < object_count; i++)
 	{
 		float t = intersect_obj(sr, objs[i]);
-		if (t >= distance || t <= 0.0001)
+		if (t >= max_t || t <= 0.0001)
 			continue;
 
 		if (objs[i].mat.transparency == 0.0)
@@ -150,6 +166,7 @@ Computation computations(Ray r, Intersection i, Obj o)
 	else if (o.type == OBJ_CUBE)     normalv = normal_at_cu(o, point);
 	else if (o.type == OBJ_PLANE)    normalv = normal_at_pl(o, point);
 	else if (o.type == OBJ_CONE)     normalv = normal_at_co(o, point);
+	else if (o.type == OBJ_TORUS)     normalv = normal_at_to(o, point);
 	else                             normalv = normal_at(o, point);
 
 	bool inside = dot(normalv, eyev) < 0.0;
@@ -173,18 +190,6 @@ Computation computations(Ray r, Intersection i, Obj o)
 
 vec4 color_at(Ray r);
 
-vec4 refelec_color(Computation comps)
-{
-	if (comps.obj.mat.reflection == 0)
-		return vec4(0);
-	Ray refRay;
-
-	refRay.origin = comps.point;
-	refRay.direction = vec4(reflect(-comps.eyev.xyz, comps.normalv.xyz), 0.0);
-
-	return color_at(refRay);
-}
-
 
 vec4 shade_hit(Computation cmp)
 {
@@ -205,7 +210,7 @@ vec4 shade_hit(Computation cmp)
 	// main lighting
 	for (int i = 0; i < light_count; i++)
 	{
-		float shadowed = 1.0;
+		float shadowed = shadow_factor(cmp.point, lights[i]);
 		res += lighting(cmp.mat, lights[i] ,cmp.point, cmp.eyev, cmp.normalv, shadowed);
 	}
 
@@ -227,7 +232,7 @@ vec4 color_at(Ray r)
 	vec3 result = vec3(0.0);
 	float weight = 1.0;
 
-	for (int b = 0; b < 10; b++)
+	for (int b = 0; b < 100; b++)
 	{
 		Intersection it = intersect_world(r);
 		if (it.t == INF)
@@ -263,13 +268,12 @@ void main()
 	int px = int(gl_FragCoord.x);
 	int py = int(gl_FragCoord.y);
 	int index = py * 1000 + px;
-	vec4 fakeSample = texture(textures, vec3(0.0)) * 0.0;
 	Ray r = rayForPixel(px, py, index);
 
-	FragColor = color_at(r) + fakeSample;
+	FragColor = color_at(r);
 	if (px == 200 && py == 200)
 	{
-		debugData[index] = vec4(objs[0].mat.text.layer, objs[1].mat.text.layer, 0.0, 0.0);
+		debugData[index] = vec4((lights[0].type == DIRECTIONAL) ? 5.0: 3.0);
 		debugData[index + 1] = objs[0].inv_transform[0];
 		debugData[index + 2] = objs[0].inv_transform[1];
 		debugData[index + 3] = objs[0].inv_transform[2];

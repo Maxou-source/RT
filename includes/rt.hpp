@@ -32,6 +32,7 @@ typedef enum {
 	SPHERE,
 	CYLINDER,
     CUBE,
+    TORUS,
     PLANE,
     CONE,
 	CAMERA,

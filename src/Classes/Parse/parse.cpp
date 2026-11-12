@@ -28,7 +28,7 @@ bool Parse::checkFileRights(const char *fileName, std::ifstream *fileStream)
 
 ObjectId findObjectId(std::string& s)
 {
-	const std::array<std::string, 9	> strings_id = {"None","Sphere", "Cylinder", "Cube", "Plane",
+	const std::array<std::string, 10> strings_id = {"None","Sphere", "Cylinder", "Cube", "Torus" ,"Plane",
 		"Cone", "Camera", "AmbientLight", "Light"};
 	
 	for (size_t i = 1; i < strings_id.size(); i++) {

@@ -105,6 +105,7 @@ SRC_OBJECTS			= $(addprefix $(OBJECTS_DIR), \
 						Pattern.cpp \
 						Texture.cpp \
 						Wobble.cpp \
+						Torus.cpp \
 						)
 
 SRC_TUPLE			= $(addprefix $(TUPLE_DIR), \
