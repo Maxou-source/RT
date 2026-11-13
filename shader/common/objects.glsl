@@ -71,11 +71,12 @@ struct Material {
 };
 
 struct Obj {
-	mat4     inv_transform;
-	Material mat;
-	int      type;        // OBJ_SPHERE, OBJ_CUBE, ...
-	float    param;       // the one shape-specific value (meaning depends on type)
-	int      param2, _pad1;
+	mat4		inv_transform;
+	Material	mat;
+	int		type;        // OBJ_SPHERE, OBJ_CUBE, ...
+	float	param;       // the one shape-specific value (meaning depends on type)
+	int		param2;
+	int		_pad1;
 };
 
 struct PointLight {

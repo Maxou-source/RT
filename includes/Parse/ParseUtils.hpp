@@ -15,5 +15,5 @@ namespace ParseUtils
 	std::vector<std::string> concat(std::vector<std::string> a,
 										const std::vector<std::string>& b);
 	bool	parseTextureFile(const std::string& v, std::string &texture_file);
-	
+	ObjectId findObjectId(const std::string& s);
 }

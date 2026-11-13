@@ -16,6 +16,7 @@ class Cone : public AObject
 	    const char * typeString() const override;
 	    bool packIntoGpuScene(GpuScene& s) const override;
         bool preBuild() override;
+		bool repeatableSubBlock() const override;
 
         bool setProperty(const std::string& key, const std::string& val) override;
 };

@@ -13,7 +13,6 @@
 # include "IParsable.hpp"
 # include "Material.hpp"
 
-class Ray;
 
 using namespace ParseUtils;
 
@@ -38,6 +37,7 @@ class AObject : public IParsable
 		void	applyTransformations();
 		bool packIntoGpuScene(GpuScene& s) const override;
 		IParsable* getSubBlock(const std::string& name) override;
+		virtual bool repeatableSubBlock() const override = 0;
 
 	// setters and getters
 		bool	setProperty(const std::string& key, const std::string& val) override;

@@ -30,6 +30,7 @@ class Pattern: public IParsable
 		bool packIntoGpuScene(GpuScene&) const override;
 		void packInto(GpuMaterial& g) const;
 
+		bool repeatableSubBlock() const override {return false;}
 		bool parsePatternType(const std::string& vec);
 
 		// getters and setters 

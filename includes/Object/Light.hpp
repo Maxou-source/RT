@@ -27,6 +27,7 @@ class Light: public IParsable {
 		const char *				typeString() const override;
 		void						print(size_t index) const;
 		bool						parseLightType(const std::string& vec);
+		bool repeatableSubBlock() const override;
 };
 
 #endif

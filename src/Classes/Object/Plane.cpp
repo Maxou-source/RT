@@ -43,3 +43,8 @@ bool Plane::preBuild() {
 	i_m.display();
 	return true;
 }
+
+
+bool Plane::repeatableSubBlock() const {
+	return false;
+}

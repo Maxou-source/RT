@@ -35,6 +35,9 @@ typedef enum {
     TORUS,
     PLANE,
     CONE,
+    CSG_UNION,
+    CSG_INTERSECT,
+    CSG_DIFFERENCE,
 	CAMERA,
     AMBIENT_LIGHT,
     LIGHT

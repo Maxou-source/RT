@@ -5,6 +5,7 @@
 #include "Plane.hpp"
 #include "Torus.hpp"
 #include "Cone.hpp"
+#include "CSG.hpp"
 #include "Ray.hpp"
 # include <memory>
 
@@ -27,12 +28,15 @@ AObject* World::AddObject(ObjectId id)
 {
 	switch (id)
 	{
-		case ObjectId::SPHERE:		objects.push_back(std::make_unique<Sphere>()); break;
-		case ObjectId::CYLINDER:	objects.push_back(std::make_unique<Cylinder>()); break;
-		case ObjectId::CUBE:		objects.push_back(std::make_unique<Cube>()); break;
-		case ObjectId::PLANE:		objects.push_back(std::make_unique<Plane>()); break;
-		case ObjectId::CONE:		objects.push_back(std::make_unique<Cone>()); break;
-		case ObjectId::TORUS:		objects.push_back(std::make_unique<Torus>()); break;
+		case ObjectId::SPHERE:			objects.push_back(std::make_unique<Sphere>()); break;
+		case ObjectId::CYLINDER:		objects.push_back(std::make_unique<Cylinder>()); break;
+		case ObjectId::CUBE:			objects.push_back(std::make_unique<Cube>()); break;
+		case ObjectId::PLANE:			objects.push_back(std::make_unique<Plane>()); break;
+		case ObjectId::CONE:			objects.push_back(std::make_unique<Cone>()); break;
+		case ObjectId::TORUS:			objects.push_back(std::make_unique<Torus>()); break;
+		case ObjectId::CSG_UNION:		objects.push_back(std::make_unique<CSG>(CSG_UNION)); break;
+		case ObjectId::CSG_INTERSECT:		objects.push_back(std::make_unique<CSG>(CSG_INTERSECT)); break;
+		case ObjectId::CSG_DIFFERENCE:		objects.push_back(std::make_unique<CSG>(CSG_DIFFERENCE)); break;
 		default: return nullptr;
 	}
 	return (objects.back().get());

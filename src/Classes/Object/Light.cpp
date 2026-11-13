@@ -81,3 +81,5 @@ bool Light::parseLightType(const std::string& value) {
 	type = it->second;
 	return true;
 }
+
+bool Light::repeatableSubBlock() const {return false;}

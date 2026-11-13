@@ -46,6 +46,11 @@ bool Cube::preBuild() {
 	return true;
 }
 
+bool Cube::repeatableSubBlock() const {
+	return false;
+}
+
+
 bool Cube::setProperty(const std::string& key, const std::string& val) {
 	if (key == "size")
 	{

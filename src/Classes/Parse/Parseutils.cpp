@@ -76,5 +76,15 @@ namespace ParseUtils
 	// texture_file.append(buf, 0, file.gcount());
 	return true;
 	}
-
+	ObjectId findObjectId(const std::string& s)
+	{
+		const std::array<std::string, 13> strings_id = {"None","Sphere", "Cylinder", "Cube", "Torus" ,"Plane",
+			"Cone", "Union", "Intersect", "Difference", "Camera", "AmbientLight", "Light"};
+		
+		for (size_t i = 1; i < strings_id.size(); i++) {
+			if (s.find(strings_id[i]) != std::string::npos)
+				return static_cast<ObjectId>(i);
+		}
+		return ObjectId::NONE;
+	}
 }

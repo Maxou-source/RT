@@ -64,3 +64,6 @@ bool Torus::setProperty(const std::string& key, const std::string& val) {
 	return true;
 }
 
+bool Torus::repeatableSubBlock() const {
+	return false;
+}

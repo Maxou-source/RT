@@ -26,5 +26,25 @@ Torus {
     }
 }
 
+Union {
+    Torus {
+        position: [0,0,0]
+        orientation: [1,0,0]
+        A: 2.0
+        B: 1.0
+        Material {
+            color: [1,0,1]
+        }
+    }
+    Cylinder {
+        position: [0,-0.1,0]
+        orientation: [0,1,0]
+        diameter: 40
+        height: 0.2
+        Material {
+            color: [0.25,0.25,0.3]
+        }
+    }
+}
 
 

@@ -17,4 +17,5 @@ class Torus: public AObject
 		bool packIntoGpuScene(GpuScene& s) const override;
 		bool preBuild() override;
 		bool setProperty(const std::string& key, const std::string& val) override;
+		bool repeatableSubBlock() const override;
 };

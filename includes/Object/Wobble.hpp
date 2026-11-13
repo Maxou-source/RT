@@ -14,4 +14,5 @@ class Wobble: public IParsable {
 		const char *typeString() const override;
 		bool	packIntoGpuScene(GpuScene&) const override;
 		void	packInto(GpuMaterial& g) const;
+		bool repeatableSubBlock() const override {return false;}
 };

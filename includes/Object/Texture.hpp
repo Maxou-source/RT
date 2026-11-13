@@ -25,4 +25,5 @@ class Texture: public IParsable {
 		void	packInto(GpuMaterial& g) const;
 		std::string& file() {return texture_file;}
 		void setLayer(int l) {layer = l;}
+		bool repeatableSubBlock() const override {return false;}
 };

@@ -64,3 +64,7 @@ bool Cylinder::packIntoGpuScene(GpuScene& s) const {
 	return true;
 }
 
+bool Cylinder::repeatableSubBlock() const {
+	return false;
+}
+

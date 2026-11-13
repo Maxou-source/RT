@@ -63,3 +63,6 @@ bool Cone::setProperty(const std::string& key, const std::string& val) {
 }
 
 
+bool Cone::repeatableSubBlock() const {
+	return false;
+}

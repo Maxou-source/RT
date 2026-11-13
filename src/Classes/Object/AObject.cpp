@@ -21,7 +21,7 @@ void AObject::applyTransformations()
 bool AObject::setProperty(const std::string& key, const std::string& val)
 {
 	if (key == "position")
-		return parsePosition(val, position);
+		return ParseUtils::parsePosition(val, position);
 	return false;   // color, specular, pattern, ...
 }
 
@@ -58,6 +58,7 @@ IParsable* AObject::getSubBlock(const std::string& name)
 		return &material;
 	return nullptr;
 }
+
 /*===== Setters and Getters =======*/
 
 void	AObject::setPosition(t_f4 p) {position = p;}

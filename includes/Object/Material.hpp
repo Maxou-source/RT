@@ -34,6 +34,7 @@ class Material : public IParsable
 		void packInto(GpuMaterial& g) const;
 		IParsable* getSubBlock(const std::string& name) override;
 		void print(std::ostream& os, const char* indent = "  ") const;
+		bool repeatableSubBlock() const override {return false;}
 
 		// getterssss
 		Pattern& getPattern() ;

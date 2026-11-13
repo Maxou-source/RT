@@ -14,4 +14,5 @@ class AmbientLight: public IParsable {
 		std::vector<std::string>	requiredKeys() const override;
 		const char *				typeString() const override;
 		void						print(size_t index) const;
+		bool repeatableSubBlock() const override {return false;}
 };

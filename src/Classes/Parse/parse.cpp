@@ -26,17 +26,7 @@ bool Parse::checkFileRights(const char *fileName, std::ifstream *fileStream)
 	return false;
 }
 
-ObjectId findObjectId(std::string& s)
-{
-	const std::array<std::string, 10> strings_id = {"None","Sphere", "Cylinder", "Cube", "Torus" ,"Plane",
-		"Cone", "Camera", "AmbientLight", "Light"};
-	
-	for (size_t i = 1; i < strings_id.size(); i++) {
-		if (s.find(strings_id[i]) != std::string::npos)
-			return static_cast<ObjectId>(i);
-	}
-	return ObjectId::NONE;
-}
+
 
 bool Parse::parseBlock(IterVectorString& it, IterVectorString end, IParsable& target)
 {
@@ -74,7 +64,7 @@ bool Parse::parseBlock(IterVectorString& it, IterVectorString end, IParsable& ta
 				std::cerr << "KO:: unknown sub-block '" << name << "'" << std::endl;
 				return false;
 			}
-			if (seenKeys.count(name))
+			if (seenKeys.count(name) && !target.repeatableSubBlock())
 			{
 				std::cerr << "KO:: duplicate sub-block '" << name << "'" << std::endl;
 				return false;

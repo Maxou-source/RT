@@ -41,6 +41,7 @@ class Camera : public IParsable {
 		Camera(const Tuple& pov, const Tuple& orient, float f);
 		void print() const;
 		void move(float forward, float right, float up);
+		bool repeatableSubBlock() const override {return false;}
 
 	// Methods
 		void	rayForPixel(int px, int py, Ray *r);

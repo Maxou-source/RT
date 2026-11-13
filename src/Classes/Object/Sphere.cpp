@@ -45,6 +45,11 @@ bool Sphere::preBuild() {
 	return true;
 }
 
+bool Sphere::repeatableSubBlock() const {
+	return false;
+}
+
+
 bool Sphere::packIntoGpuScene(GpuScene& s) const {
 	return AObject::packIntoGpuScene(s);
 }
