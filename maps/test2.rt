@@ -39,35 +39,10 @@ Cube {
     Material {
         color: [1,1,1]
         ambient: 0.9
-        transparency: 1
-        refractive_index: 1.33
-    }
-}
-
-Paraboloid {
-    position: [0,0,0]
-    orientation: [0,1,0]
-    size: 2.0
-    height: 3.0
-    Material {
-        color: [1,1,1]
-    }
-}
-
-Intersection {
-    Cube {
-        position: [0, 2, 0]
-        orientation: [0,0,1]
-        size: 1.80
-        Material {
-            color: [0, 0.5, 1]
-        }
-    }
-    Sphere {
-        position: [0, 2, 0.0]
-        diameter: 2.75
-        Material {
-            color: [1, 0, 0]
+        Pattern {
+            type: perlin
+            parameter: 100.0
+            second_color: [1,1,0]
         }
     }
 }

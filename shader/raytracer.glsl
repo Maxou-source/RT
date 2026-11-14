@@ -319,7 +319,7 @@ void main()
 	FragColor = color_at(r);
 	if (px == 200 && py == 200)
 	{
-		debugData[index] = vec4((lights[0].type == DIRECTIONAL) ? 5.0: 3.0);
+		debugData[index] = vec4(objs[0].mat.pat.param);
 		debugData[index + 1] = objs[0].inv_transform[0];
 		debugData[index + 2] = objs[0].inv_transform[1];
 		debugData[index + 3] = objs[0].inv_transform[2];
