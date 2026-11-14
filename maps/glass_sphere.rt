@@ -7,11 +7,21 @@ Camera {
 
 
 Light {
-    position: [8,12,-12]
+    type: positional
+    source: [8,12,-12]
     color: [1,1,1]
     ambient: 0.1
     diffuse: 0.9
     specular: 0.9
+}
+
+Sphere {
+    position: [0,0,0]
+    diameter: 2.0
+    Material {
+        color: [1,1,1]
+        reflection: 0.0
+    }
 }
 
 Cube {

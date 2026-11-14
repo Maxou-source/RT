@@ -1,7 +1,6 @@
 #pragma once
 #include "Matrix.hpp"
 
-
 struct GpuPattern {
 	t_m4 i_m;
 	float color[4];
@@ -27,11 +26,11 @@ struct GpuWobble
 
 struct GpuMaterial
 {
-	float	color[4]; // 16
-	float	ambient; float diffuse; float specular; float shininess; // 16
+	float	color[4];
+	float	ambient; float diffuse; float specular; float shininess;
 	float	reflection; 
 	float	transparency = 0;
-	float	refractive_index = 0; // 16
+	float	refractive_index = 0;
 	int	_pad0 = 0;
 	GpuPattern	pat;
 	GpuTexture	texture;
@@ -45,7 +44,10 @@ struct GpuObject
 	int				type; // 4 -> 88
 	float			param; // 4 -> 92
 	int				param2;
-	int				_pad2 = 0; // 100
+	int				_pad1, _pad2 = 0; // 100
+	int				parent = -1;        // index of the CSG node that owns this object, -1 = top level
+	int				left   = -1;        // child indices, only used when op != 0
+	int				right  = -1;
 };
 
 struct GpuLight

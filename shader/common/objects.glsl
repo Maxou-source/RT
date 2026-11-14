@@ -73,10 +73,13 @@ struct Material {
 struct Obj {
 	mat4		inv_transform;
 	Material	mat;
-	int		type;        // OBJ_SPHERE, OBJ_CUBE, ...
-	float	param;       // the one shape-specific value (meaning depends on type)
+	int		type;
+	float	param;
 	int		param2;
-	int		_pad1;
+	int		_pad1, _pad2;
+	int		parent;
+	int		left;
+	int		right;
 };
 
 struct PointLight {

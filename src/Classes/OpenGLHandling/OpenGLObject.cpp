@@ -144,7 +144,10 @@ bool OpenGLObject::SetFragmentShader(const std::string& rootFile)
 			{"RING",   std::to_string((int)PatternType::RING)},
 			{"PERLIN",   std::to_string((int)PatternType::PERLIN)},
 			{"DIRECTIONAL",   std::to_string((int)LightType::DIRECTIONAL)},
-			{"POSITIONAL", std::to_string((int)LightType::POSITIONAL)}
+			{"POSITIONAL", std::to_string((int)LightType::POSITIONAL)},
+			{"CSG_UNION", std::to_string((int)ObjectId::CSG_UNION)},
+			{"CSG_DIFFERENCE", std::to_string((int)ObjectId::CSG_DIFFERENCE)},
+			{"CSG_INTERSECT", std::to_string((int)ObjectId::CSG_INTERSECT)},
 		}, source))
 		return false;
 

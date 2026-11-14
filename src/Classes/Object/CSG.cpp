@@ -46,6 +46,25 @@ const char * CSG::typeString() const {
 }
 
 bool CSG::packIntoGpuScene(GpuScene& s) const {
+	if (s.object_count + 3 > MAX_OBJECTS)
+		return false;
+
+	int self = s.object_count++;
+	GpuObject& g = s.objs[self];
+	g = GpuObject{};
+	g.type   = type();
+	g.parent = -1;
+
+	int idx[2];
+	for (int i = 0; i < 2; i++)
+	{
+		idx[i] = s.object_count;
+		if (!children[i]->packIntoGpuScene(s))
+			return false;
+		s.objs[idx[i]].parent = self;
+	}
+	s.objs[self].left  = idx[0];
+	s.objs[self].right = idx[1];
 	return true;
 }
 

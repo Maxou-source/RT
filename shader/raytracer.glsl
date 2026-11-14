@@ -9,6 +9,7 @@ out vec4 FragColor;
 //!include "intersections/plane.glsl"
 //!include "intersections/cone.glsl"
 //!include "intersections/torus.glsl"
+//!include "intersections/group.glsl"
 //!include "lights/lighting.glsl"
 //!include "lights/normals.glsl"
 //!include "lights/pattern.glsl"
@@ -38,38 +39,79 @@ Ray	rayForPixel(int px, int py, int index) {
 	return r;
 }
 
+
+
+
+bool is_csg_child(int id)
+{
+    for (int i = 0; i < object_count; i++)
+    {
+        if (objs[i].type == CSG_UNION ||
+            objs[i].type == CSG_INTERSECT ||
+            objs[i].type == CSG_DIFFERENCE)
+        {
+            if (objs[i].left == id || objs[i].right == id)
+                return true;
+        }
+    }
+
+    return false;
+}
+
 float intersect_obj(Ray r, Obj o)
 {
+	// if (o.type == CSG_UNION || o.type == CSG_INTERSECT || o.type == CSG_DIFFERENCE)
+	// 	return group_intersect(r, o);
 	if (o.type == OBJ_SPHERE) {
 		return(intersect_sp(r, o));
-	} else if (o.type == OBJ_CYLINDER) {
-		return(intersect_cy(r, o));
-	} else if (o.type == OBJ_CUBE) {
-		return(intersect_cu(r, o));
-	} else if (o.type == OBJ_PLANE) {
-		return(intersect_pl(r, o));
-	} else if (o.type == OBJ_CONE) {
-		return(intersect_co(r, o));
-	} else if (o.type == OBJ_TORUS) {
-		return intersect_to(r, o);
 	}
+	else if (o.type == OBJ_CYLINDER) {
+		return(intersect_cy(r, o));
+	}
+	else if (o.type == OBJ_CUBE) {
+		return(intersect_cu(r, o));
+	}
+	else if (o.type == OBJ_PLANE) {
+		return(intersect_pl(r, o));
+	}
+	else if (o.type == OBJ_CONE) {
+		return(intersect_co(r, o));
+	}
+	else if (o.type == OBJ_TORUS) {
+		return (intersect_to(r, o));
+	} 
 	return INF;
 }
 
 Intersection intersect_world(Ray r)
 {
-	Intersection best = Intersection(INF, -1);
-	for (int i = 0; i < object_count; i++)
-	{
-		float t;
-		t = intersect_obj(r, objs[i]);
-		
-		if (t < best.t)
-			best = Intersection(t, i);
-	}
-	return best;
-}
+    Intersection best = Intersection(INF, -1);
 
+    for (int i = 0; i < object_count; i++)
+    {
+        if (is_csg_child(i))
+            continue;
+
+        Intersection hit;
+
+        if (objs[i].type == CSG_UNION ||
+            objs[i].type == CSG_INTERSECT ||
+            objs[i].type == CSG_DIFFERENCE)
+        {
+            hit = group_intersect(r, objs[i]);
+        }
+        else
+        {
+            float t = intersect_obj(r, objs[i]);
+            hit = Intersection(t, i);
+        }
+
+        if (hit.t < best.t)
+            best = hit;
+    }
+
+    return best;
+}
 Computation computations(Ray r, Intersection i, Obj o);
 float shadow_factor(vec4 point, Light lgt)
 {
@@ -213,9 +255,6 @@ vec4 shade_hit(Computation cmp)
 		float shadowed = shadow_factor(cmp.point, lights[i]);
 		res += lighting(cmp.mat, lights[i] ,cmp.point, cmp.eyev, cmp.normalv, shadowed);
 	}
-
-	// reflect
-	// res += refelec_color(cmp);
 	return vec4(res.r, res.g, res.b, 1.0);
 }
 
@@ -262,6 +301,8 @@ vec4 color_at(Ray r)
 	}
 	return vec4(result, 1.0);
 }
+
+
 
 void main()
 {
