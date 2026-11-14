@@ -107,6 +107,7 @@ SRC_OBJECTS			= $(addprefix $(OBJECTS_DIR), \
 						Wobble.cpp \
 						Torus.cpp \
 						CSG.cpp \
+						Paraboloid.cpp \
 						)
 
 SRC_TUPLE			= $(addprefix $(TUPLE_DIR), \

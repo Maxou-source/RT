@@ -44,6 +44,16 @@ Cube {
     }
 }
 
+Paraboloid {
+    position: [0,0,0]
+    orientation: [0,1,0]
+    size: 2.0
+    height: 3.0
+    Material {
+        color: [1,1,1]
+    }
+}
+
 Intersection {
     Cube {
         position: [0, 2, 0]

@@ -101,3 +101,14 @@ vec4 normal_at_pl(Obj o, vec4 p)
 	world_point.w = 0;
 	return (normalize(world_point));
 }
+
+vec4 normal_at_pa(Obj o, vec4 p)
+{
+    // float a = /* paraboloid parameter */;
+
+    return normalize(vec4(
+        2.0 * p	.x,
+        -4.0 * o.param,
+        2.0 * p.z, 0.0
+    ));
+}

@@ -10,6 +10,7 @@ out vec4 FragColor;
 //!include "intersections/cone.glsl"
 //!include "intersections/torus.glsl"
 //!include "intersections/group.glsl"
+//!include "intersections/paraboloid.glsl"
 //!include "lights/lighting.glsl"
 //!include "lights/normals.glsl"
 //!include "lights/pattern.glsl"
@@ -44,18 +45,18 @@ Ray	rayForPixel(int px, int py, int index) {
 
 bool is_csg_child(int id)
 {
-    for (int i = 0; i < object_count; i++)
-    {
-        if (objs[i].type == CSG_UNION ||
-            objs[i].type == CSG_INTERSECT ||
-            objs[i].type == CSG_DIFFERENCE)
-        {
-            if (objs[i].left == id || objs[i].right == id)
-                return true;
-        }
-    }
+	for (int i = 0; i < object_count; i++)
+	{
+		if (objs[i].type == CSG_UNION ||
+			objs[i].type == CSG_INTERSECT ||
+			objs[i].type == CSG_DIFFERENCE)
+		{
+			if (objs[i].left == id || objs[i].right == id)
+				return true;
+		}
+	}
 
-    return false;
+	return false;
 }
 
 float intersect_obj(Ray r, Obj o)
@@ -79,38 +80,41 @@ float intersect_obj(Ray r, Obj o)
 	}
 	else if (o.type == OBJ_TORUS) {
 		return (intersect_to(r, o));
-	} 
+	}
+	else if (o.type == OBJ_PARABOLOID) {
+		return (intersect_pa(r, o));
+	}
 	return INF;
 }
 
 Intersection intersect_world(Ray r)
 {
-    Intersection best = Intersection(INF, -1);
+	Intersection best = Intersection(INF, -1);
 
-    for (int i = 0; i < object_count; i++)
-    {
-        if (is_csg_child(i))
-            continue;
+	for (int i = 0; i < object_count; i++)
+	{
+		if (is_csg_child(i))
+			continue;
 
-        Intersection hit;
+		Intersection hit;
 
-        if (objs[i].type == CSG_UNION ||
-            objs[i].type == CSG_INTERSECT ||
-            objs[i].type == CSG_DIFFERENCE)
-        {
-            hit = group_intersect(r, objs[i]);
-        }
-        else
-        {
-            float t = intersect_obj(r, objs[i]);
-            hit = Intersection(t, i);
-        }
+		if (objs[i].type == CSG_UNION ||
+			objs[i].type == CSG_INTERSECT ||
+			objs[i].type == CSG_DIFFERENCE)
+		{
+			hit = group_intersect(r, objs[i]);
+		}
+		else
+		{
+			float t = intersect_obj(r, objs[i]);
+			hit = Intersection(t, i);
+		}
 
-        if (hit.t < best.t)
-            best = hit;
-    }
+		if (hit.t < best.t)
+			best = hit;
+	}
 
-    return best;
+	return best;
 }
 Computation computations(Ray r, Intersection i, Obj o);
 float shadow_factor(vec4 point, Light lgt)
@@ -120,19 +124,19 @@ float shadow_factor(vec4 point, Light lgt)
 
 	if (lgt.type == DIRECTIONAL)
 	{
-		L     = normalize(-lgt.position);      // same direction everywhere
-		max_t = INF;                            // nothing is "beyond" the light
+		L	 = normalize(-lgt.position);	  // same direction everywhere
+		max_t = INF;							// nothing is "beyond" the light
 	}
 	else
 	{
 		vec4 v = lgt.position - point;
-		L      = normalize(v);
-		max_t  = length(v);                     // only objects before the light count
+		L	  = normalize(v);
+		max_t  = length(v);					 // only objects before the light count
 	}
 
 
 	Ray sr;
-	sr.origin    = point;
+	sr.origin	= point;
 	sr.direction = vec4(normalize(L));
 
 	float factor = 1.0;
@@ -151,27 +155,27 @@ float shadow_factor(vec4 point, Light lgt)
 		float cos_theta = clamp(dot(normalize(sr.direction.xyz), normalize(comps.normalv.xyz)), -1.0, 1.0);
 		float sin_theta = sqrt(1.0 - cos_theta * cos_theta);
 
-        float eta = 1.0 / objs[i].mat.refractive_index; // Air (1.0) to Object IOR
-        float sin_theta_t = eta * sin_theta;
+		float eta = 1.0 / objs[i].mat.refractive_index; // Air (1.0) to Object IOR
+		float sin_theta_t = eta * sin_theta;
 
-        // If total internal reflection happens inside our approximation loop
-        if (sin_theta_t > 1.0) {
-            factor *= 0.0; // Block light
-            continue;
-        }
+		// If total internal reflection happens inside our approximation loop
+		if (sin_theta_t > 1.0) {
+			factor *= 0.0; // Block light
+			continue;
+		}
 
 		float cos_theta_t = sqrt(1.0 - sin_theta_t * sin_theta_t);
 		// schlick
-        float r0 = ((1.0 - objs[i].mat.refractive_index) / (1.0 + objs[i].mat.refractive_index));
-        r0 = r0 * r0;
-        float fresnel = r0 + (1.0 - r0) * pow(1.0 - abs(cos_theta), 5.0);
+		float r0 = ((1.0 - objs[i].mat.refractive_index) / (1.0 + objs[i].mat.refractive_index));
+		r0 = r0 * r0;
+		float fresnel = r0 + (1.0 - r0) * pow(1.0 - abs(cos_theta), 5.0);
 
 		float dispersion = pow(sin_theta, 2.0) * (1.0 - eta);
-        
-        // Combine transmission loss (fresnel) and directional scattering (dispersion)
-        float transmission = (1.0 - fresnel) * (1.0 - dispersion);
+		
+		// Combine transmission loss (fresnel) and directional scattering (dispersion)
+		float transmission = (1.0 - fresnel) * (1.0 - dispersion);
 
-        factor *= clamp(transmission, 0.0, 1.0) * objs[i].mat.transparency;
+		factor *= clamp(transmission, 0.0, 1.0) * objs[i].mat.transparency;
 	}
 	return factor;
 }
@@ -192,7 +196,7 @@ bool refract_dir(Computation c, out vec4 dir)
 
 vec4 wobble_at(Obj o, vec4 point, vec4 normalv)
 {
-	vec4 lp = point * o.inv_transform;            // exact point, object space
+	vec4 lp = point * o.inv_transform;			// exact point, object space
 	vec3 d = vec3(sin(lp.y * o.mat.wob.frequency), sin(lp.z * o.mat.wob.frequency), sin(lp.x * o.mat.wob.frequency));
 	d -= normalv.xyz * dot(d, normalv.xyz);       // tangent part only
 	return (vec4(normalize(normalv.xyz + o.mat.wob.amplitude * d), 0.0));
@@ -204,12 +208,13 @@ Computation computations(Ray r, Intersection i, Obj o)
 	vec4 eyev  = -r.direction;
 
 	vec4 normalv;
-	if      (o.type == OBJ_CYLINDER) normalv = normal_at_cy(o, point);
-	else if (o.type == OBJ_CUBE)     normalv = normal_at_cu(o, point);
-	else if (o.type == OBJ_PLANE)    normalv = normal_at_pl(o, point);
-	else if (o.type == OBJ_CONE)     normalv = normal_at_co(o, point);
-	else if (o.type == OBJ_TORUS)     normalv = normal_at_to(o, point);
-	else                             normalv = normal_at(o, point);
+	if      (o.type == OBJ_CYLINDER)	normalv = normal_at_cy(o, point);
+	else if (o.type == OBJ_CUBE)		normalv = normal_at_cu(o, point);
+	else if (o.type == OBJ_PLANE)		normalv = normal_at_pl(o, point);
+	else if (o.type == OBJ_CONE)		normalv = normal_at_co(o, point);
+	else if (o.type == OBJ_TORUS)		normalv = normal_at_to(o, point);
+	else if (o.type == OBJ_PARABOLOID)	normalv = normal_at_pa(o, point);
+	else	normalv = normal_at(o, point);
 
 	bool inside = dot(normalv, eyev) < 0.0;
 	if (inside)

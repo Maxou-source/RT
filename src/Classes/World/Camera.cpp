@@ -161,8 +161,8 @@ bool Camera::packIntoGpuScene(GpuScene& s) const
 bool Camera::setProperty(const std::string& key, const std::string& val)
 {
 	if (key == "position")    return parsePosition(val, position);
-	if (key == "orientation") return parseVec(val, orientation, 0.f);
-	if (key == "fov")         { try { fov = std::stof(val); } catch (...) { return false; } return true; }
+	else if (key == "orientation") return parseVec(val, orientation, 0.f);
+	else if (key == "fov")         { try { fov = std::stof(val); } catch (...) { return false; } return true; }
 	return false;
 }
 

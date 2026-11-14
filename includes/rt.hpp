@@ -38,6 +38,7 @@ typedef enum {
     CSG_UNION,
     CSG_INTERSECT,
     CSG_DIFFERENCE,
+    PARABOLOID,
 	CAMERA,
     AMBIENT_LIGHT,
     LIGHT
