@@ -120,7 +120,7 @@ vec4 perlin_at(Pattern pat, vec4 p, vec4 colorA)
     // return vec4(fract(q), 1.0);
 	float n = perlin(p.x * pat.param, p.y * pat.param, p.z * pat.param);   // remap to 0..1
 	 n = n * 0.5 + 0.5;
-	return vec4(n,n,n,1.0);
+	return mix(colorA, pat.color, n);
 }
 
 vec4 ring_at(Pattern pat, vec4 p, vec4 colorA)

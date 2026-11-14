@@ -57,7 +57,7 @@ void debugMessages(const OpenGLObject& gl)
 	glBindBuffer(GL_UNIFORM_BUFFER, gl.getUbo());          // add a getUbo() getter
 	glGetBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GpuScene), &back);
 
-	std::cout << "\nshaderProgram: " << gl.getShaderProgram() << std::endl;
+	std::cout << "\nshaderProgram: " << gl.getComputeProgram() << std::endl;
 	std::cout << "half_width:  " << back.cam.half_width  << "\n"
 	          << "half_height: " << back.cam.half_height << "\n"
 	          << "pixel_size:  " << back.cam.pixel_size  << "\n"
@@ -86,33 +86,120 @@ void printMat4(const float* m, const char* name)
     }
 }
 
-bool runGpuTest()
-{
-	OpenGLObject	oglo;
+// bool runGpuTest()
+// {
+// 	OpenGLObject	oglo;
 
-	std::cout << "running tests" << std::endl;
-	oglo.SetVertexShader();
-	oglo.SetFragmentShader("shader/tests/cube_tests.glsl");
-	oglo.Whatever();
+// 	std::cout << "running tests" << std::endl;
+// 	// oglo.SetVertexShader();
+// 	oglo.SetComputeShader("shader/tests/cube_tests.glsl");
+// 	oglo.Whatever();
 
-	// 1. actually run the shader: draw the fullscreen quad once
-	glUseProgram(oglo.getShaderProgram());
-	glBindVertexArray(oglo.getVAO());
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);
+// 	// 1. actually run the shader: draw the fullscreen quad once
+// 	glUseProgram(oglo.getComputeProgram());
+// 	glBindVertexArray(oglo.getVAO());
+// 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+// 	glBindVertexArray(0);
 
-	// 2. make the shader's SSBO writes visible
-	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+// 	// 2. make the shader's SSBO writes visible
+// 	glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, oglo.getDebugSSBO());
+// 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, oglo.getDebugSSBO());
 
-	std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 12);
-	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	int idx = 0;
-	std::cout << "debugout 0 " << debugOut[0] << std::endl;
-	return false;
-}
+// 	std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 12);
+// 	glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, debugOut.size() * sizeof(float), debugOut.data());
+// 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+// 	int idx = 0;
+// 	std::cout << "debugout 0 " << debugOut[0] << std::endl;
+// 	return false;
+// }
+
+
+// int main()
+// {
+//     OpenGLObject gl;
+
+//     // 1. Compile compute shader
+// if (!gl.SetComputeShader("shader/test.glsl"))
+//     return 1;
+
+// if (!gl.Whatever())
+//     return 1;
+
+//     GLuint program = gl.getComputeProgram();
+
+//     if (program == 0)
+//     {
+//         std::cerr << "KO:: Invalid compute program" << std::endl;
+//         return 1;
+//     }
+
+//     // 2. Get framebuffer dimensions
+//     GLFWwindow* window = gl.getWindow();
+
+//     int width, height;
+//     glfwGetFramebufferSize(window, &width, &height);
+
+//     // 3. Create output texture and read framebuffer
+//     gl.CreateOutputTexture(width, height);
+
+//     // 4. Dispatch compute shader
+//     glUseProgram(program);
+
+//     glDispatchCompute(
+//         (width + 7) / 8,
+//         (height + 7) / 8,
+//         1
+//     );
+
+//     // 5. Make image writes visible to framebuffer operations
+//     glMemoryBarrier(
+//         GL_SHADER_IMAGE_ACCESS_BARRIER_BIT |
+//         GL_FRAMEBUFFER_BARRIER_BIT
+//     );
+
+//     // 6. Check one pixel
+//     unsigned char pixel[4] = {};
+
+//     glBindFramebuffer(GL_READ_FRAMEBUFFER, gl.getReadFBO());
+//     glReadBuffer(GL_COLOR_ATTACHMENT0);
+
+//     glReadPixels(
+//         width / 2,
+//         height / 2,
+//         1, 1,
+//         GL_RGBA,
+//         GL_UNSIGNED_BYTE,
+//         pixel
+//     );
+
+//     std::cout << "Pixel: "
+//               << (int)pixel[0] << " "
+//               << (int)pixel[1] << " "
+//               << (int)pixel[2] << " "
+//               << (int)pixel[3] << std::endl;
+
+//     // 7. Display result
+//     while (!glfwWindowShouldClose(window))
+//     {
+//         glfwPollEvents();
+
+//         glBindFramebuffer(GL_READ_FRAMEBUFFER, gl.getReadFBO());
+//         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+//         glBlitFramebuffer(
+//             0, 0, width, height,
+//             0, 0, width, height,
+//             GL_COLOR_BUFFER_BIT,
+//             GL_NEAREST
+//         );
+
+//         glfwSwapBuffers(window);
+//     }
+
+//     glfwTerminate();
+//     return 0;
+// }
 
 
 int main(int ac, char **av)
@@ -121,8 +208,8 @@ int main(int ac, char **av)
 	Parse	par;
 	World	*w;
 
-	if (ac == 2 && !strcmp(av[1], "--test"))
-		return runGpuTest();
+	// if (ac == 2 && !strcmp(av[1], "--test"))
+	// 	return runGpuTest();
 	if (ac != 2 || par.parseFileAndName(av[1]))
 	{
 		std::cerr << "KO:: Wrong number of arguments" << std::endl;
@@ -146,9 +233,11 @@ int main(int ac, char **av)
 	float speedMul   = 1.0f;
 	OpenGLObject OpenGLObj;
 	
-	OpenGLObj.SetVertexShader();
-	OpenGLObj.SetFragmentShader("shader/raytracer.glsl");
-	OpenGLObj.Whatever();
+	// OpenGLObj.SetVertexShader();
+	if (!OpenGLObj.SetComputeShader("shader/raytracer.glsl"))
+		return (-1);
+	if (!OpenGLObj.Whatever())
+		return (-1);
 	OpenGLObj.UploadScene(gpuS);
 	if (!OpenGLObj.UploadTextures(w->getTextures()))      // GPU array + sampler uniform
 		return 1;
@@ -158,58 +247,76 @@ int main(int ac, char **av)
 	FPSCounter fpsCounter;
 	bool one = true;
 	double last = glfwGetTime();
+	int fbw, fbh;
+	glfwGetFramebufferSize(OpenGLObj.getWindow(), &fbw, &fbh);
+	OpenGLObj.CreateOutputTexture(fbw, fbh);     // creates outTex, the image binding and the read FBO
+	bool needsRender = true;
+	int nw, nh;
+	glfwGetFramebufferSize(OpenGLObj.getWindow(), &nw, &nh);
+	if (nw != fbw || nh != fbh)
+	{
+		fbw = nw; fbh = nh;
+		glViewport(0, 0, fbw, fbh);
+		OpenGLObj.CreateOutputTexture(fbw, fbh);      // also reattaches the read FBO
+		gpuS = w->buildGpuScene();
+		OpenGLObj.UploadScene(gpuS);
+		needsRender = true;
+	}
+
 	while (!glfwWindowShouldClose(OpenGLObj.getWindow()))
 	{
 		glfwPollEvents();
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-		glUseProgram(OpenGLObj.getShaderProgram());
-		glBindVertexArray(OpenGLObj.getVAO());
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-		
-		glfwSwapInterval(1);
 
-		glfwSwapBuffers(OpenGLObj.getWindow());
-		fpsCounter.update(); 
-		glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-		
-		glBindBuffer(GL_SHADER_STORAGE_BUFFER, OpenGLObj.getDebugSSBO());
-
-
+	// ---------- 1. time ----------
 		double now = glfwGetTime();
-		float  dt  = float(now - last);
+		float  dt  = std::min(float(now - last), 0.05f);   // clamp spikes
 		last = now;
 
+		// ---------- 2. input ----------
+		GLFWwindow* win = OpenGLObj.getWindow();
 		float step = baseSpeed * speedMul * dt;
 		float fwd = 0, rgt = 0, upw = 0;
-		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_W) == GLFW_PRESS) fwd += step;
-		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_S) == GLFW_PRESS) fwd -= step;
-		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_D) == GLFW_PRESS) rgt += step;
-		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_A) == GLFW_PRESS) rgt -= step;
-		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_E) == GLFW_PRESS) upw += step;
-		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_Q) == GLFW_PRESS) upw -= step;
+		if (glfwGetKey(win, GLFW_KEY_W) == GLFW_PRESS) fwd += step;
+		if (glfwGetKey(win, GLFW_KEY_S) == GLFW_PRESS) fwd -= step;
+		if (glfwGetKey(win, GLFW_KEY_D) == GLFW_PRESS) rgt += step;
+		if (glfwGetKey(win, GLFW_KEY_A) == GLFW_PRESS) rgt -= step;
+		if (glfwGetKey(win, GLFW_KEY_E) == GLFW_PRESS) upw += step;
+		if (glfwGetKey(win, GLFW_KEY_Q) == GLFW_PRESS) upw -= step;
 
-		float turnSpeed = 1.5f;                            // radians per second
+		float turnSpeed = 1.5f;
 		float dYaw = 0, dPitch = 0;
+		if (glfwGetKey(win, GLFW_KEY_LEFT)  == GLFW_PRESS) dYaw   -= turnSpeed * dt;
+		if (glfwGetKey(win, GLFW_KEY_RIGHT) == GLFW_PRESS) dYaw   += turnSpeed * dt;
+		if (glfwGetKey(win, GLFW_KEY_UP)    == GLFW_PRESS) dPitch += turnSpeed * dt;
+		if (glfwGetKey(win, GLFW_KEY_DOWN)  == GLFW_PRESS) dPitch -= turnSpeed * dt;
 
-		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_LEFT)  == GLFW_PRESS) dYaw   -= turnSpeed * dt;
-		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_RIGHT) == GLFW_PRESS) dYaw   += turnSpeed * dt;
-		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_UP)    == GLFW_PRESS) dPitch += turnSpeed * dt;
-		if (glfwGetKey(OpenGLObj.getWindow(), GLFW_KEY_DOWN)  == GLFW_PRESS) dPitch -= turnSpeed * dt;
-		if (fwd || rgt || upw)
+		// ---------- 3. camera update (one upload per frame) ----------
+		bool changed = false;
+		if (fwd || rgt || upw)   { w->getCamera().move(fwd, rgt, upw);      changed = true; }
+		if (dYaw || dPitch)      { w->getCamera().rotate(dYaw, dPitch);     changed = true; }
+		if (changed)
 		{
-			w->getCamera().move(fwd, rgt, upw);
 			w->getCamera().packIntoGpuScene(gpuS);
-			OpenGLObj.UploadCamera(gpuS);   // only when something changed
-		}
-		if (dYaw || dPitch)
-		{
-			w->getCamera().rotate(dYaw, dPitch);
-			w->getCamera().packIntoGpuScene(gpuS);
-			OpenGLObj.UploadCamera(gpuS);   // only when something changed
+			OpenGLObj.UploadCamera(gpuS);
 		}
 
+		// ---------- 4. render ----------
+		if (changed || needsRender)                        // skip if nothing moved
+		{
+			glUseProgram(OpenGLObj.getComputeProgram());
+			glDispatchCompute((fbw + 7) / 8, (fbh + 7) / 8, 1);
+
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_FRAMEBUFFER_BARRIER_BIT);
+			needsRender = false;
+		}
+
+		// ---------- 5. present ----------
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, OpenGLObj.getReadFBO());
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBlitFramebuffer(0, 0, fbw, fbh, 0, 0, fbw, fbh, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		glfwSwapBuffers(win);
+
+		fpsCounter.update();
 		if (one == true)
 		{
 			std::vector<float> debugOut(WIN_HEIGHT * WIN_WIDTH * 4 * 12);
@@ -250,23 +357,3 @@ int main(int ac, char **av)
 	glfwTerminate();
 }
 
-/*
- okay next:
-	- implement cylinder (check)
-	- check inside stuff is it okay (check)
-	- cube (check), plane (check), cone (check)
-	- movement (check)
-	- move back to compute shaders
-
-color (albedo)	material	the surface’s own color
-ambient (reflectivity)	material	how much fill light this surface reflects
-diffuse	material	how matte it is
-specular, shininess	material	how shiny it is
-
-color (emitted)	light	what the source emits
-position	light	where it is
-intensity	light	how strong it is
-
-global ambient color/level	scene	one knob for “how dark are the shadows”
-
-*/

@@ -15,14 +15,16 @@ class OpenGLObject
 		OpenGLObject();
 		bool SetVertexShader();
 		bool SetFragmentShader(const std::string& rootFile);
+		bool SetComputeShader(const std::string& rootFile);
+		void CreateOutputTexture(int w, int h);
 		void UploadScene(const GpuScene& scene);
 		void UploadCamera(const GpuScene& scene);
 		bool UploadTextures(const std::vector<Image>& imgs);
 		bool Whatever();
 
 		// Setters and getters
-		unsigned int getShaderProgram() const;
-		void setShaderProgram(unsigned int);
+		unsigned int getComputeProgram() const;
+		void setComputeProgram(unsigned int);
 
 		const char* getInfoLog() const;
 		void setInfoLog(const char*);
@@ -30,8 +32,8 @@ class OpenGLObject
 		unsigned int getVertexShader() const;
 		void setVertexShader(unsigned int);
 
-		unsigned int getFragmentShader() const;
-		void setFragmentShader(unsigned int);
+		unsigned int getComputeShader() const;
+		void setComputeShader(unsigned int);
 
 		unsigned int getVBO() const;
 		void setVBO(unsigned int);
@@ -51,19 +53,24 @@ class OpenGLObject
 		void setUbo(GLuint gl);
 
 		GLuint getUbo(void) const;
+		GLuint getReadFBO() const {return readFBO;}
 	
 		private:
+		GLuint outTex  = 0;
+		GLuint readFBO = 0;
 		GLuint texArray = 0;
 		char infoLog[512];
 		unsigned int vertexShader;
-		unsigned int fragmentShader;
+		// unsigned int fragmentShader;
+		unsigned int computeShader;
 
-		unsigned int shaderProgram;
+		// unsigned int shaderProgram;
+		unsigned int computeProgram;
 
-		unsigned int VBO;
-		unsigned int EBO;
+		// unsigned int VBO;
+		// unsigned int EBO;
 
-		unsigned int VAO;
+		// unsigned int VAO;
 		unsigned int debugSSBO;
 
 		unsigned int ubo = 0;

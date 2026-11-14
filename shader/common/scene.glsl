@@ -9,5 +9,5 @@ layout(std140) uniform Scene {
     Obj    objs[MAX_OBJECTS];
 };
 
-in vec2 TexCoords;
+// in vec2 TexCoords;
 uniform sampler2DArray textures;

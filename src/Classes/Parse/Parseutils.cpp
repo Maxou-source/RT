@@ -76,6 +76,7 @@ namespace ParseUtils
 	// texture_file.append(buf, 0, file.gcount());
 	return true;
 	}
+
 	ObjectId findObjectId(const std::string& s)
 	{
 		const std::array<std::string, 14> strings_id = {"None","Sphere", "Cylinder", "Cube", "Torus" ,"Plane",

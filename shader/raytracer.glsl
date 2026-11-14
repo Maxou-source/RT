@@ -1,5 +1,6 @@
 
-out vec4 FragColor;
+layout(local_size_x = 8, local_size_y = 8) in;
+layout(rgba8, binding = 0) uniform writeonly image2D outImage;
 //!include "utils.glsl"
 //!include "common/objects.glsl"
 //!include "common/scene.glsl"
@@ -25,8 +26,8 @@ Ray	rayForPixel(int px, int py, int index) {
 	vec4	pixel;
 	Ray r;
 
-	world_x = cam.half_width - gl_FragCoord.x * cam.pixel_size;
-	world_y = -cam.half_height + gl_FragCoord.y * cam.pixel_size;
+	world_x = cam.half_width - float(px) * cam.pixel_size;
+	world_y = -cam.half_height + float(py) * cam.pixel_size;
 	world_point = vec4(world_x, world_y, -1.0, 1.0);
 	pixel = world_point * cam.inv_transform;
 	r.origin = (vec4(0,0,0,1.0) * cam.inv_transform);
@@ -311,23 +312,37 @@ vec4 color_at(Ray r)
 
 void main()
 {
-	int px = int(gl_FragCoord.x);
-	int py = int(gl_FragCoord.y);
-	int index = py * 1000 + px;
-	Ray r = rayForPixel(px, py, index);
+ivec2 size = imageSize(outImage);
+ivec2 p = ivec2(gl_GlobalInvocationID.xy);
 
-	FragColor = color_at(r);
-	if (px == 200 && py == 200)
-	{
-		debugData[index] = vec4(objs[0].mat.pat.param);
-		debugData[index + 1] = objs[0].inv_transform[0];
-		debugData[index + 2] = objs[0].inv_transform[1];
-		debugData[index + 3] = objs[0].inv_transform[2];
-		debugData[index + 4] = objs[0].inv_transform[3];
+if (p.x >= size.x || p.y >= size.y)
+    return;
 
-		debugData[index + 5] = objs[1].inv_transform[0];
-		debugData[index + 6] = objs[1].inv_transform[1];
-		debugData[index + 7] = objs[1].inv_transform[2];
-		debugData[index + 8] = objs[1].inv_transform[3];
-	}
+// Pixel center, equivalent to gl_FragCoord
+vec2 frag = vec2(p) + vec2(0.5);
+
+// Pixel index
+int index = p.y * size.x + p.x;
+
+// Generate ray and trace it
+Ray ray = rayForPixel(p.x, p.y, index);
+vec4 color = color_at(ray);
+
+// Write final pixel
+imageStore(outImage, p, vec4(color.rgb, 1.0));
+
+	// FragColor = color_at(r);
+	// if (px == 200 && py == 200)
+	// {
+	// 	debugData[index] = vec4(objs[0].mat.pat.param);
+	// 	debugData[index + 1] = objs[0].inv_transform[0];
+	// 	debugData[index + 2] = objs[0].inv_transform[1];
+	// 	debugData[index + 3] = objs[0].inv_transform[2];
+	// 	debugData[index + 4] = objs[0].inv_transform[3];
+
+	// 	debugData[index + 5] = objs[1].inv_transform[0];
+	// 	debugData[index + 6] = objs[1].inv_transform[1];
+	// 	debugData[index + 7] = objs[1].inv_transform[2];
+	// 	debugData[index + 8] = objs[1].inv_transform[3];
+	// }
 }

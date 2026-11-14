@@ -5,6 +5,19 @@ Camera {
     fov: 90
 }
 
+Sphere {
+    position: [0,0,0]
+    diameter: 2.0
+    Material {
+        color: [1,1,1]
+        reflection: 0.0
+        Texture {
+            texture_file: textures/earth.jpg
+            orientation: [1,0,0]
+            scale: 1.0
+        }
+    }
+}
 
 
 Light {
@@ -39,9 +52,10 @@ Cube {
     Material {
         color: [1,1,1]
         ambient: 0.9
+        reflection: 0.0
         Pattern {
             type: perlin
-            parameter: 100.0
+            parameter: 5.0
             second_color: [1,1,0]
         }
     }
