@@ -2,8 +2,8 @@
 #include "AObject.hpp"
 #include "Light.hpp"
 
-Parse::Parse() {
-	w = new World;
+Parse::Parse(World *wo) {
+	w = wo;
 }
 
 bool Parse::checkFileName(const char *fileName)

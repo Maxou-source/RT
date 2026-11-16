@@ -97,7 +97,7 @@ bool Camera::preBuild() {
 	if (init == false)
 	{
 		std::cout << "first" << std::endl;
-		yaw   = atan2f(orientation.x, orientation.z);
+		yaw = atan2f(orientation.x, orientation.z);
 		pitch = asinf(std::clamp(orientation.y, -1.f, 1.f));   
 		init = true;
 	}
@@ -139,7 +139,9 @@ void Camera::move(float forward, float right, float up)
 
 /*======== SETTERS AND GETTERS ========*/
 
-t_f4 Camera::getPosition(void) const {return position;}
+t_f4 Camera::getPosition(void) const {
+	return position;
+}
 void Camera::setViewPort(int w, int h) {
 	width = w;
 	height = h;

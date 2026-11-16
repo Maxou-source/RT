@@ -100,29 +100,15 @@ void World::printIntersection()
 	}
 }
 
-bool loadImage(const std::string& path, Image& out)
-{
-	int channels;
-	unsigned char* d = stbi_load(path.c_str(), &out.w, &out.h, &channels, 4);  // force RGBA
-	if (!d)
-	{
-		std::cerr << "KO:: cannot load " << path << std::endl;
-		return false;
-	}
-	out.px.assign(d, d + (size_t)out.w * out.h * 4);
-	stbi_image_free(d);
-	return true;
-}
-
 int World::registerTexture(const std::string& path)
 {
 	auto it = textureIndex.find(path);
 	if (it != textureIndex.end())
-		return it->second;                     // already loaded: share the layer
+		return it->second;
 
 	int w, h, channels;
 	std::cout << "path" << path << std::endl;
-	unsigned char* src = stbi_load(path.c_str(), &w, &h, &channels, 4);   // force RGBA
+	unsigned char* src = stbi_load(path.c_str(), &w, &h, &channels, 4);
 	if (!src)
 	{
 		std::cerr << "KO:: cannot load texture " << path << std::endl;
@@ -135,7 +121,8 @@ int World::registerTexture(const std::string& path)
 
 	img.px.resize(w * h * 4);
 	memcpy(img.px.data(), src, w * h * 4);
-	
+
+	stbi_image_free(src);
 	// assert(img.px.size() == TEX_SIZE * TEX_SIZE * 4);
 	textures.push_back(std::move(img));
 	int layer = (int)textures.size() - 1;

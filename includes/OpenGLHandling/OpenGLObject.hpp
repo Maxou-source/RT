@@ -1,14 +1,11 @@
 #pragma once 
 #include "rt.hpp"
-#include <glad/glad.h>   // must be included BEFORE glfw3.h
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <chrono>
 #include "GpuObjects.hpp"
 #include "Texture.hpp"
 #include "World.hpp"
-
-// #define STB_IMAGE_IMPLEMENTATION
-// #include "stb_image.h"
 
 struct Movements {
 	float fwd = 0;
@@ -20,20 +17,28 @@ struct Movements {
 };
 
 struct Time {
-	double	last;
-	float	now;
+	double	last = 0.0;
+	double	now = 0.0;
 };
 
 class OpenGLObject
 {
 	public:
 		OpenGLObject();
-		bool Whatever();
-		
+		~OpenGLObject();
+
+		// error handling
+		bool CheckGLError(const char* operation);
+
+
+		bool LinkComputeProgram();
 		bool SetComputeShader(const std::string& rootFile);
 		void CreateOutputTexture(int w, int h);
 
 		void handleResize();
+		void handleMovements();
+		void handleChange();
+		void Render();
 
 		// upload data
 		bool UploadScene(const GpuScene& scene);
@@ -54,15 +59,6 @@ class OpenGLObject
 		unsigned int getComputeShader() const;
 		void setComputeShader(unsigned int);
 
-		unsigned int getVBO() const;
-		void setVBO(unsigned int);
-
-		unsigned int getEBO() const;
-		void setEBO(unsigned int);
-
-		unsigned int getVAO() const;
-		void setVAO(unsigned int);
-
 		unsigned int getDebugSSBO() const;
 		void setDebugSSBO(unsigned int);
 
@@ -74,10 +70,6 @@ class OpenGLObject
 		GLuint getUbo(void) const;
 		GLuint getReadFBO() const {return readFBO;}
 
-		void handleMovements();
-		void handleChange();
-		void Render();
-	
 		private:
 			// OPENGL stuff
 			GLuint outTex  = 0;

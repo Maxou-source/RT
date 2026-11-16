@@ -29,8 +29,8 @@ class Camera : public IParsable {
 		float pitch;
 
 		// actual height needed to update camera for resize
-		int width;
-		int height;
+		int width = 0.0;
+		int height = 0.0;
 	public:
 		
 		bool setProperty(const std::string& key, const std::string& val) override;

@@ -13,7 +13,7 @@ class Parse {
 		World						*w;
 		std::vector<std::string>	lines;
 	public:
-		Parse();
+		explicit Parse(World *);
 		bool parseFileAndName(const char *);
 		std::vector<std::string>	parseContent(std::ifstream *fileStream);
 

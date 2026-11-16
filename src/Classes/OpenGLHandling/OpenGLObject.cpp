@@ -14,17 +14,17 @@
 OpenGLObject::OpenGLObject()
 {
 	glfwSetErrorCallback([](int code, const char* desc) {
-	std::cerr << "GLFW error " << code << ": " << desc << std::endl;
+		std::cerr << "GLFW error " << code << ": " << desc << std::endl;
 	});
 
+	// setting up graphic stuff
 	if (!glfwInit())
 	{
 		std::cerr << "Failed to init GLFW" << std::endl;
-		return ;
+		throw ;
 	}
-	// setting up graphic stuff
 
-	// Request an OpenGL 4.3+ core context (compute shaders need 4.3 minimum)
+	// Request a window
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -52,76 +52,105 @@ OpenGLObject::OpenGLObject()
 
 	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 	
-	GLenum err = glGetError();
-	if (err != GL_NO_ERROR)
-	{
-		std::cout << "constructor" << std::endl;
-		std::cerr << "KO:: GL error 0x" << std::dec << err << std::dec
-		          << " while actructive	 uploading textures" << std::endl;
-		const GLubyte* errorString = gluErrorString(err);
-    	printf("OpenGL Error: %s\n", errorString);
-		exit(1);
-	}
+	if (CheckGLError("Initialising OpenGLObkject"))
+		return ;
 	time.last = glfwGetTime();
 }
 
 bool OpenGLObject::SetComputeShader(const std::string& rootfile)
 {
-    ShaderLoader loader;
-    std::string source;
+	ShaderLoader loader;
+	std::string source;
 
-    if (!loader.load(rootfile, {
-        {"MAX_OBJECTS", std::to_string(MAX_OBJECTS)},
-        {"MAX_LIGHTS", std::to_string(MAX_LIGHTS)},
-        {"EPSILON", std::to_string(EPSILON)},
-        {"OBJ_SPHERE", std::to_string((int)ObjectId::SPHERE)},
-        {"OBJ_CYLINDER", std::to_string((int)ObjectId::CYLINDER)},
-        {"OBJ_CUBE", std::to_string((int)ObjectId::CUBE)},
-        {"OBJ_TORUS", std::to_string((int)ObjectId::TORUS)},
-        {"OBJ_PLANE", std::to_string((int)ObjectId::PLANE)},
-        {"OBJ_CONE", std::to_string((int)ObjectId::CONE)},
-        {"OBJ_PARABOLOID", std::to_string((int)ObjectId::PARABOLOID)},
-        {"NO_PATTERN", std::to_string((int)PatternType::NO_PATTERN)},
-        {"STRIPE", std::to_string((int)PatternType::STRIPE)},
-        {"CHECKER", std::to_string((int)PatternType::CHECKER)},
-        {"GRADIENT", std::to_string((int)PatternType::GRADIENT)},
-        {"RING", std::to_string((int)PatternType::RING)},
-        {"PERLIN", std::to_string((int)PatternType::PERLIN)},
-        {"DIRECTIONAL", std::to_string((int)LightType::DIRECTIONAL)},
-        {"POSITIONAL", std::to_string((int)LightType::POSITIONAL)},
-        {"CSG_UNION", std::to_string((int)ObjectId::CSG_UNION)},
-        {"CSG_DIFFERENCE", std::to_string((int)ObjectId::CSG_DIFFERENCE)},
-        {"CSG_INTERSECT", std::to_string((int)ObjectId::CSG_INTERSECT)},
-    }, source))
-        return false;
+	if (!loader.load(rootfile, {
+		{"MAX_OBJECTS", std::to_string(MAX_OBJECTS)},
+		{"MAX_LIGHTS", std::to_string(MAX_LIGHTS)},
+		{"EPSILON", std::to_string(EPSILON)},
+		{"OBJ_SPHERE", std::to_string((int)ObjectId::SPHERE)},
+		{"OBJ_CYLINDER", std::to_string((int)ObjectId::CYLINDER)},
+		{"OBJ_CUBE", std::to_string((int)ObjectId::CUBE)},
+		{"OBJ_TORUS", std::to_string((int)ObjectId::TORUS)},
+		{"OBJ_PLANE", std::to_string((int)ObjectId::PLANE)},
+		{"OBJ_CONE", std::to_string((int)ObjectId::CONE)},
+		{"OBJ_PARABOLOID", std::to_string((int)ObjectId::PARABOLOID)},
+		{"NO_PATTERN", std::to_string((int)PatternType::NO_PATTERN)},
+		{"STRIPE", std::to_string((int)PatternType::STRIPE)},
+		{"CHECKER", std::to_string((int)PatternType::CHECKER)},
+		{"GRADIENT", std::to_string((int)PatternType::GRADIENT)},
+		{"RING", std::to_string((int)PatternType::RING)},
+		{"PERLIN", std::to_string((int)PatternType::PERLIN)},
+		{"DIRECTIONAL", std::to_string((int)LightType::DIRECTIONAL)},
+		{"POSITIONAL", std::to_string((int)LightType::POSITIONAL)},
+		{"CSG_UNION", std::to_string((int)ObjectId::CSG_UNION)},
+		{"CSG_DIFFERENCE", std::to_string((int)ObjectId::CSG_DIFFERENCE)},
+		{"CSG_INTERSECT", std::to_string((int)ObjectId::CSG_INTERSECT)},
+	}, source))
+		return false;
 
-    computeShader = glCreateShader(GL_COMPUTE_SHADER);
+	computeShader = glCreateShader(GL_COMPUTE_SHADER);
 
-    const char* src = source.c_str();
-    glShaderSource(computeShader, 1, &src, nullptr);
-    glCompileShader(computeShader);
+	const char* src = source.c_str();
+	glShaderSource(computeShader, 1, &src, nullptr);
+	glCompileShader(computeShader);
 
-    GLint success = GL_FALSE;
-    glGetShaderiv(computeShader, GL_COMPILE_STATUS, &success);
+	GLint success = GL_FALSE;
+	glGetShaderiv(computeShader, GL_COMPILE_STATUS, &success);
 
-    if (!success)
-    {
-        GLint length = 0;
-        glGetShaderiv(computeShader, GL_INFO_LOG_LENGTH, &length);
+	if (!success)
+	{
+		GLint length = 0;
+		glGetShaderiv(computeShader, GL_INFO_LOG_LENGTH, &length);
 
-        std::vector<char> log(length);
-        glGetShaderInfoLog(computeShader, length, nullptr, log.data());
+		std::vector<char> log(length);
+		glGetShaderInfoLog(computeShader, length, nullptr, log.data());
 
-        std::cerr << "COMPUTE SHADER COMPILATION FAILED:\n"
-                  << log.data() << std::endl;
+		std::cerr << "COMPUTE SHADER COMPILATION FAILED:\n"
+				  << log.data() << std::endl;
 
+		glDeleteShader(computeShader);
+		computeShader = 0;
+		return false;
+	}
+
+	if (!CheckGLError("glCompileShader"))
+		return false;
+	std::cout << "Compute shader compiled successfully!" << std::endl;
+	return true;
+}
+
+OpenGLObject::~OpenGLObject()
+{
+    if (window)
+        glfwMakeContextCurrent(window);
+
+    if (computeShader)
         glDeleteShader(computeShader);
-        computeShader = 0;
-        return false;
+
+    if (computeProgram)
+        glDeleteProgram(computeProgram);
+
+    if (debugSSBO)
+        glDeleteBuffers(1, &debugSSBO);
+
+    if (ubo)
+        glDeleteBuffers(1, &ubo);
+
+    if (texArray)
+        glDeleteTextures(1, &texArray);
+
+    if (outTex)
+        glDeleteTextures(1, &outTex);
+
+    if (readFBO)
+        glDeleteFramebuffers(1, &readFBO);
+
+    if (window)
+    {
+        glfwDestroyWindow(window);
+        window = nullptr;
     }
 
-    std::cout << "Compute shader compiled successfully!" << std::endl;
-    return true;
+    glfwTerminate();
 }
 
 void OpenGLObject::handleResize() {
@@ -163,7 +192,7 @@ void OpenGLObject::CreateOutputTexture(int w, int h)
 		glGenFramebuffers(1, &readFBO);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, readFBO);
 	glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-	                       GL_TEXTURE_2D, outTex, 0);
+						   GL_TEXTURE_2D, outTex, 0);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	
 	if (glCheckFramebufferStatus(GL_READ_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -173,187 +202,186 @@ void OpenGLObject::CreateOutputTexture(int w, int h)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-bool OpenGLObject::Whatever()
+bool OpenGLObject::LinkComputeProgram()
 {
-    computeProgram = glCreateProgram();
+	computeProgram = glCreateProgram();
 
-    glAttachShader(computeProgram, computeShader);
-    glLinkProgram(computeProgram);
+	glAttachShader(computeProgram, computeShader);
+	glLinkProgram(computeProgram);
 
-    GLint success = GL_FALSE;
-    glGetProgramiv(computeProgram, GL_LINK_STATUS, &success);
+	GLint success = GL_FALSE;
+	glGetProgramiv(computeProgram, GL_LINK_STATUS, &success);
 
-    if (!success)
-    {
-        GLint length = 0;
-        glGetProgramiv(computeProgram, GL_INFO_LOG_LENGTH, &length);
+	if (!success)
+	{
+		GLint length = 0;
+		glGetProgramiv(computeProgram, GL_INFO_LOG_LENGTH, &length);
 
-        std::vector<char> log(length);
-        glGetProgramInfoLog(computeProgram, length, nullptr, log.data());
+		std::vector<char> log(length);
+		glGetProgramInfoLog(computeProgram, length, nullptr, log.data());
 
-        std::cerr << "COMPUTE PROGRAM LINK FAILED:\n"
-                  << log.data() << std::endl;
+		std::cerr << "COMPUTE PROGRAM LINK FAILED:\n"
+				  << log.data() << std::endl;
 
-        glDeleteProgram(computeProgram);
-        computeProgram = 0;
-        glDeleteShader(computeShader);
-        computeShader = 0;
+		glDeleteProgram(computeProgram);
+		computeProgram = 0;
+		glDeleteShader(computeShader);
+		computeShader = 0;
 
-        return false;
-    }
+		return false;
+	}
 
-    glDetachShader(computeProgram, computeShader);
-    glDeleteShader(computeShader);
-    computeShader = 0;
+	glDetachShader(computeProgram, computeShader);
+	glDeleteShader(computeShader);
+	computeShader = 0;
 
-    std::cout << "Compute program linked successfully!" << std::endl;
+	std::cout << "Compute program linked successfully!" << std::endl;
 
-    const int width = WIN_WIDTH;
-    const int height = WIN_HEIGHT;
-    const int numPixels = width * height;
+	const int width = WIN_WIDTH;
+	const int height = WIN_HEIGHT;
+	const int numPixels = width * height;
 
-    glGenBuffers(1, &debugSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, debugSSBO);
+	glGenBuffers(1, &debugSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, debugSSBO);
 
-    const int slotsPerPixel = 12;
+	const int slotsPerPixel = 12;
 
-    glBufferData(
-        GL_SHADER_STORAGE_BUFFER,
-        (size_t)numPixels * slotsPerPixel * sizeof(float) * 4,
-        nullptr,
-        GL_DYNAMIC_READ
-    );
+	glBufferData(
+		GL_SHADER_STORAGE_BUFFER,
+		(size_t)numPixels * slotsPerPixel * sizeof(float) * 4,
+		nullptr,
+		GL_DYNAMIC_READ
+	);
 
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, debugSSBO);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, debugSSBO);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-    return true;
+	return true;
 }
 
-bool CheckGLError(const char* operation)
+bool OpenGLObject::CheckGLError(const char* operation)
 {
-    GLenum err;
-    bool success = true;
+	GLenum err;
+	bool success = true;
 
-    while ((err = glGetError()) != GL_NO_ERROR)
-    {
-        std::cerr << "OpenGL error during "
-                  << operation << ": 0x"
-                  << std::hex << err << std::dec
-                  << " (" << gluErrorString(err) << ")"
-                  << std::endl;
+	while ((err = glGetError()) != GL_NO_ERROR)
+	{
+		std::cerr << "OpenGL error during "
+				  << operation << ": 0x"
+				  << std::hex << err << std::dec
+				  << " (" << gluErrorString(err) << ")"
+				  << std::endl;
+		success = false;
+	}
 
-        success = false;
-    }
-
-    return success;
+	return success;
 }
 
 bool OpenGLObject::UploadTextures(const std::vector<Image>& imgs)
 {
-    if (imgs.empty())
-        return true;
+	if (imgs.empty())
+		return true;
 
-    GLint maxLayers = 0;
-    glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxLayers);
+	GLint maxLayers = 0;
+	glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &maxLayers);
 
-    if (imgs.size() > (size_t)maxLayers)
-    {
-        std::cerr << "Too many texture layers!" << std::endl;
-        return false;
-    }
+	if (imgs.size() > (size_t)maxLayers)
+	{
+		std::cerr << "Too many texture layers!" << std::endl;
+		return false;
+	}
 
-    // All images must have identical dimensions
-    int width = imgs[0].w;
-    int height = imgs[0].h;
+	// All images must have identical dimensions
+	int width = imgs[0].w;
+	int height = imgs[0].h;
 
-    if (width <= 0 || height <= 0)
-        return false;
+	if (width <= 0 || height <= 0)
+		return false;
 
-    for (const auto& img : imgs)
-    {
-        if (img.w != width || img.h != height)
-        {
-            std::cerr << "Inconsistent texture dimensions!" << std::endl;
-            return false;
-        }
+	for (const auto& img : imgs)
+	{
+		if (img.w != width || img.h != height)
+		{
+			std::cerr << "Inconsistent texture dimensions!" << std::endl;
+			return false;
+		}
 
-        if (img.px.size() != (size_t)width * height * 4)
-        {
-            std::cerr << "Invalid RGBA pixel buffer!" << std::endl;
-            return false;
-        }
-    }
+		if (img.px.size() != (size_t)width * height * 4)
+		{
+			std::cerr << "Invalid RGBA pixel buffer!" << std::endl;
+			return false;
+		}
+	}
 
-    // Calculate mipmap levels
-    int levels = 1 + (int)std::floor(
-        std::log2(std::max(width, height))
-    );
+	// Calculate mipmap levels
+	int levels = 1 + (int)std::floor(
+		std::log2(std::max(width, height))
+	);
 
-    if (texArray)
-        glDeleteTextures(1, &texArray);
+	if (texArray)
+		glDeleteTextures(1, &texArray);
 
-    glGenTextures(1, &texArray);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, texArray);
+	glGenTextures(1, &texArray);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, texArray);
 
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    glTexStorage3D(
-        GL_TEXTURE_2D_ARRAY,
-        levels,
-        GL_SRGB8_ALPHA8,
-        width,
-        height,
-        (GLsizei)imgs.size()
-    );
+	glTexStorage3D(
+		GL_TEXTURE_2D_ARRAY,
+		levels,
+		GL_SRGB8_ALPHA8,
+		width,
+		height,
+		(GLsizei)imgs.size()
+	);
 
-    for (size_t i = 0; i < imgs.size(); i++)
-    {
-        glTexSubImage3D(
-            GL_TEXTURE_2D_ARRAY,
-            0,
-            0, 0, (GLint)i,
-            width, height, 1,
-            GL_RGBA,
-            GL_UNSIGNED_BYTE,
-            imgs[i].px.data()
-        );
-    }
+	for (size_t i = 0; i < imgs.size(); i++)
+	{
+		glTexSubImage3D(
+			GL_TEXTURE_2D_ARRAY,
+			0,
+			0, 0, (GLint)i,
+			width, height, 1,
+			GL_RGBA,
+			GL_UNSIGNED_BYTE,
+			imgs[i].px.data()
+		);
+	}
 
-    glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
+	glGenerateMipmap(GL_TEXTURE_2D_ARRAY);
 
-    glTexParameteri(GL_TEXTURE_2D_ARRAY,
-                    GL_TEXTURE_MIN_FILTER,
-                    GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY,
+					GL_TEXTURE_MIN_FILTER,
+					GL_LINEAR_MIPMAP_LINEAR);
 
-    glTexParameteri(GL_TEXTURE_2D_ARRAY,
-                    GL_TEXTURE_MAG_FILTER,
-                    GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY,
+					GL_TEXTURE_MAG_FILTER,
+					GL_LINEAR);
 
-    glTexParameteri(GL_TEXTURE_2D_ARRAY,
-                    GL_TEXTURE_WRAP_S,
-                    GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY,
+					GL_TEXTURE_WRAP_S,
+					GL_REPEAT);
 
-    glTexParameteri(GL_TEXTURE_2D_ARRAY,
-                    GL_TEXTURE_WRAP_T,
-                    GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D_ARRAY,
+					GL_TEXTURE_WRAP_T,
+					GL_CLAMP_TO_EDGE);
 
-    glUseProgram(computeProgram);
+	glUseProgram(computeProgram);
 
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, texArray);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, texArray);
 
-    GLint loc = glGetUniformLocation(computeProgram, "textures");
+	GLint loc = glGetUniformLocation(computeProgram, "textures");
 
-    if (loc == -1)
-    {
-        std::cerr << "Texture uniform not found!" << std::endl;
-        return false;
-    }
+	if (loc == -1)
+	{
+		std::cerr << "Texture uniform not found!" << std::endl;
+		return false;
+	}
 
-    glUniform1i(loc, 0);
+	glUniform1i(loc, 0);
 
-    return CheckGLError("UploadTextures");
+	return CheckGLError("UploadTextures");
 }
 
 bool OpenGLObject::UploadScene(const GpuScene& scene)
@@ -364,7 +392,7 @@ bool OpenGLObject::UploadScene(const GpuScene& scene)
 		glGenBuffers(1, &ubo);
 		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(GpuScene),
-		             &scene, GL_DYNAMIC_DRAW);
+					 &scene, GL_DYNAMIC_DRAW);
 		GLuint idx = glGetUniformBlockIndex(computeProgram, "Scene");
 		glUniformBlockBinding(computeProgram, idx, 0);
 		glBindBufferBase(GL_UNIFORM_BUFFER, 0, ubo);
@@ -389,7 +417,7 @@ bool OpenGLObject::UploadWorld(World *w) {
 	if (!w->resolveTextures())
 		return false;
 
-	world = w;
+	// world = w;
 	cam = w->getCamera();
 
 	// building the GpuScene
@@ -402,7 +430,7 @@ bool OpenGLObject::UploadWorld(World *w) {
 	// uploading it raw to GPU
 	if (!UploadScene(gpuS))
 		return false;
-	if (!UploadTextures(w->getTextures()))      // GPU array + sampler uniform
+	if (!UploadTextures(w->getTextures()))
 		return false;
 	needsRender = true;
 	return true;
@@ -411,8 +439,10 @@ bool OpenGLObject::UploadWorld(World *w) {
 
 void OpenGLObject::handleMovements()
 {
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
 	time.now = glfwGetTime();
-	float  dt  = std::min(float(time.now - time.last), 0.05f);   // clamp spikes
+	float  dt  = std::min(float(time.now - time.last), 0.05f);
 		time.last = time.now;
 	float step = baseSpeed * speedMul * dt;
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) mov.fwd += step;
@@ -425,7 +455,7 @@ void OpenGLObject::handleMovements()
 	float turnSpeed = 1.5f;
 	if (glfwGetKey(window, GLFW_KEY_LEFT)  == GLFW_PRESS) mov.dYaw   -= turnSpeed * dt;
 	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) mov.dYaw   += turnSpeed * dt;
-	if (glfwGetKey(window, GLFW_KEY_UP)    == GLFW_PRESS) mov.dPitch += turnSpeed * dt;
+	if (glfwGetKey(window, GLFW_KEY_UP)	== GLFW_PRESS) mov.dPitch += turnSpeed * dt;
 	if (glfwGetKey(window, GLFW_KEY_DOWN)  == GLFW_PRESS) mov.dPitch -= turnSpeed * dt;
 }
 
@@ -450,7 +480,7 @@ void OpenGLObject::handleChange()
 
 void OpenGLObject::Render()
 {
-	if (changed || needsRender)                        // skip if nothing moved
+	if (changed || needsRender)
 	{
 		glUseProgram(computeProgram);
 		glDispatchCompute((actualWidth + 7) / 8, (actualHeight + 7) / 8, 1);
@@ -469,50 +499,50 @@ void OpenGLObject::Render()
 
 
 const char* OpenGLObject::getInfoLog() const {
-    return infoLog;
+	return infoLog;
 }
 
 void OpenGLObject::setInfoLog(const char* log) {
-    if (log != nullptr) {
-        strncpy(infoLog, log, sizeof(infoLog) - 1);
-        infoLog[sizeof(infoLog) - 1] = '\0';
-    }
+	if (log != nullptr) {
+		strncpy(infoLog, log, sizeof(infoLog) - 1);
+		infoLog[sizeof(infoLog) - 1] = '\0';
+	}
 }
 
 // fragmentShader getters and setters
 unsigned int OpenGLObject::getComputeShader() const {
-    return computeShader;
+	return computeShader;
 }
 
 void OpenGLObject::setComputeShader(unsigned int shader) {
-    computeShader = shader;
+	computeShader = shader;
 }
 
 // shaderProgram getters and setters
 unsigned int OpenGLObject::getComputeProgram() const {
-    return computeProgram;
+	return computeProgram;
 }
 
 void OpenGLObject::setComputeProgram(unsigned int program) {
-    computeProgram = program;
+	computeProgram = program;
 }
 
 // debugSSBO getters and setters
 unsigned int OpenGLObject::getDebugSSBO() const {
-    return debugSSBO;
+	return debugSSBO;
 }
 
 void OpenGLObject::setDebugSSBO(unsigned int ssbo) {
-    debugSSBO = ssbo;
+	debugSSBO = ssbo;
 }
 
 // window getters and setters
 GLFWwindow* OpenGLObject::getWindow() const {
-    return window;
+	return window;
 }
 
 void OpenGLObject::setWindow(GLFWwindow* win) {
-    window = win;
+	window = win;
 }
 
 void OpenGLObject::setUbo(GLuint gl) {
