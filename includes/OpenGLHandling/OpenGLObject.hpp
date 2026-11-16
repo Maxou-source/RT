@@ -2,25 +2,47 @@
 #include "rt.hpp"
 #include <glad/glad.h>   // must be included BEFORE glfw3.h
 #include <GLFW/glfw3.h>
+#include <chrono>
 #include "GpuObjects.hpp"
 #include "Texture.hpp"
+#include "World.hpp"
 
 // #define STB_IMAGE_IMPLEMENTATION
 // #include "stb_image.h"
 
+struct Movements {
+	float fwd = 0;
+	float rgt = 0;
+	float upw = 0;
+
+	float dYaw = 0;
+	float dPitch = 0;
+};
+
+struct Time {
+	double	last;
+	float	now;
+};
 
 class OpenGLObject
 {
 	public:
 		OpenGLObject();
-		bool SetVertexShader();
-		bool SetFragmentShader(const std::string& rootFile);
+		bool Whatever();
+		
 		bool SetComputeShader(const std::string& rootFile);
 		void CreateOutputTexture(int w, int h);
-		void UploadScene(const GpuScene& scene);
+
+		void handleResize();
+
+		// upload data
+		bool UploadScene(const GpuScene& scene);
 		void UploadCamera(const GpuScene& scene);
+		bool UploadWorld(World *w);
 		bool UploadTextures(const std::vector<Image>& imgs);
-		bool Whatever();
+		
+		// update camera
+		void UpdateCamera();
 
 		// Setters and getters
 		unsigned int getComputeProgram() const;
@@ -28,9 +50,6 @@ class OpenGLObject
 
 		const char* getInfoLog() const;
 		void setInfoLog(const char*);
-
-		unsigned int getVertexShader() const;
-		void setVertexShader(unsigned int);
 
 		unsigned int getComputeShader() const;
 		void setComputeShader(unsigned int);
@@ -54,37 +73,43 @@ class OpenGLObject
 
 		GLuint getUbo(void) const;
 		GLuint getReadFBO() const {return readFBO;}
+
+		void handleMovements();
+		void handleChange();
+		void Render();
 	
 		private:
-		GLuint outTex  = 0;
-		GLuint readFBO = 0;
-		GLuint texArray = 0;
-		char infoLog[512];
-		unsigned int vertexShader;
-		// unsigned int fragmentShader;
-		unsigned int computeShader;
+			// OPENGL stuff
+			GLuint outTex  = 0;
+			GLuint readFBO = 0;
+			GLuint texArray = 0;
+			char infoLog[512];
+			GLuint computeShader;
+			GLuint computeProgram;
+			GLuint debugSSBO;
+			GLuint ubo = 0;
 
-		// unsigned int shaderProgram;
-		unsigned int computeProgram;
+			GLFWwindow*	window;
 
-		// unsigned int VBO;
-		// unsigned int EBO;
+			// time
+			Time		time;
 
-		// unsigned int VAO;
-		unsigned int debugSSBO;
+			// movements handle
+			Movements	mov;
+			
+			// WORLD
+			// movement factors
+			GpuScene	gpuS;
+			World		*world;
+			Camera		cam;
+			float		baseSpeed;
+			float		speedMul;
 
-		unsigned int ubo = 0;
+			// actual size of the window
+			int			actualHeight;
+			int			actualWidth;
 
-		GLFWwindow* window;
+			bool		needsRender;
+			bool		changed = false;
 
-		static constexpr float vertices[12] = {
-			1.0f,  1.0f, 0.0f,  // top right
-			1.0f, -1.0f, 0.0f,  // bottom right
-			-1.0f, -1.0f, 0.0f,  // bottom left
-			-1.0f,  1.0f, 0.0f   // top left 
-		};
-		static constexpr unsigned int indices[6] = {  // note that we start from 0!
-			0, 1, 3,   // first triangle
-			1, 2, 3    // second triangle
-		};
 };

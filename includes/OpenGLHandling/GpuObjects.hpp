@@ -69,7 +69,7 @@ static_assert(sizeof(GpuLight) == 48, "GpuLight must be 48 bytes");
 
 struct GpuCamera {
 	t_m4	inv_transform;
-	float	half_width, half_height, pixel_size, _pad0 = 0;
+	float	half_width, half_height, pixel_size, half_view;
 };
 
 struct GpuScene

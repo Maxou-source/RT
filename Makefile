@@ -8,13 +8,6 @@ NAME				=	RT
 #					COMPILATION						#
  #=================================================#
 
-# CC					=	clang++
-
-# FLAGS				=	$(DBFLAGS) $(CFLAGS) $(INCLUDES_FLAGED) $(CDFLAGS)
-
-# PKG_CONFIG = pkg-config
-# CFLAGS				=	-gdwarf-4 -Wall -Wextra -Werror $(shell $(PKG_CONFIG) --cflags xcb) -fenable-matrix -lglfw -lGL -ldl -lpthread#-std=c++98 #-fsanitize=address 
-# LDFLAGS = $(shell $(PKG_CONFIG) --libs xcb)
 CC					=	clang++
 CC_C				=   clang
 
@@ -64,7 +57,7 @@ INCLUDES			=	$(INCLUDE_DIR) \
 							)
 
 SRC_FILES_CPP			=	$(addprefix $(SRC_DIR), \
-						maintest.cpp \
+						main.cpp \
 						$(SRC_CLASSES) \
 						)
 

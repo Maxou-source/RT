@@ -33,10 +33,10 @@ void	Camera::rayForPixel(int px, int py, Ray *r) {
 	r->setDirection(Tuple::normalize(pixel - r->getOrigin()));
 }
 
-Camera::Camera(unsigned int shaderProgram, const Tuple& pov, const Tuple& orient, float f) {
-	half_view = (f * PI) / 180.0;
-	float aspect_ratio = (float)WIN_WIDTH / (float)WIN_HEIGHT;
-	std::cout << "aspect _ratio "  << aspect_ratio << std::endl;
+void Camera::updateSize(int actualWidth, int actualHeight)
+{
+	half_view = (fov * PI) / 180.0;
+	float aspect_ratio = (float)actualWidth / (float)actualHeight;
 	if (aspect_ratio >= 1)
 	{
 		half_width = half_view;
@@ -47,28 +47,10 @@ Camera::Camera(unsigned int shaderProgram, const Tuple& pov, const Tuple& orient
 		half_width = half_view * aspect_ratio;
 		half_height = half_view;
 	}
-	pixel_size = (half_width * 2) / (float)WIN_WIDTH;
-	std::cout << "(FROM CPU) half_view = " << half_width << std::endl;
-	std::cout << "(FROM CPU) pixel_size = " << pixel_size << std::endl;
-
-	transform = Matrix::view_transform(pov,
-			Tuple::normalize(orient), Tuple(0, 1, 0, 0));
-
-	inv_transform = transform.invertedMatrix();
-
-	glUniform1f(glGetUniformLocation(shaderProgram, "cam.half_view"), half_view);
-	glUniform1f(glGetUniformLocation(shaderProgram, "cam.half_height"), half_height);
-	glUniform1f(glGetUniformLocation(shaderProgram, "cam.half_width"), half_width);
-	glUniform1f(glGetUniformLocation(shaderProgram, "cam.pixel_size"), pixel_size);
-
-	auto matmat = transform.getMatrix();
-	auto invmat = inv_transform.getMatrix();
-	std::cout << colorprint::green << "(FROM CPU) pov : " << colorprint::reset << pov << std::endl;
-	std::cout << colorprint::green << "(FROM CPU) orientation : " << colorprint::reset << orient << std::endl;
-	transform.display();
-	inv_transform.display();
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "cam.transform"),1, GL_TRUE, (float *)(&matmat) );
-	glUniformMatrix4fv(glGetUniformLocation(shaderProgram, "cam.inv_transform"),1, GL_TRUE, (float *)(&invmat) );
+	pixel_size = (half_width * 2) / (float)actualWidth;
+	transform = Matrix::view_transform(position,
+		Tuple::normalize(orientation), Tuple(0, 1, 0, 0));
+		inv_transform = transform.invertedMatrix().transpose();
 }
 
 void Camera::print() const
@@ -95,36 +77,9 @@ void Camera::rotate(float dYaw, float dPitch)
 	preBuild();
 }
 
-
-Camera::Camera(const Tuple& pov, const Tuple& orient, float f) {
-	half_view = (f * PI) / 180.0;
-	float aspect_ratio = WIN_WIDTH / WIN_HEIGHT;
-	if (aspect_ratio >= 1)
-	{
-		half_width = half_view;
-		half_height = half_view / aspect_ratio;
-	}
-	else
-	{
-		half_width = half_view * aspect_ratio;
-		half_height = half_view;
-	}
-	pixel_size = (half_width * 2) / WIN_WIDTH;
-	std::cout << colorprint::green << "CAMERA (CPU)" << colorprint::reset << std::flush;
-	std::cout << " half_width: " << half_width << std::flush;
-	std::cout << " half_height: " << half_height << std::flush;
-	std::cout << " half_view: " << half_view << std::flush;
-	std::cout << " pixel_size: " << pixel_size << std::endl;
-	transform = Matrix::view_transform(pov,
-			Tuple::normalize(orient), Tuple(0, 1, 0, 0));
-	inv_transform = transform.invertedMatrix();
-	transform.display();
-	inv_transform.display();
-}
-
 bool Camera::preBuild() {
 	half_view = (fov * PI) / 180.0;
-	float aspect_ratio = (float)WIN_WIDTH / (float)WIN_HEIGHT;
+	float aspect_ratio = (float)width / (float)height;
 	if (aspect_ratio >= 1)
 	{
 		half_width = half_view;
@@ -135,7 +90,7 @@ bool Camera::preBuild() {
 		half_width = half_view * aspect_ratio;
 		half_height = half_view;
 	}
-	pixel_size = (half_width * 2) / (float)WIN_WIDTH;
+	pixel_size = (half_width * 2) / (float)width;
 	transform = Matrix::view_transform(position,
 		Tuple::normalize(orientation), Tuple(0, 1, 0, 0));
 		inv_transform = transform.invertedMatrix().transpose();
@@ -155,6 +110,7 @@ bool Camera::packIntoGpuScene(GpuScene& s) const
 	s.cam.half_width = half_width;
 	s.cam.half_height = half_height;
 	s.cam.pixel_size = pixel_size;
+	s.cam.half_view = half_view;
 	return true;
 }
 
@@ -179,4 +135,12 @@ void Camera::move(float forward, float right, float up)
 	Tuple pos = (f * forward + r * right + u * up) + position;
 	position = pos.getValue();
 	preBuild();                                              // rebuild the view matrix
+}
+
+/*======== SETTERS AND GETTERS ========*/
+
+t_f4 Camera::getPosition(void) const {return position;}
+void Camera::setViewPort(int w, int h) {
+	width = w;
+	height = h;
 }

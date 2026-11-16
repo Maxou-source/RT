@@ -121,6 +121,7 @@ bool	Parse::getBase()
 			if (!blockResult) {
 				return false;
 			}
+			objCamera.setViewPort(WIN_WIDTH, WIN_HEIGHT);
 			objCamera.preBuild();
 			continue ;
 		}

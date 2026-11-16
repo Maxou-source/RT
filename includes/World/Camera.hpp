@@ -27,6 +27,10 @@ class Camera : public IParsable {
 
 		float yaw;
 		float pitch;
+
+		// actual height needed to update camera for resize
+		int width;
+		int height;
 	public:
 		
 		bool setProperty(const std::string& key, const std::string& val) override;
@@ -34,24 +38,24 @@ class Camera : public IParsable {
 		const char * typeString() const override;
 		bool preBuild() override;
 		bool packIntoGpuScene(GpuScene& s) const override;
-		void rotate(float dYaw, float dPitch);
-	// Constructors and Destructors 
-		Camera();
-		Camera(unsigned int shaderProgram, const Tuple&, const Tuple&, float );
-		Camera(const Tuple& pov, const Tuple& orient, float f);
-		void print() const;
-		void move(float forward, float right, float up);
 		bool repeatableSubBlock() const override {return false;}
+		// Constructors and Destructors 
+		Camera();
+		void print() const;
+
+		// update
+		void updateSize(int, int);
+		void move(float forward, float right, float up);
+		void rotate(float dYaw, float dPitch);
 
 	// Methods
 		void	rayForPixel(int px, int py, Ray *r);
 
 		void	setOpenGlObject();
 
-		// bool	buildMatrix() override;
-
 	// getters and setters
-		t_f4 getPosition(void) const {return position;}
+		t_f4 getPosition(void) const;
+		void setViewPort(int, int);
 };
 
 #endif

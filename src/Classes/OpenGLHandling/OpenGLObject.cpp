@@ -3,14 +3,13 @@
 #include "ShaderLoader.hpp"
 #include "Texture.hpp"
 #include "Light.hpp"
+#include <algorithm>
 #include <string.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <cmath>
 #include <GL/glu.h>
-constexpr float OpenGLObject::vertices[12];
-constexpr unsigned int OpenGLObject::indices[6];
 
 OpenGLObject::OpenGLObject()
 {
@@ -37,6 +36,7 @@ OpenGLObject::OpenGLObject()
 		return ;
 	}
 
+	glfwGetFramebufferSize(window, &actualWidth, &actualHeight);
 	glfwMakeContextCurrent(window);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -48,32 +48,10 @@ OpenGLObject::OpenGLObject()
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(0); 
 
+	CreateOutputTexture(actualWidth, actualHeight);
+
 	std::cout << "OpenGL version: " << glGetString(GL_VERSION) << std::endl;
 	
-	float vertices[] = {
-		1.0f,  1.0f, 0.0f,  // top right
-		1.0f, -1.0f, 0.0f,  // bottom right
-	   -1.0f, -1.0f, 0.0f,  // bottom left
-	   -1.0f,  1.0f, 0.0f   // top left 
-	};
-	unsigned int indices[] = {  // note that we start from 0!
-	   0, 1, 3,   // first triangle
-	   1, 2, 3    // second triangle
-	};
-	// glGenVertexArrays(1, &VAO);
-	// glBindVertexArray(VAO);
-
-	// glGenBuffers(1, &VBO);  
-	// glBindBuffer(GL_ARRAY_BUFFER, VBO); 
-	// glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	// glEnableVertexAttribArray(0); 
-
-	// glGenBuffers(1, &EBO);
-	// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	// glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	GLenum err = glGetError();
 	if (err != GL_NO_ERROR)
 	{
@@ -84,44 +62,8 @@ OpenGLObject::OpenGLObject()
     	printf("OpenGL Error: %s\n", errorString);
 		exit(1);
 	}
+	time.last = glfwGetTime();
 }
-
-// bool OpenGLObject::SetVertexShader()
-// {
-// 	const char *vertexShaderSource = "#version 330 core\n"
-//     "layout (location = 0) in vec3 aPos;\n"
-//     "void main()\n"
-//     "{\n"
-//     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-//     "}\0";
-	
-// 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-// 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-// 	glCompileShader(vertexShader);
-
-// 	int  success;
-// 	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
-// 	if(!success)
-// 	{
-// 		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-// 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-// 		return false;
-// 	}
-// 	GLenum err = glGetError();
-// 	if (err != GL_NO_ERROR)
-// 	{
-// 		std::cout << "devut" << std::endl;
-// 		std::cerr << "KO:: GL error 0x" << std::dec << err << std::dec
-// 		          << " while actructive	 uploading textures" << std::endl;
-// 		const GLubyte* errorString = gluErrorString(err);
-//     	printf("OpenGL Error: %s\n", errorString);
-// 		exit(1);
-// 	}
-// 	return true;
-// }
-
 
 bool OpenGLObject::SetComputeShader(const std::string& rootfile)
 {
@@ -182,100 +124,54 @@ bool OpenGLObject::SetComputeShader(const std::string& rootfile)
     return true;
 }
 
+void OpenGLObject::handleResize() {
+	int nw, nh;
+	glfwGetFramebufferSize(window, &nw, &nh);
+	if (nw == 0 || nh == 0 || (nw == actualWidth && nh == actualHeight))
+		return;
+
+	actualWidth  = nw;
+	actualHeight = nh;
+	CreateOutputTexture(actualWidth, actualHeight);
+	UpdateCamera();
+}
+
+void OpenGLObject::UpdateCamera()
+{
+	cam.setViewPort(actualWidth, actualHeight);
+	cam.preBuild();
+	cam.packIntoGpuScene(gpuS);
+	UploadCamera(gpuS);
+	needsRender = true;
+}
+
 void OpenGLObject::CreateOutputTexture(int w, int h)
 {
-	// 1. free the old texture (resize case)
 	if (outTex)
 		glDeleteTextures(1, &outTex);
 
-	// 2. immutable storage, filled by the compute shader
 	glGenTextures(1, &outTex);
 	glBindTexture(GL_TEXTURE_2D, outTex);
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, w, h);
 
-	// 3. filtering (only matters if the blit scales)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	// 4. image unit 0, must match layout(rgba8, binding = 0) in the shader
 	glBindImageTexture(0, outTex, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA8);
 
-	// 5. FBO used to read the texture in glBlitFramebuffer
 	if (!readFBO)
 		glGenFramebuffers(1, &readFBO);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, readFBO);
 	glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
 	                       GL_TEXTURE_2D, outTex, 0);
-glReadBuffer(GL_COLOR_ATTACHMENT0);
-	// 6. completeness check
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	
 	if (glCheckFramebufferStatus(GL_READ_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		std::cerr << "KO:: read framebuffer is not complete" << std::endl;
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);   // leave the state clean
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
-
-// bool OpenGLObject::SetFragmentShader(const std::string& rootFile)
-// {
-// 	ShaderLoader loader;
-// 	std::string  source;
-
-// 	if (!loader.load(rootFile, {
-// 			{"MAX_OBJECTS",  std::to_string(MAX_OBJECTS)},
-// 			{"MAX_LIGHTS",   std::to_string(MAX_LIGHTS)},
-// 			{"EPSILON",   std::to_string(EPSILON)},
-// 			{"OBJ_SPHERE",   std::to_string((int)ObjectId::SPHERE)},
-// 			{"OBJ_CYLINDER", std::to_string((int)ObjectId::CYLINDER)},
-// 			{"OBJ_CUBE", std::to_string((int)ObjectId::CUBE)},
-// 			{"OBJ_TORUS", std::to_string((int)ObjectId::TORUS)},
-// 			{"OBJ_PLANE", std::to_string((int)ObjectId::PLANE)},
-// 			{"OBJ_CONE", std::to_string((int)ObjectId::CONE)},
-// 			{"OBJ_PARABOLOID", std::to_string((int)ObjectId::PARABOLOID)},
-// 			{"NO_PATTERN",   std::to_string((int)PatternType::NO_PATTERN)},
-// 			{"STRIPE",   std::to_string((int)PatternType::STRIPE)},
-// 			{"CHECKER",   std::to_string((int)PatternType::CHECKER)},
-// 			{"GRADIENT",   std::to_string((int)PatternType::GRADIENT)},
-// 			{"RING",   std::to_string((int)PatternType::RING)},
-// 			{"PERLIN",   std::to_string((int)PatternType::PERLIN)},
-// 			{"DIRECTIONAL",   std::to_string((int)LightType::DIRECTIONAL)},
-// 			{"POSITIONAL", std::to_string((int)LightType::POSITIONAL)},
-// 			{"CSG_UNION", std::to_string((int)ObjectId::CSG_UNION)},
-// 			{"CSG_DIFFERENCE", std::to_string((int)ObjectId::CSG_DIFFERENCE)},
-// 			{"CSG_INTERSECT", std::to_string((int)ObjectId::CSG_INTERSECT)},
-// 		}, source))
-// 		return false;
-
-// 	std::vector<std::string> shaderFiles = loader.files();
-
-// 	const char* src = source.c_str();
-// 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-// 	glShaderSource(fragmentShader, 1, &src, NULL);
-// 	glCompileShader(fragmentShader);
-
-// 	GLint success;
-// 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-// 	if (!success)
-// 	{
-// 		char log[2048];                                // 512 is easily too small for GLSL errors
-// 		glGetShaderInfoLog(fragmentShader, sizeof(log), NULL, log);
-// 		std::cerr << "KO:: fragment shader compilation failed\n" << log << std::endl;
-// 		for (size_t i = 0; i < shaderFiles.size(); i++)
-// 			std::cerr << "  file " << i << " = " << shaderFiles[i] << std::endl;
-// 		glDeleteShader(fragmentShader);
-// 		return false;
-// 	}
-// 	GLenum err = glGetError();
-// 	if (err != GL_NO_ERROR)
-// 	{
-// 		std::cout << "devut" << std::endl;
-// 		std::cerr << "KO:: GL error 0x" << std::dec << err << std::dec
-// 		          << " while actructive	 uploading textures" << std::endl;
-// 		const GLubyte* errorString = gluErrorString(err);
-//     	printf("OpenGL Error: %s\n", errorString);
-// 		exit(1);
-// 	}
-// 	return true;
-// }
 
 bool OpenGLObject::Whatever()
 {
@@ -460,7 +356,7 @@ bool OpenGLObject::UploadTextures(const std::vector<Image>& imgs)
     return CheckGLError("UploadTextures");
 }
 
-void OpenGLObject::UploadScene(const GpuScene& scene)
+bool OpenGLObject::UploadScene(const GpuScene& scene)
 {
 	GLenum err = glGetError();
 	if (!ubo)
@@ -478,6 +374,7 @@ void OpenGLObject::UploadScene(const GpuScene& scene)
 		glBindBuffer(GL_UNIFORM_BUFFER, ubo);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(GpuScene), &scene);
 	}
+	return 1;
 }
 
 void OpenGLObject::UploadCamera(const GpuScene& scene)
@@ -486,8 +383,87 @@ void OpenGLObject::UploadCamera(const GpuScene& scene)
 	glBufferSubData(GL_UNIFORM_BUFFER, offsetof(GpuScene, cam), sizeof(GpuCamera), &scene.cam);
 }
 
+bool OpenGLObject::UploadWorld(World *w) {
+
+	// resolve textures first
+	if (!w->resolveTextures())
+		return false;
+
+	world = w;
+	cam = w->getCamera();
+
+	// building the GpuScene
+	gpuS = w->buildGpuScene();
+
+	// calculating the movement factors
+	baseSpeed  = w->sceneScale() * 0.25f;
+	speedMul   = 1.0f;
+
+	// uploading it raw to GPU
+	if (!UploadScene(gpuS))
+		return false;
+	if (!UploadTextures(w->getTextures()))      // GPU array + sampler uniform
+		return false;
+	needsRender = true;
+	return true;
+}
 
 
+void OpenGLObject::handleMovements()
+{
+	time.now = glfwGetTime();
+	float  dt  = std::min(float(time.now - time.last), 0.05f);   // clamp spikes
+		time.last = time.now;
+	float step = baseSpeed * speedMul * dt;
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) mov.fwd += step;
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) mov.fwd -= step;
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) mov.rgt += step;
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) mov.rgt -= step;
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS) mov.upw += step;
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) mov.upw -= step;
+
+	float turnSpeed = 1.5f;
+	if (glfwGetKey(window, GLFW_KEY_LEFT)  == GLFW_PRESS) mov.dYaw   -= turnSpeed * dt;
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) mov.dYaw   += turnSpeed * dt;
+	if (glfwGetKey(window, GLFW_KEY_UP)    == GLFW_PRESS) mov.dPitch += turnSpeed * dt;
+	if (glfwGetKey(window, GLFW_KEY_DOWN)  == GLFW_PRESS) mov.dPitch -= turnSpeed * dt;
+}
+
+void OpenGLObject::handleChange()
+{
+	changed = false;
+	if (mov.fwd || mov.rgt || mov.upw) {
+		cam.move(mov.fwd, mov.rgt, mov.upw);
+		changed = true;
+	}
+	if (mov.dYaw || mov.dPitch) {
+		cam.rotate(mov.dYaw, mov.dPitch);
+		changed = true;
+	}
+	if (changed)
+	{
+		cam.packIntoGpuScene(gpuS);
+		UploadCamera(gpuS);
+		bzero(&mov, sizeof(Movements));
+	}
+}
+
+void OpenGLObject::Render()
+{
+	if (changed || needsRender)                        // skip if nothing moved
+	{
+		glUseProgram(computeProgram);
+		glDispatchCompute((actualWidth + 7) / 8, (actualHeight + 7) / 8, 1);
+
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT | GL_FRAMEBUFFER_BARRIER_BIT);
+		needsRender = false;
+	}
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, readFBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBlitFramebuffer(0, 0, actualWidth, actualHeight, 0, 0, actualWidth, actualHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	glfwSwapBuffers(window);
+}
 
 /*============= SETTERS && GETTERS ===========*/
 
@@ -501,15 +477,6 @@ void OpenGLObject::setInfoLog(const char* log) {
         strncpy(infoLog, log, sizeof(infoLog) - 1);
         infoLog[sizeof(infoLog) - 1] = '\0';
     }
-}
-
-// vertexShader getters and setters
-unsigned int OpenGLObject::getVertexShader() const {
-    return vertexShader;
-}
-
-void OpenGLObject::setVertexShader(unsigned int shader) {
-    vertexShader = shader;
 }
 
 // fragmentShader getters and setters
@@ -529,33 +496,6 @@ unsigned int OpenGLObject::getComputeProgram() const {
 void OpenGLObject::setComputeProgram(unsigned int program) {
     computeProgram = program;
 }
-
-// // VBO getters and setters
-// unsigned int OpenGLObject::getVBO() const {
-//     return VBO;
-// }
-
-// void OpenGLObject::setVBO(unsigned int vbo) {
-//     VBO = vbo;
-// }
-
-// // EBO getters and setters
-// unsigned int OpenGLObject::getEBO() const {
-//     return EBO;
-// }
-
-// void OpenGLObject::setEBO(unsigned int ebo) {
-//     EBO = ebo;
-// }
-
-// // VAO getters and setters
-// unsigned int OpenGLObject::getVAO() const {
-//     return VAO;
-// }
-
-// void OpenGLObject::setVAO(unsigned int vao) {
-//     VAO = vao;
-// }
 
 // debugSSBO getters and setters
 unsigned int OpenGLObject::getDebugSSBO() const {

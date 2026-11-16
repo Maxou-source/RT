@@ -62,19 +62,12 @@ namespace ParseUtils
 	}
 
 	bool	parseTextureFile(const std::string& val, std::string &texture_file) {
-	std::ifstream file;
-	file.open(val.c_str());
-	if (!file.is_open())
-		return false;
-	texture_file = val;
-	// constexpr auto read_size = std::size_t(4096);
-
-	// auto buf = std::string(read_size, '\0');
-    // while (file.read(& buf[0], read_size)) {
-    //     texture_file.append(buf, 0, file.gcount());
-    // }
-	// texture_file.append(buf, 0, file.gcount());
-	return true;
+		std::ifstream file;
+		file.open(val.c_str());
+		if (!file.is_open())
+			return false;
+		texture_file = val;
+		return true;
 	}
 
 	ObjectId findObjectId(const std::string& s)
