@@ -41,7 +41,6 @@ bool Texture::packIntoGpuScene(GpuScene&) const {
 }
 
 void Texture::packInto(GpuMaterial& g) const {
-	std::cout << "layer " << layer << std::endl;
 	g.texture.i_m   = i_m.getMatrix();
 	g.texture.layer = layer;
 	g.texture.scale = param;

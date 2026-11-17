@@ -29,10 +29,6 @@ bool Torus::packIntoGpuScene(GpuScene& s) const {
 }
 
 bool Torus::preBuild() {
-	// Matrix scale_Matrix;
-	// scale_Matrix.scale(A, A, A);
-	// scale_Matrix.display();
-
 	Matrix translation_matrix;
 	translation_matrix.translate(position.x, position.y, position.z);
 	translation_matrix.display();

@@ -92,33 +92,31 @@ float perlin(float x, float y, float z)
    49,192,214, 31,181,199,106,157,184, 84,204,176,115,121,50,45,127, 4,150,254,
    138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180
    };
-    int X = int(floor(x)) & 255;                  // FIND UNIT CUBE THAT
-    int Y = int(floor(y)) & 255;                  // CONTAINS POINT.
+    int X = int(floor(x)) & 255;
+    int Y = int(floor(y)) & 255;
     int  Z = int(floor(z)) & 255;
-      x -= floor(x);                                // FIND RELATIVE X,Y,Z
-      y -= floor(y);                                // OF POINT IN CUBE.
+      x -= floor(x);
+      y -= floor(y);
       z -= floor(z);
-      float u = fade(x),                                // COMPUTE FADE CURVES
-             v = fade(y),                                // FOR EACH OF X,Y,Z.
+      float u = fade(x),
+             v = fade(y),
              w = fade(z);
-      int A = p[X  ]+Y, AA = p[A]+Z, AB = p[A+1]+Z,      // HASH COORDINATES OF
-          B = p[X+1]+Y, BA = p[B]+Z, BB = p[B+1]+Z;      // THE 8 CUBE CORNERS,
+      int A = p[X  ]+Y, AA = p[A]+Z, AB = p[A+1]+Z,
+          B = p[X+1]+Y, BA = p[B]+Z, BB = p[B+1]+Z;
 
-      return lerp(w, lerp(v, lerp(u, grad(p[AA  ], x  , y  , z   ),  // AND ADD
-                                     grad(p[BA  ], x-1, y  , z   )), // BLENDED
-                             lerp(u, grad(p[AB  ], x  , y-1, z   ),  // RESULTS
-                                     grad(p[BB  ], x-1, y-1, z   ))),// FROM  8
-                     lerp(v, lerp(u, grad(p[AA+1], x  , y  , z-1 ),  // CORNERS
-                                     grad(p[BA+1], x-1, y  , z-1 )), // OF CUBE
+      return lerp(w, lerp(v, lerp(u, grad(p[AA  ], x  , y  , z   ),
+                                     grad(p[BA  ], x-1, y  , z   )),
+                             lerp(u, grad(p[AB  ], x  , y-1, z   ),
+                                     grad(p[BB  ], x-1, y-1, z   ))),
+                     lerp(v, lerp(u, grad(p[AA+1], x  , y  , z-1 ),
+                                     grad(p[BA+1], x-1, y  , z-1 )),
                              lerp(u, grad(p[AB+1], x  , y-1, z-1 ),
                                      grad(p[BB+1], x-1, y-1, z-1 ))));
 }
 
 vec4 perlin_at(Pattern pat, vec4 p, vec4 colorA)
 {
-    // vec3 q = p.xyz * pat.param;
-    // return vec4(fract(q), 1.0);
-	float n = perlin(p.x * pat.param, p.y * pat.param, p.z * pat.param);   // remap to 0..1
+	float n = perlin(p.x * pat.param, p.y * pat.param, p.z * pat.param);
 	 n = n * 0.5 + 0.5;
 	return mix(colorA, pat.color, n);
 }
