@@ -68,7 +68,7 @@ class OpenGLObject
 		void setUbo(GLuint gl);
 
 		GLuint getUbo(void) const;
-		GLuint getReadFBO() const {return readFBO;}
+		GLuint getReadFBO() const;
 
 		private:
 			// OPENGL stuff

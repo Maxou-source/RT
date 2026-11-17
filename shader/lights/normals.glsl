@@ -1,38 +1,28 @@
 
 vec4 normal_at(Obj o, vec4 world_point)
 {
-	vec4 local_point  = world_point * o.inv_transform;        // same convention as your intersect_sp
-	vec4 local_normal = vec4(local_point.xyz, 0.0);           // unit sphere at origin
-	vec4 n            = o.inv_transform * local_normal;
+	vec4 local_point  = world_point * o.inv_transform;
+	vec4 local_normal = vec4(local_point.xyz, 0.0);
+	vec4 n = o.inv_transform * local_normal;
 	return vec4(normalize(n.xyz), 0.0);
 }
+
 vec4 normal_at_to(Obj torus, vec4 point)
 {
-    // Transform intersection point into object space
-    vec4 P = point * torus.inv_transform;
-
-    float A = torus.param;
-
-    // Find the closest point Q on the torus center circle
-    float length_xy = sqrt(P.x * P.x + P.y * P.y);
-
-    vec3 Q = vec3(
-        A * P.x / length_xy,
-        A * P.y / length_xy,
-        0.0
-    );
-
-    // Calculate normal vector (from Q to P)
-    vec3 N = P.xyz - Q;
-
-    // Normalize the normal
-    N = normalize(N);
-
-    // Transform normal back to world space
-    N = normalize(N * transpose(mat3(torus.inv_transform)));
-
-    return vec4(N, 0.0);
+	vec4 P = point * torus.inv_transform;
+	float A = torus.param;
+	float length_xy = sqrt(P.x * P.x + P.y * P.y);
+	vec3 Q = vec3(
+		A * P.x / length_xy,
+		A * P.y / length_xy,
+		0.0
+	);
+	vec3 N = P.xyz - Q;
+	N = normalize(N);
+	N = normalize(N * transpose(mat3(torus.inv_transform)));
+	return vec4(N, 0.0);
 }
+
 vec4 normal_at_cy(Obj o, vec4 world_point)
 {
 	vec4 lp = world_point * o.inv_transform;
@@ -41,16 +31,16 @@ vec4 normal_at_cy(Obj o, vec4 world_point)
 	float half_h = o.param / 2.0;
 	float dist   = lp.x * lp.x + lp.z * lp.z;
 	if (dist < 1.0 - 0.001 && lp.y >= half_h - 0.001)
-		local_normal = vec4(0.0,  1.0, 0.0, 0.0);   // top cap
+		local_normal = vec4(0.0,  1.0, 0.0, 0.0);
 	else if (dist < 1.0 - 0.001 && lp.y <= -half_h + 0.001)
-		local_normal = vec4(0.0, -1.0, 0.0, 0.0);   // bottom cap
+		local_normal = vec4(0.0, -1.0, 0.0, 0.0);
 	else
 	{
 
-		local_normal = vec4(lp.x, 0.0, lp.z, 0.0);  // side
+		local_normal = vec4(lp.x, 0.0, lp.z, 0.0);
 	}
 
-	vec4 n = o.inv_transform * local_normal;           // transpose(inverse) in your convention
+	vec4 n = o.inv_transform * local_normal;
 	return vec4(normalize(n.xyz), 0.0);
 }
 
@@ -62,18 +52,18 @@ vec4 normal_at_co(Obj o, vec4 world_point)
 	float half_h = o.param / 2.0;
 	float dist   = lp.x * lp.x + lp.z * lp.z;
 	if (dist < 1.0 - 0.001 && lp.y >= half_h - 0.001)
-		local_normal = vec4(0.0,  1.0, 0.0, 0.0);   // top cap
+		local_normal = vec4(0.0,  1.0, 0.0, 0.0);
 	else if (dist < 1.0 - 0.001 && lp.y <= -half_h + 0.001)
-		local_normal = vec4(0.0, -1.0, 0.0, 0.0);   // bottom cap
+		local_normal = vec4(0.0, -1.0, 0.0, 0.0);
 	else
 	{
 		float y = sqrt((lp.x * lp.x) + (lp.z * lp.z));
 		if (lp.y > 0.0)
 			y = -y;
-		local_normal = vec4(lp.x, y, lp.z, 0.0);  // side
+		local_normal = vec4(lp.x, y, lp.z, 0.0);
 	}
 
-	vec4 n = o.inv_transform * local_normal;           // transpose(inverse) in your convention
+	vec4 n = o.inv_transform * local_normal;
 	return vec4(normalize(n.xyz), 0.0);
 }
 
@@ -104,11 +94,9 @@ vec4 normal_at_pl(Obj o, vec4 p)
 
 vec4 normal_at_pa(Obj o, vec4 p)
 {
-    // float a = /* paraboloid parameter */;
-
-    return normalize(vec4(
-        2.0 * p	.x,
-        -4.0 * o.param,
-        2.0 * p.z, 0.0
-    ));
+	return normalize(vec4(
+		2.0 * p	.x,
+		-4.0 * o.param,
+		2.0 * p.z, 0.0
+	));
 }

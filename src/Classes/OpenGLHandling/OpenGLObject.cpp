@@ -552,3 +552,7 @@ void OpenGLObject::setUbo(GLuint gl) {
 GLuint OpenGLObject::getUbo(void) const {
 	return ubo;
 }
+
+GLuint OpenGLObject::getReadFBO() const {
+	return readFBO;
+}

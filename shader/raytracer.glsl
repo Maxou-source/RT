@@ -17,8 +17,6 @@ layout(rgba8, binding = 0) uniform writeonly image2D outImage;
 //!include "lights/pattern.glsl"
 //!include "lights/texture.glsl"
 
-
-
 Ray	rayForPixel(int px, int py, int index) {
 	float	world_x;
 	float	world_y;
@@ -41,9 +39,6 @@ Ray	rayForPixel(int px, int py, int index) {
 	return r;
 }
 
-
-
-
 bool is_csg_child(int id)
 {
 	for (int i = 0; i < object_count; i++)
@@ -62,8 +57,6 @@ bool is_csg_child(int id)
 
 float intersect_obj(Ray r, Obj o)
 {
-	// if (o.type == CSG_UNION || o.type == CSG_INTERSECT || o.type == CSG_DIFFERENCE)
-	// 	return group_intersect(r, o);
 	if (o.type == OBJ_SPHERE) {
 		return(intersect_sp(r, o));
 	}
@@ -117,6 +110,7 @@ Intersection intersect_world(Ray r)
 
 	return best;
 }
+
 Computation computations(Ray r, Intersection i, Obj o);
 float shadow_factor(vec4 point, Light lgt)
 {
@@ -125,14 +119,14 @@ float shadow_factor(vec4 point, Light lgt)
 
 	if (lgt.type == DIRECTIONAL)
 	{
-		L	 = normalize(-lgt.position);	  // same direction everywhere
-		max_t = INF;							// nothing is "beyond" the light
+		L	 = normalize(-lgt.position);
+		max_t = INF;
 	}
 	else
 	{
 		vec4 v = lgt.position - point;
 		L	  = normalize(v);
-		max_t  = length(v);					 // only objects before the light count
+		max_t  = length(v);
 	}
 
 
@@ -156,24 +150,22 @@ float shadow_factor(vec4 point, Light lgt)
 		float cos_theta = clamp(dot(normalize(sr.direction.xyz), normalize(comps.normalv.xyz)), -1.0, 1.0);
 		float sin_theta = sqrt(1.0 - cos_theta * cos_theta);
 
-		float eta = 1.0 / objs[i].mat.refractive_index; // Air (1.0) to Object IOR
+		float eta = 1.0 / objs[i].mat.refractive_index;
 		float sin_theta_t = eta * sin_theta;
 
-		// If total internal reflection happens inside our approximation loop
 		if (sin_theta_t > 1.0) {
-			factor *= 0.0; // Block light
+			factor *= 0.0;
 			continue;
 		}
 
 		float cos_theta_t = sqrt(1.0 - sin_theta_t * sin_theta_t);
-		// schlick
+
 		float r0 = ((1.0 - objs[i].mat.refractive_index) / (1.0 + objs[i].mat.refractive_index));
 		r0 = r0 * r0;
 		float fresnel = r0 + (1.0 - r0) * pow(1.0 - abs(cos_theta), 5.0);
 
 		float dispersion = pow(sin_theta, 2.0) * (1.0 - eta);
 		
-		// Combine transmission loss (fresnel) and directional scattering (dispersion)
 		float transmission = (1.0 - fresnel) * (1.0 - dispersion);
 
 		factor *= clamp(transmission, 0.0, 1.0) * objs[i].mat.transparency;
@@ -197,9 +189,9 @@ bool refract_dir(Computation c, out vec4 dir)
 
 vec4 wobble_at(Obj o, vec4 point, vec4 normalv)
 {
-	vec4 lp = point * o.inv_transform;			// exact point, object space
+	vec4 lp = point * o.inv_transform;
 	vec3 d = vec3(sin(lp.y * o.mat.wob.frequency), sin(lp.z * o.mat.wob.frequency), sin(lp.x * o.mat.wob.frequency));
-	d -= normalv.xyz * dot(d, normalv.xyz);       // tangent part only
+	d -= normalv.xyz * dot(d, normalv.xyz);
 	return (vec4(normalize(normalv.xyz + o.mat.wob.amplitude * d), 0.0));
 }
 
@@ -209,19 +201,19 @@ Computation computations(Ray r, Intersection i, Obj o)
 	vec4 eyev  = -r.direction;
 
 	vec4 normalv;
-	if      (o.type == OBJ_CYLINDER)	normalv = normal_at_cy(o, point);
-	else if (o.type == OBJ_CUBE)		normalv = normal_at_cu(o, point);
-	else if (o.type == OBJ_PLANE)		normalv = normal_at_pl(o, point);
-	else if (o.type == OBJ_CONE)		normalv = normal_at_co(o, point);
-	else if (o.type == OBJ_TORUS)		normalv = normal_at_to(o, point);
-	else if (o.type == OBJ_PARABOLOID)	normalv = normal_at_pa(o, point);
+	if		(o.type == OBJ_CYLINDER)	normalv = normal_at_cy(o, point);
+	else if	(o.type == OBJ_CUBE)		normalv = normal_at_cu(o, point);
+	else if	(o.type == OBJ_PLANE)		normalv = normal_at_pl(o, point);
+	else if	(o.type == OBJ_CONE)		normalv = normal_at_co(o, point);
+	else if	(o.type == OBJ_TORUS)		normalv = normal_at_to(o, point);
+	else if	(o.type == OBJ_PARABOLOID)	normalv = normal_at_pa(o, point);
 	else	normalv = normal_at(o, point);
 
 	bool inside = dot(normalv, eyev) < 0.0;
 	if (inside)
-		normalv = -normalv;                           // geometric normal, facing the eye
+		normalv = -normalv;
 
-	vec4 over_point  = point + normalv * EPSILON * 100.0;   // after the flip
+	vec4 over_point  = point + normalv * EPSILON * 100.0;
 	vec4 under_point = point - normalv * EPSILON * 100.0;
 
 	if (o.mat.wob.amplitude != 0.0)
@@ -243,19 +235,15 @@ vec4 shade_hit(Computation cmp)
 {
 	vec4 res;
 
-
-	// PATTERN
 	if (cmp.mat.pat.patType != NO_PATTERN)
 		cmp.mat.color = applyPattern(cmp.obj, cmp.point);
 
 	if (cmp.mat.text.layer >= 0)
 		cmp.mat.color = applyTexture(cmp.obj, cmp.under_point);
 
-	// ambient 
 	vec4 amb = (ambientLgt.a * ambientLgt.a.w) * cmp.mat.ambient;
 	res = cmp.mat.color * amb;
 
-	// main lighting
 	for (int i = 0; i < light_count; i++)
 	{
 		float shadowed = shadow_factor(cmp.point, lights[i]);
@@ -267,7 +255,7 @@ vec4 shade_hit(Computation cmp)
 Ray reflected_ray(Computation c)
 {
 	Ray r;
-	r.origin    = c.point;                                  // already an over point
+	r.origin = c.point;
 	r.direction = vec4(reflect(-c.eyev.xyz, c.normalv.xyz), 0.0);
 	return r;
 }
@@ -299,7 +287,7 @@ vec4 color_at(Ray r)
 		{
 			result += weight * local;
 			weight *= c.mat.reflection;
-			r.origin    = c.point;                     // over point
+			r.origin    = c.point;
 			r.direction = vec4(reflect(-c.eyev.xyz, c.normalv.xyz), 0.0);
 		}
 		if (weight < 0.01)
@@ -308,41 +296,24 @@ vec4 color_at(Ray r)
 	return vec4(result, 1.0);
 }
 
-
-
 void main()
 {
-ivec2 size = imageSize(outImage);
-ivec2 p = ivec2(gl_GlobalInvocationID.xy);
+	ivec2 size = imageSize(outImage);
+	ivec2 p = ivec2(gl_GlobalInvocationID.xy);
 
-if (p.x >= size.x || p.y >= size.y)
-    return;
+	if (p.x >= size.x || p.y >= size.y)
+		return ;
 
-// Pixel center, equivalent to gl_FragCoord
-vec2 frag = vec2(p) + vec2(0.5);
+	// Pixel center, equivalent to gl_FragCoord
+	vec2 frag = vec2(p) + vec2(0.5);
 
-// Pixel index
-int index = p.y * size.x + p.x;
+	// Pixel index
+	int index = p.y * size.x + p.x;
 
-// Generate ray and trace it
-Ray ray = rayForPixel(p.x, p.y, index);
-vec4 color = color_at(ray);
+	// Generate ray and trace it
+	Ray ray = rayForPixel(p.x, p.y, index);
+	vec4 color = color_at(ray);
 
-// Write final pixel
-imageStore(outImage, p, vec4(color.rgb, 1.0));
-
-	// FragColor = color_at(r);
-	// if (px == 200 && py == 200)
-	// {
-	// 	debugData[index] = vec4(objs[0].mat.pat.param);
-	// 	debugData[index + 1] = objs[0].inv_transform[0];
-	// 	debugData[index + 2] = objs[0].inv_transform[1];
-	// 	debugData[index + 3] = objs[0].inv_transform[2];
-	// 	debugData[index + 4] = objs[0].inv_transform[3];
-
-	// 	debugData[index + 5] = objs[1].inv_transform[0];
-	// 	debugData[index + 6] = objs[1].inv_transform[1];
-	// 	debugData[index + 7] = objs[1].inv_transform[2];
-	// 	debugData[index + 8] = objs[1].inv_transform[3];
-	// }
+	// Write final pixel
+	imageStore(outImage, p, vec4(color.rgb, 1.0));
 }
