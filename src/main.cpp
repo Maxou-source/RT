@@ -2,7 +2,6 @@
 #include <iostream>
 #include <stdlib.h>
 #include "Sphere.hpp"
-#include "Ray.hpp"
 #include "parse.hpp"
 #include "Matrix.hpp"
 #include "rt.hpp"
@@ -11,8 +10,6 @@
 #include <xcb/xcb.h>
 #include "Light.hpp"
 #include "World.hpp"
-#include "Intersection.hpp"
-#include "Computations.hpp"
 #include "Camera.hpp"
 #include "OpenGLObject.hpp"
 #include <string>

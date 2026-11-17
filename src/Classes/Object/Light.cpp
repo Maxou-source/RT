@@ -16,7 +16,6 @@ Light::Light()
 }
 
 bool	Light::packIntoGpuScene(GpuScene& s) const {
-	std::cout << "packing light" << std::endl;
 	if (s.light_count >= MAX_LIGHTS)
 		return false;
 	GpuLight& l = s.lights[s.light_count++];

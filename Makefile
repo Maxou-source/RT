@@ -68,7 +68,6 @@ SRC_FILES_C			=	$(addprefix $(SRC_DIR), \
 SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
 						$(SRC_PARSING) \
 						$(SRC_OBJECTS) \
-						$(SRC_TUPLE) \
 						$(SRC_MATRIX) \
 						$(SRC_WORLD) \
 						$(SRC_OPENGLHANDLING) \
@@ -76,12 +75,12 @@ SRC_CLASSES			=	$(addprefix $(CLASSES_DIR), \
 
 SRC_WORLD			=	$(addprefix $(WORLD_DIR), \
 						World.cpp \
-						Intersection.cpp \
 						Camera.cpp \
 						)
 
 SRC_MATRIX			=	$(addprefix $(MATRIX_DIR), \
 						Matrix.cpp \
+						TupleUtils.cpp \
 						)
 
 
@@ -103,10 +102,9 @@ SRC_OBJECTS			= $(addprefix $(OBJECTS_DIR), \
 						Paraboloid.cpp \
 						)
 
-SRC_TUPLE			= $(addprefix $(TUPLE_DIR), \
-						Tuple.cpp \
-						Ray.cpp \
-						)
+# SRC_TUPLE			= $(addprefix $(TUPLE_DIR), \
+# 						Tuple.cpp \
+# 						)
 
 SRC_PARSING			=	$(addprefix $(PARSE_DIR), \
 						parse.cpp \

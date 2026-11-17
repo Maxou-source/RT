@@ -1,6 +1,6 @@
 #include "Camera.hpp"
 #include "rt.hpp"
-#include "Ray.hpp"
+#include "TupleUtils.hpp"
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -16,21 +16,6 @@ std::vector<std::string> Camera::requiredKeys() const {
 
 const char * Camera::typeString() const {
 	return "Camera";
-}
-
-
-void	Camera::rayForPixel(int px, int py, Ray *r) {
-	float	world_x;
-	float	world_y;
-	Tuple	world_point;
-	Tuple	pixel;
-
-	world_x = half_width - (((float)px + 0.5) * pixel_size);
-	world_y = half_height - (((float)py + 0.5) * pixel_size);
-	world_point = Tuple(world_x, world_y, -1.0, 1.0);
-	pixel = world_point * inv_transform;
-	r->setOrigin(Tuple(0,0,0,1.0) * inv_transform);
-	r->setDirection(Tuple::normalize(pixel - r->getOrigin()));
 }
 
 void Camera::updateSize(int actualWidth, int actualHeight)
@@ -49,7 +34,7 @@ void Camera::updateSize(int actualWidth, int actualHeight)
 	}
 	pixel_size = (half_width * 2) / (float)actualWidth;
 	transform = Matrix::view_transform(position,
-		Tuple::normalize(orientation), Tuple(0, 1, 0, 0));
+		normalize(orientation), point(0, 1, 0, 0));
 		inv_transform = transform.invertedMatrix().transpose();
 }
 
@@ -92,7 +77,7 @@ bool Camera::preBuild() {
 	}
 	pixel_size = (half_width * 2) / (float)width;
 	transform = Matrix::view_transform(position,
-		Tuple::normalize(orientation), Tuple(0, 1, 0, 0));
+		normalize(orientation), point(0, 1, 0, 0));
 		inv_transform = transform.invertedMatrix().transpose();
 	if (init == false)
 	{
@@ -116,25 +101,31 @@ bool Camera::packIntoGpuScene(GpuScene& s) const
 
 bool Camera::setProperty(const std::string& key, const std::string& val)
 {
-	if (key == "position")    return parsePosition(val, position);
-	else if (key == "orientation") return parseVec(val, orientation, 0.f);
-	else if (key == "fov")         { try { fov = std::stof(val); } catch (...) { return false; } return true; }
+	if (key == "position")
+		return parsePosition(val, position);
+	else if (key == "orientation")
+		return parseVec(val, orientation, 0.f);
+	else if (key == "fov") {
+		try {
+			fov = std::stof(val);
+		} catch (...) { return false; }
+		return true;
+	}
 	return false;
 }
 
 void Camera::move(float forward, float right, float up)
 {
-	Tuple f = orientation;
-	f.normalize();
-	Tuple r(0, 1, 0, 0);
-	r = r.cross_product(f);
-	r.normalize();
-	// normalize(cross_product(f, t_f4{0, 1, 0, 0}));  // flip the order if left/right is inverted
-	Tuple u = r.cross_product(f);
+	t_f4 f = orientation;
+	f = normalize(f);
+	t_f4 r = point(0, 1, 0, 0);
+	r = cross_product(r, f);
+	r = normalize(r);
+	t_f4 u = cross_product(r, f);
 
-	Tuple pos = (f * forward + r * right + u * up) + position;
-	position = pos.getValue();
-	preBuild();                                              // rebuild the view matrix
+	t_f4 pos = (f * forward + r * right + u * up) + position;
+	position = pos;
+	preBuild();
 }
 
 /*======== SETTERS AND GETTERS ========*/

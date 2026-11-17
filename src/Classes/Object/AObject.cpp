@@ -38,12 +38,11 @@ void packMatrix(const Matrix& m, t_m4& out)
 }
 
 bool AObject::packIntoGpuScene(GpuScene& s) const {
-	std::cout << "packing"<< std::endl;
 	if (s.object_count >= MAX_OBJECTS)
 		return false;
 
-	GpuObject& g = s.objs[s.object_count++];     // write directly into the slot
-	g = GpuObject{};                             // zero everything, including padding
+	GpuObject& g = s.objs[s.object_count++];
+	g = GpuObject{};
 	g.parent = -1;
 	packMatrix(i_m, g.inv_transform);
 	g.type = static_cast<int>(type());

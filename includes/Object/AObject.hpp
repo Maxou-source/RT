@@ -5,8 +5,6 @@
 # include <iostream>
 # include <stdbool.h>
 # include <set>
-# include "Intersection.hpp"
-# include "Tuple.hpp"
 # include "Matrix.hpp"
 # include "rt.hpp"
 # include "ParseUtils.hpp"
@@ -42,8 +40,6 @@ class AObject : public IParsable
 	// setters and getters
 		bool	setProperty(const std::string& key, const std::string& val) override;
 
-		// bool	buildMatrix() override {return true;}
-		
 		void	setPosition(t_f4);
 		void	setMaterial(const Material&);
 		

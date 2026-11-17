@@ -41,7 +41,7 @@ bool Torus::preBuild() {
 	orientation_matrix.orientation(orientation.x, orientation.y,orientation.z);
 	orientation_matrix.display();
 	
-	i_m = translation_matrix * orientation_matrix ; //* scale_Matrix;
+	i_m = translation_matrix * orientation_matrix ;
 	i_m = i_m.invertedMatrix().transpose();
 	std::cout << "displaying finale" << std::endl;
 	i_m.display();

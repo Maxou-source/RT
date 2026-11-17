@@ -40,7 +40,6 @@ bool Pattern::packIntoGpuScene(GpuScene&) const {
 }
 
 void Pattern::packInto(GpuMaterial& g) const {
-	std::cout << "packing pattern" << std::endl;
 	g.pat.patType = type;
 	g.pat.color[0] = clr.r;
 	g.pat.color[1] = clr.g;

@@ -7,8 +7,6 @@ typedef float	t_m4 __attribute__((matrix_type(4, 4)));
 typedef float	t_m3 __attribute__((matrix_type(3, 3)));
 typedef float	t_m2 __attribute__((matrix_type(2, 2)));
 
-class Tuple;
-
 class Matrix {
 	private:
 		t_m4	matrix;
@@ -39,7 +37,7 @@ class Matrix {
 		t_m2			submatrix_f3(t_m3 matrix, int row, int column);
 		float			determinant_2b2(t_m2 m);
 		float			minor_f3(t_m3 m, int row, int column);
-		static Matrix	view_transform(const Tuple &,const Tuple &,const Tuple &);
+		static Matrix	view_transform(const t_f4 &,const t_f4 &,const t_f4 &);
 		void			orientation(float x, float y, float z);
 
 	// setters and getters

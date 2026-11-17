@@ -7,7 +7,6 @@
 # include <memory>
 # include <map>
 
-# include "Intersection.hpp"
 # include "Camera.hpp"
 # include "rt.hpp"
 # include "GpuObjects.hpp"
@@ -22,7 +21,6 @@ class Ray;
 
 class World {
 	private:
-		std::set<Intersection>					intersects;
 		std::vector<std::unique_ptr<AObject>>	objects;
 		std::vector<Light>						lights;
 		AmbientLight							amb;
@@ -33,15 +31,11 @@ class World {
 		bool									CameraDefined = false;
 		bool									AmbientDefined = false;
 	public:
-	// Constructors and Destructors
 		World();
 
-	// method
-		void					SetUpMatrixWorld();
 		AObject*				AddObject(ObjectId id);
 		Light&					AddLight();
 		void					printWorld() const;
-		void					printIntersection();
 		int						registerTexture(const std::string& path);
 
 		void					setCamera(Camera &c);
@@ -61,9 +55,8 @@ class World {
 		
 		bool markAmbient() {if (AmbientDefined) return false; AmbientDefined = true; return true;}
 
-		// texture manipulation
-	bool                       resolveTextures();
-	const std::vector<Image>&  getTextures() const {return textures;}
+		bool resolveTextures();
+		const std::vector<Image>&  getTextures() const {return textures;}
 };
 
 #endif

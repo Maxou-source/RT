@@ -1,7 +1,6 @@
 #ifndef CAMERA_HPP
 # define CAMERA_HPP
 
-# include "Tuple.hpp"
 # include "Matrix.hpp"
 # include "IParsable.hpp"
 # include "ParseUtils.hpp"
@@ -47,11 +46,6 @@ class Camera : public IParsable {
 		void updateSize(int, int);
 		void move(float forward, float right, float up);
 		void rotate(float dYaw, float dPitch);
-
-	// Methods
-		void	rayForPixel(int px, int py, Ray *r);
-
-		void	setOpenGlObject();
 
 	// getters and setters
 		t_f4 getPosition(void) const;

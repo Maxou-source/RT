@@ -1,6 +1,6 @@
 #include "Matrix.hpp"
+#include "TupleUtils.hpp"
 #include "rt.hpp"
-#include "Tuple.hpp"
 #include <math.h>
 
 /*====== Construcforwardrs and Destructors ======*/
@@ -271,30 +271,30 @@ float	Matrix::cofactor3(t_m3 m, int row, int column)
 	return (minor_f3(m, row, column));
 }
 
-Matrix Matrix::view_transform(const Tuple& from, const Tuple& forward, const Tuple& up)
+Matrix Matrix::view_transform(const t_f4& from, const t_f4& forward, const t_f4& up)
 {
-	// Tuple forward = Tuple::normalize(from - forward);
-	Tuple leftv = forward.cross_product(Tuple::normalize(up));
-	if (leftv == Tuple(0,0,0,0))
+	// t_f4 forward = t_f4::normalize(from - forward);
+	t_f4 leftv = cross_product(forward, normalize(up));
+	if (equal_tuple(leftv, point(0,0,0,0)))
 	{
-		leftv = forward.cross_product(Tuple(0,0,1,0));
-		if (leftv == Tuple(0,0,0,0))
-			leftv = forward.cross_product(Tuple(1,0,0,0));
+		leftv = cross_product(forward, point(0,0,1,0));
+		if (equal_tuple(leftv, point(0,0,0,0)))
+			leftv = cross_product(forward, point(1,0,0,0));
 	}
-	Tuple true_up = leftv.cross_product(forward);
+	t_f4 true_up = cross_product(leftv, forward);
 	Matrix m;
-	m.matrix[0][0] = leftv.getValue().x;
-	m.matrix[0][1] = leftv.getValue().y;
-	m.matrix[0][2] = leftv.getValue().z;
-	m.matrix[1][0] = true_up.getValue().x;
-	m.matrix[1][1] = true_up.getValue().y;
-	m.matrix[1][2] = true_up.getValue().z;
-	m.matrix[2][0] = -forward.getValue().x;
-	m.matrix[2][1] = -forward.getValue().y;
-	m.matrix[2][2] = -forward.getValue().z;
+	m.matrix[0][0] = leftv.x;
+	m.matrix[0][1] = leftv.y;
+	m.matrix[0][2] = leftv.z;
+	m.matrix[1][0] = true_up.x;
+	m.matrix[1][1] = true_up.y;
+	m.matrix[1][2] = true_up.z;
+	m.matrix[2][0] = -forward.x;
+	m.matrix[2][1] = -forward.y;
+	m.matrix[2][2] = -forward.z;
 
 	Matrix tmp;
-	tmp.translate(-from.getValue().x, -from.getValue().y, -from.getValue().z);
+	tmp.translate(-from.x, -from.y, -from.z);
 	// tmp.display();
 	return m * tmp;
 }

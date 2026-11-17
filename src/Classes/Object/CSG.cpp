@@ -14,8 +14,8 @@ std::vector<std::string> CSG::requiredKeys() const {
 IParsable* CSG::getSubBlock(const std::string& name) {
 	ObjectId id = ParseUtils::findObjectId(name);
 	if (id == ObjectId::NONE || children.size() >= 2)
-		return nullptr;                            // unknown shape, or a third child
-	AObject* child = AddObject(id);   // the same factory as World::AddObject
+		return nullptr;
+	AObject* child = AddObject(id);
 	if (!child)
 		return nullptr;
 	return children.back().get();

@@ -7,7 +7,6 @@
 #include "Cone.hpp"
 #include "CSG.hpp"
 #include "Paraboloid.hpp"
-#include "Ray.hpp"
 # include <memory>
 
 #define STB_IMAGE_IMPLEMENTATION               // in exactly one .cpp
@@ -89,15 +88,6 @@ void World::printWorld() const
 		light.print(j++);
 	std::cout << lights.size() << " light(s) in world" << std::endl;
 	std::cout << objects.size() << " object(s) in world" << std::endl;
-}
-
-void World::printIntersection()
-{
-	std::set<Intersection>::iterator it;
-	for (it = intersects.begin(); it != intersects.end(); it++)
-	{
-		std::cout << "intersected at " << (*it).getT() << std::endl;
-	}
 }
 
 int World::registerTexture(const std::string& path)

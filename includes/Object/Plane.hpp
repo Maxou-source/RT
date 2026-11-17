@@ -10,12 +10,12 @@ class Plane : public AObject
 	public:
 		Plane();
 		ObjectId type() const override {return ObjectId::PLANE;}
-        void printSpecific(std::ostream& os) const override;
+		void printSpecific(std::ostream& os) const override;
 		std::vector<std::string> requiredKeys() const override;
-	    const char * typeString() const override;
-	    bool packIntoGpuScene(GpuScene& s) const override;
-        bool preBuild() override;
+		const char * typeString() const override;
+		bool packIntoGpuScene(GpuScene& s) const override;
+		bool preBuild() override;
 		bool repeatableSubBlock() const override;
 
-        bool setProperty(const std::string& key, const std::string& val) override;
+		bool setProperty(const std::string& key, const std::string& val) override;
 };

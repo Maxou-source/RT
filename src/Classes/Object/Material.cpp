@@ -7,15 +7,15 @@ Material::Material() {
 
 bool Material::setProperty(const std::string& key, const std::string& val) {
 	try {
-		if (key == "color")           return ParseUtils::parseColor(val, color);
-		else if (key == "ambient")         ambient = std::stof(val);
-		else if (key == "diffuse")    diffuse = std::stof(val);
-		else if (key == "specular")   specular = std::stof(val);
-		else if (key == "shininess")  shininess = std::stof(val);
-		else if (key == "transparency")  transparency = std::stof(val);
-		else if (key == "refractive_index")  refractive_index = std::stof(val);
-		else if (key == "reflection")  reflection = std::stof(val);
-		else return false;           // not a material key
+		if (key == "color") return ParseUtils::parseColor(val, color);
+		else if (key == "ambient") ambient = std::stof(val);
+		else if (key == "diffuse") diffuse = std::stof(val);
+		else if (key == "specular") specular = std::stof(val);
+		else if (key == "shininess") shininess = std::stof(val);
+		else if (key == "transparency") transparency = std::stof(val);
+		else if (key == "refractive_index") refractive_index = std::stof(val);
+		else if (key == "reflection") reflection = std::stof(val);
+		else return false;
 	} catch (const std::exception&) { return false; }
 	return true;
 }

@@ -1,5 +1,4 @@
 #include "Sphere.hpp"
-#include "Ray.hpp"
 #include "rt.hpp"
 
 /*==== Constructors and Destructors =====*/

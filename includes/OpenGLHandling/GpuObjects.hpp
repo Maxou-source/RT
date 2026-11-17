@@ -39,14 +39,14 @@ struct GpuMaterial
 
 struct GpuObject
 {
-	t_m4			inv_transform; // 64
-	GpuMaterial		mat; // 72 -> 12 + 72 -> 84
-	int				type; // 4 -> 88
-	float			param; // 4 -> 92
+	t_m4			inv_transform;
+	GpuMaterial		mat;
+	int				type;
+	float			param;
 	int				param2;
-	int				_pad1, _pad2 = 0; // 100
-	int				parent = -1;        // index of the CSG node that owns this object, -1 = top level
-	int				left   = -1;        // child indices, only used when op != 0
+	int				_pad1, _pad2 = 0;
+	int				parent = -1;
+	int				left   = -1;
 	int				right  = -1;
 };
 
