@@ -11,8 +11,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION               // in exactly one .cpp
 #include "stb_image.h"
-// #define STB_IMAGE_RESIZE_IMPLEMENTATION        // same rule
-// #include "stb_image_resize.h"
+#define STB_IMAGE_RESIZE_IMPLEMENTATION        // same rule
+#include "stb_image_resize2.h"
 
 /*===== Construcors an Destructors =======*/
 
@@ -81,7 +81,7 @@ void World::printWorld() const
 		          << " [" << obj->typeString() << "]\n" << colorprint::reset
 		          << "  position:   (" << pos.x << ", " << pos.y << ", " << pos.z << ")\n";
 		obj->getMaterial().print(std::cout);
-		obj->printSpecific(std::cout);   // shape-specific properties
+		obj->printSpecific(std::cout);
 	}
 	size_t j = 0;
 	for (const auto& light : lights)
@@ -97,7 +97,6 @@ int World::registerTexture(const std::string& path)
 		return it->second;
 
 	int w, h, channels;
-	std::cout << "path" << path << std::endl;
 	unsigned char* src = stbi_load(path.c_str(), &w, &h, &channels, 4);
 	if (!src)
 	{
@@ -106,14 +105,26 @@ int World::registerTexture(const std::string& path)
 	}
 
 	Image img;
-	img.w = w;
-	img.h = h;
 
-	img.px.resize(w * h * 4);
-	memcpy(img.px.data(), src, w * h * 4);
+	img.w = TEX_SIZE;
+	img.h = TEX_SIZE;
+	img.px.resize((size_t)TEX_SIZE * TEX_SIZE * 4);
+	if (w == TEX_SIZE && h == TEX_SIZE)
+		std::copy(src, src + img.px.size(), img.px.begin());
+	else
+	stbir_resize_uint8_srgb(
+		src, w, h, 0,
+		img.px.data(), TEX_SIZE, TEX_SIZE, 0,
+		STBIR_RGBA
+	);
+
+	// img.w = w;
+	// img.h = h;
+
+	// img.px.resize(w * h * 4);
+	// memcpy(img.px.data(), src, w * h * 4);
 
 	stbi_image_free(src);
-	// assert(img.px.size() == TEX_SIZE * TEX_SIZE * 4);
 	textures.push_back(std::move(img));
 	int layer = (int)textures.size() - 1;
 	textureIndex[path] = layer;
@@ -127,7 +138,6 @@ bool World::resolveTextures()
 		Material& m = obj->getMaterial();      // non-const accessor
 		if (m.hasTexture == false)
 			continue;
-		std::cout << "objtype or something " << obj->typeString() << std::endl;
 		int layer = registerTexture(m.getTexture().file());
 		if (layer < 0)
 			return false;

@@ -81,7 +81,6 @@ bool Camera::preBuild() {
 		inv_transform = transform.invertedMatrix().transpose();
 	if (init == false)
 	{
-		std::cout << "first" << std::endl;
 		yaw = atan2f(orientation.x, orientation.z);
 		pitch = asinf(std::clamp(orientation.y, -1.f, 1.f));   
 		init = true;

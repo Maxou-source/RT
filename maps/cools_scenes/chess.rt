@@ -1,0 +1,41 @@
+Camera {
+	position: [0,1,-10]
+	orientation: [0,-0.25,1]
+	fov: 90
+}
+
+
+Light {
+	type: positional
+	source: [8,12,12]
+	color: [1,1,1]
+	ambient: 0.1
+	diffuse: 0.9
+	specular: 0.9
+}
+
+Cylinder {
+	position: [4,-4,4]
+	diameter: 3.0
+	height: 2.0
+	orientation: [0,1,0]
+	Material {
+		color: [0.2,0.2,0.2]
+	}
+}
+
+Plane {
+	position: [0, -5, 0]
+	orientation: [0,1,0]
+	Material {
+		color: [1,1,1]
+		ambient: 0.9
+		reflection: 0.0
+		Pattern {
+			type: checker
+			second_color: [0,0,0]
+			orientation: [0,1,0]
+			parameter: 8
+		}
+	}
+}

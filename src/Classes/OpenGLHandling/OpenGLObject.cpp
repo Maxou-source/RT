@@ -291,7 +291,6 @@ bool OpenGLObject::UploadTextures(const std::vector<Image>& imgs)
 		return false;
 	}
 
-	// All images must have identical dimensions
 	int width = imgs[0].w;
 	int height = imgs[0].h;
 

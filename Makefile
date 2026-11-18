@@ -40,6 +40,7 @@ OPENGL_HANDLING		=	OpenGLHandling/
 WORLD_DIR			=	World/
 MATRIX_DIR			=	Matrix/
 GLAD_DIR			=	glad/
+STB_IMAGE_DIR		=	stb_image/
 INCLUDE_DIR			=	includes/
 
  #===============================================================================#
@@ -48,6 +49,7 @@ INCLUDE_DIR			=	includes/
 
 INCLUDES			=	$(INCLUDE_DIR) \
 							$(addprefix $(INCLUDE_DIR), \
+							$(STB_IMAGE_DIR) \
 							$(OBJECTS_DIR) \
 							$(PARSE_DIR) \
 							$(TUPLE_DIR) \

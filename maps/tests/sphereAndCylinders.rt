@@ -4,7 +4,6 @@ Camera {
 	fov: 90
 }
 
-
 Light {
 	type: positional
 	source: [8,12,-12]
@@ -50,11 +49,61 @@ Sphere {
 		Texture {
 			texture_file: textures/earth.jpg
 			orientation: [0,1,0]
-			scale: 10.0
+			scale: 0.2
 		}
 	}
 }
 
+Cylinder {
+	position: [4,-4,-4]
+	diameter: 1.0
+	height: 2.0
+	orientation: [0,1,0]
+	Material {
+		color: [1,0,1]
+		Pattern {
+			type: ring
+			second_color: [1,0,0]
+			orientation: [1,1,0]
+			parameter: 0.2
+		}
+	}
+}
+
+Cylinder {
+	position: [0,-4,-4]
+	diameter: 1.0
+	height: 2.0
+	orientation: [0,1,0]
+	Material {
+		color: [1,0,1]
+		Texture {
+			texture_file: textures/campbell.png
+			orientation: [0,-1,0]
+			scale: 1.0
+		}
+	}
+}
+
+Cylinder {
+	position: [-4,-4,-4]
+	diameter: 1.0
+	height: 2.0
+	orientation: [0,1,0]
+	Material {
+		Wobble {
+			amplitude: 0.5
+			frequency: 40.0
+		}
+		color: [1,0,1]
+		Pattern {
+			type: perlin
+			orientation: [0,1,0]
+			second_color: [0,0,0]
+			parameter: 40.0
+		}
+	}
+}
 
 Plane {
 	position: [0, -5, 0]
