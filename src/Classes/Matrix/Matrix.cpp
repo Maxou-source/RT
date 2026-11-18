@@ -295,7 +295,6 @@ Matrix Matrix::view_transform(const t_f4& from, const t_f4& forward, const t_f4&
 
 	Matrix tmp;
 	tmp.translate(-from.x, -from.y, -from.z);
-	// tmp.display();
 	return m * tmp;
 }
 

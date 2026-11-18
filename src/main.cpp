@@ -7,7 +7,6 @@
 #include "rt.hpp"
 #include <stdio.h>
 #include <stdlib.h>
-#include <xcb/xcb.h>
 #include "Light.hpp"
 #include "World.hpp"
 #include "Camera.hpp"
@@ -18,7 +17,6 @@
 #include <filesystem>
 #include <vector>
 
-// GpuScenePrinter.hpp / .cpp
 #include <iostream>
 #include <iomanip>
 

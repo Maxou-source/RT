@@ -18,11 +18,9 @@ bool Texture::setProperty(const std::string& key, const std::string& val) {
 bool Texture::preBuild()  {
 	Matrix scale_Matrix;
 	scale_Matrix.scale(param, param, param);
-	scale_Matrix.display();
 
 	Matrix orientation_matrix;
 	orientation_matrix.orientation(orientation.x, orientation.y,orientation.z);
-	orientation_matrix.display();
 	i_m = orientation_matrix * scale_Matrix;
 	i_m = i_m.invertedMatrix().transpose();
 	return true;

@@ -3,7 +3,6 @@
 /*=====Constructors and Destructors======*/
 
 AObject::AObject() {
-	// m.display();
 }
 
 const char * AObject::typeString() const {

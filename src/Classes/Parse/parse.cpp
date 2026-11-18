@@ -46,9 +46,9 @@ bool Parse::parseBlock(IterVectorString& it, IterVectorString end, IParsable& ta
 				{
 					std::cerr << "KO:: missing mandatory property \"" << k
 					          << "\" for " << target.typeString() << std::endl;
-					ok = false;                 // keep going: report every missing key
+					ok = false;
 				}
-			return ok && target.preBuild();     // your finalize equivalent
+			return ok && target.preBuild();
 		}
 
 		if (line.back() == '{')
@@ -69,10 +69,10 @@ bool Parse::parseBlock(IterVectorString& it, IterVectorString end, IParsable& ta
 				std::cerr << "KO:: duplicate sub-block '" << name << "'" << std::endl;
 				return false;
 			}
-			if (!parseBlock(it, end, *sub))     // leaves `it` after the sub-block's '}'
+			if (!parseBlock(it, end, *sub))
 				return false;
 			seenKeys.insert(name);
-			continue;                           // no ++it: already on the next line
+			continue;
 		}
 
 		size_t colon = line.find(':');
@@ -151,7 +151,7 @@ bool	Parse::getBase()
 		}
 		else
 		{
-			std::cout << "exit here" << std::endl;
+			std::cout << "KO:: Object not found" << std::endl;
 			return false;
 		}
 	}
@@ -164,7 +164,6 @@ std::vector<std::string>	Parse::parseContent(std::ifstream *fileStream)
 	std::vector<std::string>	vectorFile;
 
 	while (std::getline(*fileStream, line)) {
-		std::cout << line << std::endl;
 		vectorFile.push_back(line);
 	}
 	return vectorFile;

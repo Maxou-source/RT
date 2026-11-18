@@ -20,28 +20,28 @@
 #define TEX_SIZE 512
 
 namespace colorprint {
-    constexpr const char* reset  = "\033[0m";
-    constexpr const char* red    = "\033[31m";
-    constexpr const char* green  = "\033[32m";
-    constexpr const char* yellow = "\033[33m";
-    constexpr const char* blue   = "\033[34m";
+	constexpr const char* reset  = "\033[0m";
+	constexpr const char* red    = "\033[31m";
+	constexpr const char* green  = "\033[32m";
+	constexpr const char* yellow = "\033[33m";
+	constexpr const char* blue   = "\033[34m";
 }
 
 typedef enum {
 	NONE,
 	SPHERE,
 	CYLINDER,
-    CUBE,
-    TORUS,
-    PLANE,
-    CONE,
-    CSG_UNION,
-    CSG_INTERSECT,
-    CSG_DIFFERENCE,
-    PARABOLOID,
+	CUBE,
+	TORUS,
+	PLANE,
+	CONE,
+	CSG_UNION,
+	CSG_INTERSECT,
+	CSG_DIFFERENCE,
+	PARABOLOID,
 	CAMERA,
-    AMBIENT_LIGHT,
-    LIGHT
+	AMBIENT_LIGHT,
+	LIGHT
 } ObjectId;
 
 typedef float	t_f4 __attribute__((ext_vector_type(4)));
@@ -56,9 +56,9 @@ typedef float	t_f4 __attribute__((ext_vector_type(4)));
 # define SCANLINE_PAD 32
 
 typedef struct t_clr {
-    float r;
-    float g;
-    float b;
+	float r;
+	float g;
+	float b;
 } t_clr;
 
 #endif

@@ -27,13 +27,12 @@ float shadow_factor(vec4 point, Light lgt)
 
 	for (int i = 0; i < object_count; i++)
 	{
-		float t = intersect_obj(sr, objs[i]);
-		if (t >= max_t || t <= 0.0001)
+		Intersection it = intersect_top(sr, i);
+		if (it.t >= max_t || it.t <= 0.0001 || it.object_id < 0)
 			continue;
 
 		if (objs[i].mat.transparency == 0.0)
 			return 0.0;
-		Intersection it = Intersection(t, i);
 		Computation comps = computations(sr, it, objs[i]);
 
 		float cos_theta = clamp(dot(normalize(sr.direction.xyz), normalize(comps.normalv.xyz)), -1.0, 1.0);

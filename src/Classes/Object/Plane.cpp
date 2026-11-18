@@ -31,16 +31,12 @@ bool Plane::setProperty(const std::string& key, const std::string& val) {
 bool Plane::preBuild() {
 	Matrix translation_matrix;
 	translation_matrix.translate(position.x, position.y, position.z);
-	translation_matrix.display();
 
 	Matrix orientation_matrix;
 	orientation_matrix.orientation(orientation.x, orientation.y,orientation.z);
-	orientation_matrix.display();
 	
 	i_m = translation_matrix * orientation_matrix;
 	i_m = i_m.invertedMatrix().transpose();
-	std::cout << "displaying finale" << std::endl;
-	i_m.display();
 	return true;
 }
 
