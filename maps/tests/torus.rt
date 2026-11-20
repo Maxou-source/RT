@@ -40,7 +40,7 @@ Torus {
 			scale: 3.0
 		}
 	}
-	orientation: [0,1,0]
+	orientation: [1,0,0]
 	A: 5.0
 	B: 2.0
 }

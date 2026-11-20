@@ -208,9 +208,9 @@ float intersect_to(Ray r, Obj torus)
 	float A = torus.param;
 	float B = torus.param2;
 
-	float G = 4 * A*A * (E.x*E.x + E.y*E.y);
-	float H = 8 * A*A * (D.x*E.x + D.y*E.y);
-	float I = 4 * A*A * (D.x*D.x + D.y*D.y);
+	float G = 4 * A*A * (E.x*E.x + E.z*E.z);
+	float H = 8 * A*A * (D.x*E.x + D.z*E.z);
+	float I = 4 * A*A * (D.x*D.x + D.z*D.z);
 	float J = dot(E, E);
 	float K = 2 * dot(D, E);
 	float L = dot(D, D) + A*A - B*B;

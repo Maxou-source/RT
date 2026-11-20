@@ -11,7 +11,7 @@ vec4 normal_at_to(Obj torus, vec4 point)
 {
 	vec4 P = point * torus.inv_transform;
 	float A = torus.param;
-	float length_xy = sqrt(P.x * P.x + P.y * P.y);
+	float length_xy = sqrt(P.x * P.x + P.z * P.z);
 	vec3 Q = vec3(
 		A * P.x / length_xy,
 		A * P.y / length_xy,

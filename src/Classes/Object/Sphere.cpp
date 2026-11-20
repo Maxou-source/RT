@@ -33,7 +33,7 @@ const char * Sphere::typeString() const {
 bool Sphere::preBuild() {
 	// scaling matrix
 	Matrix scale_Matrix;
-	scale_Matrix.scale(diameter, diameter, diameter);
+	scale_Matrix.scale(diameter / 2.0f, diameter / 2.0f, diameter / 2.0f);
 
 	// translated matrix
 	Matrix translation_matrix;
