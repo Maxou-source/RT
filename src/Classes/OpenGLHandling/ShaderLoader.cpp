@@ -7,14 +7,13 @@ bool ShaderLoader::load(const std::string& path,
 	included.clear();
 	fileTable.clear();
 
-	out = "#version 460 core\n";                       // the only place the version lives
+	out = "#version 460 core\n";
 	for (const auto& d : defines)
 		out += "#define " + d.first + " " + d.second + "\n";
 
 	return expand(path, out, 0);
 }
 
-// returns true and fills `file` if the line is  //!include "xxx"
 bool ShaderLoader::parseDirective(const std::string& line, std::string& file)
 {
 	const std::string tag = "//!include";
@@ -24,7 +23,7 @@ bool ShaderLoader::parseDirective(const std::string& line, std::string& file)
 	size_t a = line.find('"', s + tag.size());
 	size_t b = (a == std::string::npos) ? a : line.find('"', a + 1);
 	if (b == std::string::npos)
-		return false;                      // malformed: treat as normal line (or report)
+		return false;
 	file = line.substr(a + 1, b - a - 1);
 	return true;
 }
@@ -35,7 +34,7 @@ bool ShaderLoader::expand(const std::string& path, std::string& out, int depth)
 		return std::cerr << "KO:: include depth exceeded at " << path << std::endl, false;
 
 	std::string key = std::filesystem::weakly_canonical(path).string();
-	if (!included.insert(key).second)      // insert fails if already present
+	if (!included.insert(key).second)
 		return true;
 
 	std::ifstream in(path);

@@ -25,8 +25,8 @@ Computation computations(Ray r, Intersection i, Obj o)
 	if (inside)
 		normalv = -normalv;
 
-	vec4 over_point  = point + normalv * EPSILON * 100.0;
-	vec4 under_point = point - normalv * EPSILON * 100.0;
+	vec4 over_point  = point + normalv * EPSILON * 1.0;
+	vec4 under_point = point - normalv * EPSILON * 1.0;
 
 	if (o.mat.wob.amplitude != 0.0)
 		normalv = wobble_at(o, point, normalv);

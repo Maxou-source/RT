@@ -133,7 +133,7 @@ Matrix	Matrix::transpose()
 	return (tmp);
 }
 
-void Matrix::display()
+void	Matrix::display()
 {
 	int	i;
 	int	j;
@@ -273,7 +273,6 @@ float	Matrix::cofactor3(t_m3 m, int row, int column)
 
 Matrix Matrix::view_transform(const t_f4& from, const t_f4& forward, const t_f4& up)
 {
-	// t_f4 forward = t_f4::normalize(from - forward);
 	t_f4 leftv = cross_product(forward, normalize(up));
 	if (equal_tuple(leftv, point(0,0,0,0)))
 	{
@@ -304,25 +303,22 @@ void Matrix::orientation(float x, float y, float z)
 {
 	float len = sqrtf(x * x + y * y + z * z);
 	if (len < 1e-6f)
-		return;                          // no direction: keep current matrix
+		return;
 	x /= len; y /= len; z /= len;
 
-	// axis = cross((0,1,0), dir) = (z, 0, -x)
-	// cos(t) = dot((0,1,0), dir) = y
 	float c = y;
 	float ax = z, ay = 0.0f, az = -x;
-	float s = sqrtf(ax * ax + az * az);  // sin(t) = |axis|, no acos needed
+	float s = sqrtf(ax * ax + az * az);
 
-	if (s < 1e-6f)                       // dir parallel to Y
+	if (s < 1e-6f)
 	{
 		if (c > 0.0f)
-			return;                      // same direction: identity rotation
-		// opposite direction: 180 degrees around X
+			return;
 		matrix[1][1] = -1.0f;
 		matrix[2][2] = -1.0f;
 		return;
 	}
-	ax /= s; az /= s;                    // normalize the axis
+	ax /= s; az /= s;
 	float k = 1.0f - c;
 
 	matrix[0][0] = c + k * ax * ax;

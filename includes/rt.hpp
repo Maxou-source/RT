@@ -46,7 +46,7 @@ typedef enum {
 
 typedef float	t_f4 __attribute__((ext_vector_type(4)));
 
-# define EPSILON 0.00001
+# define EPSILON 0.0001
 # define PI 3.141592653589793
 
 # define POINT 1

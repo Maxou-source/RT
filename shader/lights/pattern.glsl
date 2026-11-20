@@ -7,7 +7,7 @@ vec4 stripe_at(Pattern pat, vec4 point, vec4 color)
 	else
 		return (color);
 }
-// color(p, ca , cb ) = ca + (cb − ca ) ∗ (px − floor(px ))
+
 vec4 gradient_at(Pattern pat, vec4 point, vec4 colorA)
 {
 	float f = clamp(point.x, 0.0, 1.0);

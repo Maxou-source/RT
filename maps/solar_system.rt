@@ -1,83 +1,308 @@
-Light {
-	position: [-5.0,5,0]
-	specular: 0.9
-	color: [0,0,1]
-	ambient: 0.2
-	diffuse: 0.2
-}
-
-Light {
-	position: [5.0,5,0]
-	specular: 0.9
-	color: [1,0,0]
-	ambient: 0.2
-	diffuse: 0.2
+AmbientLight {
+    color: [1,1,1]
+    intensity: 0.1
 }
 
 Camera {
-    position: [10,10,-18]
-    orientation: [-0.6,-0.6,1]
-    fov: 90
+    position: [32,1.5,-8]
+    orientation: [0.6,-0.1,0.8]
+    fov: 60
 }
 
 Light {
-	position: [5.0,0,5]
-	specular: 0.9
-	color: [0,1,0]
-	ambient: 0.2
-	diffuse: 0.2
+    type: positional
+    source: [14,0,0]
+    specular: 0.1
+    color: [1,1,1]
+    ambient: 0.1
+    diffuse: 0.9
+}
+
+Light {
+    type: positional
+    source: [-14,0,0]
+    specular: 0.1
+    color: [1,1,1]
+    ambient: 0.1
+    diffuse: 0.9
+}
+
+Light {
+    type: positional
+    source: [0,0,14]
+    specular: 0.1
+    color: [1,1,1]
+    ambient: 0.1
+    diffuse: 0.9
+}
+
+Light {
+    type: positional
+    source: [0,0,-14]
+    specular: 0.1
+    color: [1,1,1]
+    ambient: 0.1
+    diffuse: 0.9
 }
 
 Sphere {
-	position: [10,0,0]
-	diameter: 2
-	Material {
-		color: [1,1,1]
-	}
+    position: [0,0,0]
+    diameter: 20
+    Material {
+        color: [1,0.9,0.4]
+        ambient: 10
+        Texture {
+            texture_file: textures/sun.jpeg
+            orientation: [0,1,0]
+            scale: 1.0
+        }
+    }
 }
 
 Sphere {
-	position: [-4,0,-10]
-	diameter: 2
-	Material {
-		color: [1,1,1]
-	}
+    position: [15.32,0,12.86]
+    diameter: 0.38
+    Material {
+        color: [1,1,1]
+        diffuse: 0.9
+        specular: 0.05
+        Texture {
+            texture_file: textures/mercury.png
+            orientation: [0,1,0]
+            scale: 1.0
+        }
+    }
 }
 
 Sphere {
-	position: [4,0,-10]
-	diameter: 2
-	Material {
-		color: [1,1,1]
-	}
+    position: [-14,0,24.25]
+    diameter: 0.95
+    Material {
+        color: [1,1,1]
+        diffuse: 0.9
+        specular: 0.05
+        Texture {
+            texture_file: textures/venus.jpeg
+            orientation: [0,1,0]
+            scale: 1.0
+        }
+    }
 }
 
 Sphere {
-	position: [0,0,0]
-	diameter: 2
-	Material {
-		color: [1,1,1]
-	}
+    position: [38,0,0]
+    diameter: 1
+    Material {
+        color: [1,1,1]
+        diffuse: 0.9
+        specular: 0.2
+        Texture {
+            texture_file: textures/earth.jpg
+            orientation: [0,1,0]
+            scale: 1.0
+        }
+    }
+}
+
+Sphere {
+    position: [40,0,0]
+    diameter: 0.27
+    Material {
+        color: [1,1,1]
+        diffuse: 0.9
+        specular: 0.02
+        Texture {
+            texture_file: textures/moon.jpeg
+            orientation: [0,1,0]
+            scale: 1.0
+        }
+    }
+}
+
+Sphere {
+    position: [-46.98,0,-17.1]
+    diameter: 0.53
+    Material {
+        color: [1,1,1]
+        diffuse: 0.9
+        specular: 0.05
+        Texture {
+            texture_file: textures/mars.jpeg
+            orientation: [0,1,0]
+            scale: 1.0
+        }
+    }
+}
+
+Sphere {
+    position: [13.89,0,78.78]
+    diameter: 11.2
+    Material {
+        color: [1,1,1]
+        diffuse: 0.9
+        specular: 0.05
+        Texture {
+            texture_file: textures/jupiter.jpeg
+            orientation: [0,1,0]
+            scale: 1.0
+        }
+    }
+}
+
+Sphere {
+    position: [-39.33,0,-108.07]
+    diameter: 9.45
+    Material {
+        color: [1,1,1]
+        diffuse: 0.9
+        specular: 0.05
+        Texture {
+            texture_file: textures/saturn.png
+            orientation: [0,1,0]
+            scale: 1.0
+        }
+    }
+}
+
+Sphere {
+    position: [-129.9,0,75]
+    diameter: 4
+    Material {
+        color: [1,1,1]
+        diffuse: 0.9
+        specular: 0.05
+        Texture {
+            texture_file: textures/uranus.jpeg
+            orientation: [0,1,0]
+            scale: 1.0
+        }
+    }
+}
+
+Sphere {
+    position: [118.9,0,-141.7]
+    diameter: 3.88
+    Material {
+        color: [1,1,1]
+        diffuse: 0.9
+        specular: 0.05
+        Texture {
+            texture_file: textures/neptune.jpeg
+            orientation: [0,1,0]
+            scale: 1.0
+        }
+    }
 }
 
 Plane {
-	position: [0,-2,0]
+	position: [0, -5, 0]
 	orientation: [0,1,0]
 	Material {
-		color: [0.58823529411,0.58823529411,0.58823529411]
-	    Pattern {
-            type: checker
-            second_color: [1,1,1]
-            parameter: 5
-            orientation: [1,0,0]
-        }
+		color: [1,1,1]
+		ambient: 0.9
+		reflection: 0.0
 	}
 }
+Torus {
+    position: [0,0,0]
+    orientation: [0,1,0]
+    A: 20
+    B: 0.1
+    Material {
+        color: [0.6,0.6,0.6]
+        ambient: 10
+        diffuse: 0
+        specular: 0
+    }
+}
 
-Plane {
-	position: [-60,-60,100]
-	orientation: [0,0,1]
-	Material {
-		color: [0.58823529411,0.2,0.4]
-	}
+Torus {
+    position: [0,0,0]
+    orientation: [1,1,0]
+    A: 28
+    B: 0.12
+    Material {
+        color: [0.6,0.6,0.6]
+        ambient: 10
+        diffuse: 0
+        specular: 0
+    }
+}
+
+Torus {
+    position: [0,0,0]
+    orientation: [0,1,0]
+    A: 38
+    B: 0.15
+    Material {
+        color: [0.3,0.6,1]
+        ambient: 10
+        diffuse: 0
+        specular: 0
+    }
+}
+
+Torus {
+    position: [0,0,0]
+    orientation: [0,1,0]
+    A: 50
+    B: 0.2
+    Material {
+        color: [0.6,0.6,0.6]
+        ambient: 10
+        diffuse: 0
+        specular: 0
+    }
+}
+
+Torus {
+    position: [0,0,0]
+    orientation: [0,1,0]
+    A: 80
+    B: 0.3
+    Material {
+        color: [0.6,0.6,0.6]
+        ambient: 10
+        diffuse: 0
+        specular: 0
+    }
+}
+
+Torus {
+    position: [0,0,0]
+    orientation: [0,1,0]
+    A: 115
+    B: 0.4
+    Material {
+        color: [0.6,0.6,0.6]
+        ambient: 10
+        diffuse: 0
+        specular: 0
+    }
+}
+
+Torus {
+    position: [0,0,0]
+    orientation: [0,1,0]
+    A: 150
+    B: 0.5
+    Material {
+        color: [0.6,0.6,0.6]
+        ambient: 10
+        diffuse: 0
+        specular: 0
+    }
+}
+
+Torus {
+    position: [0,0,0]
+    orientation: [1,0,0]
+    A: 185
+    B: 0.6
+    Material {
+        color: [0.6,0.6,0.6]
+        ambient: 10
+        diffuse: 0
+        specular: 0
+    }
 }

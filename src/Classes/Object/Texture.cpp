@@ -7,6 +7,7 @@ Texture::Texture() {
 bool Texture::setProperty(const std::string& key, const std::string& val) {
 	try {
 		if (key == "texture_file") {
+			std::cout << "val" << val << std::endl;
 			return (ParseUtils::parseTextureFile(val, texture_file));
 		}
 		else if (key == "scale") { param = std::stof(val); return true;}

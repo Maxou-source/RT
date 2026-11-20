@@ -9,9 +9,9 @@
 #include "Paraboloid.hpp"
 # include <memory>
 
-#define STB_IMAGE_IMPLEMENTATION               // in exactly one .cpp
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#define STB_IMAGE_RESIZE_IMPLEMENTATION        // same rule
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb_image_resize2.h"
 
 /*===== Construcors an Destructors =======*/
@@ -118,12 +118,6 @@ int World::registerTexture(const std::string& path)
 		STBIR_RGBA
 	);
 
-	// img.w = w;
-	// img.h = h;
-
-	// img.px.resize(w * h * 4);
-	// memcpy(img.px.data(), src, w * h * 4);
-
 	stbi_image_free(src);
 	textures.push_back(std::move(img));
 	int layer = (int)textures.size() - 1;
@@ -135,7 +129,7 @@ bool World::resolveTextures()
 {
 	for (const auto& obj : objects)
 	{
-		Material& m = obj->getMaterial();      // non-const accessor
+		Material& m = obj->getMaterial();
 		if (m.hasTexture == false)
 			continue;
 		int layer = registerTexture(m.getTexture().file());
@@ -159,13 +153,13 @@ float World::sceneScale() const
 		mn = {std::min(mn.x, p.x), std::min(mn.y, p.y), std::min(mn.z, p.z), 1};
 		mx = {std::max(mx.x, p.x), std::max(mx.y, p.y), std::max(mx.z, p.z), 1};
 	}
-	t_f4 c = cam.getPosition();                       // include the camera
+	t_f4 c = cam.getPosition();
 	mn = {std::min(mn.x, c.x), std::min(mn.y, c.y), std::min(mn.z, c.z), 1};
 	mx = {std::max(mx.x, c.x), std::max(mx.y, c.y), std::max(mx.z, c.z), 1};
 
 	t_f4 d = mx - mn;
 	float size = sqrtf(d.x * d.x + d.y * d.y + d.z * d.z);
-	return size > 1e-4f ? size : 1.0f;                // degenerate scene: fall back to 1
+	return size > 1e-4f ? size : 1.0f;
 }
 
 /*================ SETTERS AND GETTERS =========================*/

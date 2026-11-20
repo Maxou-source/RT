@@ -44,30 +44,30 @@ struct Pattern
 
 struct Texture
 {
-	mat4  i_m;          // 64
-	int   layer;        // -1 = no texture
-	float scale;
-	int   _pad0, _pad1;
+	mat4	i_m;
+	int		layer;
+	float	scale;
+	int		_pad0, _pad1;
 };
 
 struct Wobble
 {
-	float amplitude;
-	float frequency;
-	float _pad0;
-	float _pad1;
+	float	amplitude;
+	float	frequency;
+	float	_pad0;
+	float	_pad1;
 };
 
 struct Material {
-    vec4  color;
-    float ambient; float diffuse; float specular; float shininess;
-    float reflection;
-	float transparency;
-	float refractive_index;
-    int pad;
-	Pattern pat;
-	Texture text;
-	Wobble wob;
+	vec4	color;
+	float	ambient; float diffuse; float specular; float shininess;
+	float	reflection;
+	float	transparency;
+	float	refractive_index;
+	int		pad;
+	Pattern	pat;
+	Texture	text;
+	Wobble	wob;
 };
 
 struct Obj {

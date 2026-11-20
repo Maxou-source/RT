@@ -47,8 +47,7 @@ int main(int ac, char **av)
 			return (-1);
 		if (!OpenGLObj.LinkComputeProgram())
 			return (-1);
-	
-	
+
 		// filling data in OpenGLObject
 		if (!OpenGLObj.UploadWorld(&w))
 			return 1;

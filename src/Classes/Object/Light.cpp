@@ -27,6 +27,7 @@ bool	Light::packIntoGpuScene(GpuScene& s) const {
 	l.source[0] = source[0];
 	l.source[1] = source[1];
 	l.source[2] = source[2];
+	l.source[3] = (type == LightType::DIRECTIONAL) ? 0.0f : 1.0f;
 
 	l.ambient = ambient;
 	l.specular = specular;
