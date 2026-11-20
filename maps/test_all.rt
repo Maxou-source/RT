@@ -1,0 +1,204 @@
+AmbientLight {
+	color: [1,1,1]
+	intensity: 0.2
+}
+
+Camera {
+	position: [1.5,8,-12]
+	orientation: [0,-0.55,1]
+	fov: 80
+}
+
+Light {
+	type: positional
+	source: [-10,15,-10]
+	color: [1,1,1]
+	ambient: 0.1
+	diffuse: 0.8
+	specular: 0.9
+	shininess: 200
+}
+
+Light {
+	type: directional
+	source: [1,-1,1]
+	color: [0.4,0.4,0.6]
+	ambient: 0.0
+	diffuse: 0.4
+}
+
+Plane {
+	position: [0,-1,0]
+	orientation: [0,1,0]
+	Material {
+		color: [1,1,1]
+		reflection: 0.2
+		Pattern {
+			type: checker
+			parameter: 2
+			second_color: [0.2,0.2,0.2]
+			orientation: [0,1,0]
+		}
+	}
+}
+
+Plane {
+	position: [0,0,30]
+	orientation: [0,0,1]
+	Material {
+		color: [0.6,0.7,1]
+		Pattern {
+			type: gradient
+			parameter: 20
+			second_color: [1,0.8,0.6]
+		}
+	}
+}
+
+Sphere {
+	position: [-9,0,0]
+	diameter: 1
+	Material {
+		color: [1,0,0]
+		ambient: 0.1
+		diffuse: 0.9
+		specular: 0.9
+		shininess: 300
+		reflection: 0.3
+	}
+}
+
+Sphere {
+	position: [-6,0,-3]
+	diameter: 1
+	Material {
+		color: [1,1,1]
+		transparency: 0.9
+		refractive_index: 1.5
+		reflection: 0.1
+	}
+}
+
+Sphere {
+	position: [-3,0,0]
+	diameter: 1
+	Material {
+		color: [1,1,1]
+		Texture {
+			texture_file: textures/jupiter.jpeg
+			orientation: [0,1,0]
+			scale: 1.0
+		}
+	}
+}
+
+Sphere {
+	position: [0,0,-3]
+	diameter: 1
+	Material {
+		color: [0.2,0.8,0.2]
+		Wobble {
+			amplitude: 0.3
+			frequency: 10
+		}
+	}
+}
+
+Cube {
+	position: [3,0,0]
+	orientation: [1,1,0]
+	size: 1
+	Material {
+		color: [1,1,0]
+		Pattern {
+			type: stripe
+			parameter: 0.25
+			second_color: [0,0,1]
+			orientation: [0,1,0]
+		}
+	}
+}
+
+Cylinder {
+	position: [6,0,0]
+	orientation: [0,1,0]
+	diameter: 1
+	height: 2
+	Material {
+		color: [1,0.5,0]
+		Pattern {
+			type: ring
+			parameter: 0.2
+			second_color: [0.3,0.1,0]
+		}
+	}
+}
+
+Cone {
+	position: [9,0,0]
+	orientation: [0,1,0]
+	size: 2
+	diameter: 1
+	Material {
+		color: [0.8,0.2,0.8]
+		Pattern {
+			type: perlin
+			parameter: 3
+			second_color: [0.1,0.1,0.3]
+		}
+	}
+}
+
+Difference {
+	Cube {
+		position: [-5,0,6]
+		orientation: [0,1,0]
+		size: 1
+		Material {
+			color: [0.9,0.3,0.3]
+		}
+	}
+	Sphere {
+		position: [-5,0,5.4]
+		diameter: 1
+		Material {
+			color: [0.3,0.3,0.9]
+		}
+	}
+}
+
+Intersect {
+	Sphere {
+		position: [0,0,6]
+		diameter: 1.2
+		Material {
+			color: [0.9,0.9,0.9]
+		}
+	}
+	Cube {
+		position: [0,0,6]
+		orientation: [0,1,0]
+		size: 1
+		Material {
+			color: [0.9,0.6,0.2]
+		}
+	}
+}
+
+Union {
+	Sphere {
+		position: [5,0,6]
+		diameter: 0.8
+		Material {
+			color: [0.3,0.9,0.3]
+		}
+	}
+	Cube {
+		position: [5.6,0,6]
+		orientation: [0,1,0]
+		size: 0.6
+		Material {
+			color: [0.3,0.6,0.9]
+		}
+	}
+}
