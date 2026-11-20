@@ -75,6 +75,7 @@ void World::printWorld() const
 	for (const auto& obj : objects)
 	{
 		const Material& m = obj->getMaterial();
+		(void) m;
 		t_f4 pos = obj->getPosition();
 
 		std::cout << "object " << i++ << colorprint::green

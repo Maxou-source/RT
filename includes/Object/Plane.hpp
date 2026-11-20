@@ -5,7 +5,6 @@
 class Plane : public AObject
 {
 	private:
-		float	size;
 		t_f4	orientation;
 	public:
 		Plane();

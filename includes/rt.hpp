@@ -14,7 +14,7 @@
 #define WIN_HEIGHT 800
 #define WIN_WIDTH 1000
 
-#define MAX_OBJECTS 1000
+#define MAX_OBJECTS 100
 #define MAX_LIGHTS 100
 
 #define TEX_SIZE 512

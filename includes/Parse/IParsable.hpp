@@ -10,6 +10,6 @@ struct IParsable
 	virtual std::vector<std::string> requiredKeys() const = 0;
 	virtual const char * typeString() const = 0;
 	virtual bool packIntoGpuScene(GpuScene&) const = 0;
-	virtual IParsable* getSubBlock(const std::string& name) {return nullptr;}
+	virtual IParsable* getSubBlock(const std::string& name) {(void) name; return nullptr;}
 	virtual bool repeatableSubBlock() const = 0;
 };

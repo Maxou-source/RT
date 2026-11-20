@@ -14,7 +14,7 @@ CC_C				=   clang
 FLAGS				=	$(DBFLAGS) $(CFLAGS) $(INCLUDES_FLAGED) $(CDFLAGS)
 
 PKG_CONFIG = pkg-config
-CFLAGS				=	-gdwarf-4  $(shell $(PKG_CONFIG) --cflags xcb) -fenable-matrix
+CFLAGS				=	-gdwarf-4  $(shell $(PKG_CONFIG) --cflags xcb) -fenable-matrix -Wall -Werror -Wextra
 LDFLAGS =  -lglfw -lGL  -lGLU  -ldl -g -O0 -lpthread -lglfw -lvulkan -ldl -lpthread -lX11 -D NDEBUG=1 -DGLFW_INCLUDE_VULKAN
 
 DBFLAGS				=	-g3

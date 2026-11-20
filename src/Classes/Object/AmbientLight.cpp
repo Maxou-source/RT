@@ -37,6 +37,7 @@ const char * AmbientLight::typeString() const {
 
 void AmbientLight::print(size_t index) const
 {
+	(void) index;
 	std::cout << "Ambientlight " << colorprint::green << " [point]\n" << colorprint::reset
 	          << "  color:     (" << color.r << ", " << color.g << ", " << color.b << ")\n"
 	          << "  intensity: " << intensity << "\n";

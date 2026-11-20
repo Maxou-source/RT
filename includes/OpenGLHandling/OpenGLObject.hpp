@@ -92,7 +92,6 @@ class OpenGLObject
 			// WORLD
 			// movement factors
 			GpuScene	gpuS;
-			World		*world;
 			Camera		cam;
 			float		baseSpeed;
 			float		speedMul;

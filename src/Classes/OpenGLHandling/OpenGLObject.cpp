@@ -312,7 +312,6 @@ bool OpenGLObject::UploadTextures(const std::vector<Image>& imgs)
 		}
 	}
 
-	// Calculate mipmap levels
 	int levels = 1 + (int)std::floor(
 		std::log2(std::max(width, height))
 	);
@@ -385,7 +384,6 @@ bool OpenGLObject::UploadTextures(const std::vector<Image>& imgs)
 
 bool OpenGLObject::UploadScene(const GpuScene& scene)
 {
-	GLenum err = glGetError();
 	if (!ubo)
 	{
 		glGenBuffers(1, &ubo);
@@ -416,17 +414,13 @@ bool OpenGLObject::UploadWorld(World *w) {
 	if (!w->resolveTextures())
 		return false;
 
-	// world = w;
 	cam = w->getCamera();
 
-	// building the GpuScene
 	gpuS = w->buildGpuScene();
 
-	// calculating the movement factors
 	baseSpeed  = w->sceneScale() * 0.25f;
 	speedMul   = 1.0f;
 
-	// uploading it raw to GPU
 	if (!UploadScene(gpuS))
 		return false;
 	if (!UploadTextures(w->getTextures()))
@@ -508,7 +502,6 @@ void OpenGLObject::setInfoLog(const char* log) {
 	}
 }
 
-// fragmentShader getters and setters
 unsigned int OpenGLObject::getComputeShader() const {
 	return computeShader;
 }
@@ -517,7 +510,6 @@ void OpenGLObject::setComputeShader(unsigned int shader) {
 	computeShader = shader;
 }
 
-// shaderProgram getters and setters
 unsigned int OpenGLObject::getComputeProgram() const {
 	return computeProgram;
 }
@@ -526,7 +518,6 @@ void OpenGLObject::setComputeProgram(unsigned int program) {
 	computeProgram = program;
 }
 
-// debugSSBO getters and setters
 unsigned int OpenGLObject::getDebugSSBO() const {
 	return debugSSBO;
 }
@@ -535,7 +526,6 @@ void OpenGLObject::setDebugSSBO(unsigned int ssbo) {
 	debugSSBO = ssbo;
 }
 
-// window getters and setters
 GLFWwindow* OpenGLObject::getWindow() const {
 	return window;
 }

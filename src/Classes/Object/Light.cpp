@@ -37,16 +37,16 @@ bool	Light::packIntoGpuScene(GpuScene& s) const {
 }
 
 bool	Light::setProperty(const std::string& key, const std::string& val) {
-	if (key == "source")
-		return parsePosition(val, source);
-		try {
-			if (key == "color")           return ParseUtils::parseColor(val, color);
+	try {
+			if (key == "source")
+				return parsePosition(val, source);
+			else if (key == "color")           return ParseUtils::parseColor(val, color);
 			else if (key == "ambient")         ambient = std::stof(val);
 			else if (key == "diffuse")    diffuse = std::stof(val);
 			else if (key == "specular")   specular = std::stof(val);
 			else if (key == "shininess")  shininess = std::stof(val);
 			else if (key == "type")			return (parseLightType(val));
-			else return false;           // not a material key
+			else return false;
 		} catch (const std::exception&) { return false; }
 		return true;
 }

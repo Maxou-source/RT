@@ -21,7 +21,6 @@ Matrix::Matrix() {
 				matrix[i][j] = 0;
 		}
 	}
-	// by default i am building the identity matrix
 }
 
 Matrix::Matrix(t_m4 m) {matrix = m;}

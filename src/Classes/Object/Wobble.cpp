@@ -28,6 +28,7 @@ const char* Wobble::typeString() const {
 }
 
 bool Wobble::packIntoGpuScene(GpuScene& g) const {
+	(void) g;
 	return true;
 }
 
